@@ -1,0 +1,850 @@
+<!doctype html>
+<html class="theme-next use-motion ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+
+
+  <meta name="keywords" content="frontend," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="es6才原生支持 class ，来看看在此之前大神们怎样实现类工厂吧">
+<meta property="og:type" content="article">
+<meta property="og:title" content="两个小巧的javascript类工厂">
+<meta property="og:url" content="http://judes.me/2015/07/31/JSClass/index.html">
+<meta property="og:site_name" content="jude's life">
+<meta property="og:description" content="es6才原生支持 class ，来看看在此之前大神们怎样实现类工厂吧">
+<meta property="og:updated_time" content="2015-08-01T08:38:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="两个小巧的javascript类工厂">
+<meta name="twitter:description" content="es6才原生支持 class ，来看看在此之前大神们怎样实现类工厂吧">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post'
+  };
+</script>
+
+  <title> 两个小巧的javascript类工厂 | jude's life </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">jude's life</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-next-home"></i> <br />
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-next-categories"></i> <br />
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            標籤
+          </a>
+        </li>
+      
+
+      
+      
+        <li class="menu-item menu-item-search">
+          <a href="#" class="st-search-show-outputs">
+            <i class="menu-item-icon icon-next-search"></i> <br />
+            檢索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              两个小巧的javascript类工厂
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          發表於
+          <time itemprop="dateCreated" datetime="2015-07-31T23:02:51+08:00" content="7月 31 2015">
+            7月 31 2015
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分類於
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/frontend/" itemprop="url" rel="index">
+                  <span itemprop="name">frontend</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h2 id="阅读前，希望你了解javascript的原型链">阅读前，希望你了解javascript的原型链</h2><h2 id="P-js">P.js</h2><h3 id="项目地址"><a href="https://github.com/jneen/pjs" target="_blank" rel="external">项目地址</a></h3><h3 id="基础用法：">基础用法：</h3><pre><code>var <span class="keyword">Animal</span> = P(function(<span class="keyword">animal</span>){
+      <span class="keyword">animal</span>.init = function(name){
+          this.name = name;
+      };
+      <span class="keyword">animal</span>.move = function(meters){
+          console.log(this.name + <span class="string">" moved "</span> + meters + <span class="string">" m."</span>);
+      }
+  });
+
+var Snake = P(<span class="keyword">Animal</span>, function(snake, <span class="keyword">animal</span>){
+        snake.move = function(){
+            console.log(<span class="string">"Slithering..."</span>);
+            <span class="keyword">animal</span>.move.call(this, 5);
+        };
+    });
+
+var Horse = P(<span class="keyword">Animal</span>, function(horse, <span class="keyword">animal</span>){
+        horse.move = function(){
+            console.log(<span class="string">"Galloping..."</span>);
+            <span class="keyword">animal</span>.move.call(this, 45);
+        };
+    });
+
+var sam = Snake(<span class="string">"Sammy the Python"</span>),
+    tom = Horse(<span class="string">"Tommy the Palomino"</span>);
+
+sam.move(); 
+// 输出 
+// Slithering...
+// Sammy the Python moved 5 m.
+tom.move();
+// 输出 
+// Galloping...
+// Tommy the Palomino moved 45 m.
+</code></pre><h3 id="源码">源码</h3><pre><code><span class="comment">//说点题外话，作者利用闭包做了不少事情：</span>
+
+<span class="comment">//传入变量 prototype 是为了能在使用代码压缩工具时缩短代码，例如把 prototype 替换为 p</span>
+<span class="comment">//在压缩代码时 obj.prototype 和 obj[prototype] 是不一样的，前者的 prototype 不会被替换，所以要达到压缩变量的目的，还要配合后一种写法</span>
+
+<span class="comment">//ownProperty 是 helper function</span>
+
+<span class="comment">//传入 undefined 是阻止在使用 undefined 时回溯原型链，提高性能</span>
+
+(<span class="function"><span class="keyword">function</span>(<span class="params">prototype, ownProperty, undefined</span>) </span>{
+    <span class="comment">//这个立即执行函数返回 类工厂 P</span>
+    <span class="comment">//P接受两个参数， 分别对应 父类 和对父类的相关扩展</span>
+    <span class="comment">//如果只传一个参数，就认为父类是 Object</span>
+    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">P</span>(<span class="params">_superclass <span class="comment">/* = Object */</span>, definition</span>) </span>{
+        <span class="comment">// handle the case where no superclass is given</span>
+        <span class="keyword">if</span> (definition === <span class="literal">undefined</span>) {
+          definition = _superclass;
+          _superclass = <span class="built_in">Object</span>;
+        }
+
+        <span class="comment">// C is the class to be returned.</span>
+        <span class="comment">//</span>
+        <span class="comment">// When called, creates and initializes an instance of C, unless</span>
+        <span class="comment">// `this` is already an instance of C, then just initializes `this`;</span>
+        <span class="comment">// either way, returns the instance of C that was initialized.</span>
+        <span class="comment">//</span>
+        <span class="comment">//  <span class="doctag">TODO:</span> the Chrome inspector shows all created objects as `C`</span>
+        <span class="comment">//        rather than `Object`.  Setting the .name property seems to</span>
+        <span class="comment">//        have no effect.  Is there a way to override this behavior?</span>
+
+        <span class="comment">// C 是 创建好类之后，实例化类时（不管有没有使用new）返回的对象，</span>
+        <span class="function"><span class="keyword">function</span> <span class="title">C</span>(<span class="params"></span>) </span>{
+            <span class="comment">//如果没有使用 new ，则调用 new Bare</span>
+            <span class="keyword">var</span> self = <span class="keyword">this</span> <span class="keyword">instanceof</span> C ? <span class="keyword">this</span> : <span class="keyword">new</span> Bare;
+            self.init.apply(self, <span class="built_in">arguments</span>);
+            <span class="keyword">return</span> self;
+        }
+
+        <span class="comment">// C.Bare is a class with a noop constructor.  Its prototype will be</span>
+        <span class="comment">// the same as C, so that instances of C.Bare are instances of C.</span>
+        <span class="comment">// `new MyClass.Bare` then creates new instances of C without</span>
+        <span class="comment">// calling .init().</span>
+        <span class="comment">//    如果不想在实例化时调用 init() ，可以用 new C.Bare</span>
+        <span class="function"><span class="keyword">function</span> <span class="title">Bare</span>(<span class="params"></span>) </span>{}
+        C.Bare = Bare;
+
+        <span class="comment">// Extend the prototype chain: first use Bare to create an</span>
+        <span class="comment">// uninitialized instance of the superclass, then set up Bare</span>
+        <span class="comment">// to create instances of this class.</span>
+
+        <span class="comment">//实现类继承，本质上都是用这样的手法：</span>
+        <span class="comment">//    var TempClass = function(){}</span>
+        <span class="comment">//    TempClass.prototype = Parent.prototype</span>
+        <span class="comment">//    Child.prototype = new TempClass()</span>
+
+        <span class="keyword">var</span> _super = Bare[prototype] = _superclass[prototype];
+        <span class="keyword">var</span> proto = Bare[prototype] = C[prototype] = C.p = <span class="keyword">new</span> Bare;
+
+        <span class="comment">// pre-declaring the iteration variable for the loop below to save</span>
+        <span class="comment">// a `var` keyword after minification</span>
+        <span class="comment">// 把 key 声明为变量，方便压缩代码时替换</span>
+        <span class="keyword">var</span> key;
+
+        <span class="comment">// set the constructor property on the prototype, for convenience</span>
+        <span class="comment">//    修正 C 的构造函数，不修正的话会是 Bare</span>
+        proto.constructor = C;
+
+        <span class="comment">//    extend 返回一个子类</span>
+        C.extend = <span class="function"><span class="keyword">function</span>(<span class="params">def</span>) </span>{ <span class="keyword">return</span> P(C, def); }
+
+        <span class="comment">//    这里写得比较复杂，化简一下会是这样 </span>
+        <span class="comment">//    return (C.open = C)</span>
+        <span class="comment">//    C.open 用于修改已存在的类的属性</span>
+        <span class="keyword">return</span> (C.open = <span class="function"><span class="keyword">function</span>(<span class="params">def</span>) </span>{
+          <span class="keyword">if</span> (<span class="keyword">typeof</span> def === <span class="string">'function'</span>) {
+            <span class="comment">// call the defining function with all the arguments you need</span>
+            <span class="comment">// extensions captures the return value.</span>
+
+            <span class="comment">//    def 接收的参数有4个</span>
+            <span class="comment">//    proto为Bare的原型，即Object的原型</span>
+            <span class="comment">//    _super为父类的原型</span>
+            <span class="comment">//    C,_superclass</span>
+
+            <span class="comment">//如果def返回对象，接下来会把此对象合并到proto里</span>
+            def = def.call(C, proto, _super, C, _superclass);
+          }
+
+          <span class="comment">// ...and extend it</span>
+          <span class="keyword">if</span> (<span class="keyword">typeof</span> def === <span class="string">'object'</span>) {
+            <span class="keyword">for</span> (key <span class="keyword">in</span> def) {
+              <span class="keyword">if</span> (ownProperty.call(def, key)) {
+                proto[key] = def[key];
+              }
+            }
+          }
+
+          <span class="comment">// if no init, assume we're inheriting from a non-Pjs class, so</span>
+          <span class="comment">// default to using the superclass constructor.</span>
+          <span class="keyword">if</span> (!(<span class="string">'init'</span> <span class="keyword">in</span> proto)) proto.init = _superclass;
+
+          <span class="keyword">return</span> C;
+        })(definition);
+    }
+
+  <span class="comment">// as a minifier optimization, we've closured in a few helper functions</span>
+  <span class="comment">// and the string 'prototype' (C[p] is much shorter than C.prototype)</span>
+})(<span class="string">'prototype'</span>, ({}).hasOwnProperty);
+</code></pre><h2 id="Simple_JavaScript_Inheritance">Simple JavaScript Inheritance</h2><h3 id="地址"><a href="http://ejohn.org/blog/simple-javascript-inheritance/" target="_blank" rel="external">地址</a></h3><h3 id="用法">用法</h3><pre><code>var <span class="keyword">Person</span> = Class.extend({
+  init: function(isDancing){
+    this.dancing = isDancing;
+  },
+  dance: function(){
+    return this.dancing;
+  }
+});
+
+var Ninja = <span class="keyword">Person</span>.extend({
+  init: function(){
+    this._super( false );
+  },
+  dance: function(){
+    // Call the inherited version <span class="keyword">of</span> dance()
+    return this._super();
+  },
+  swingSword: function(){
+    return true;
+  }
+});
+
+var p = new <span class="keyword">Person</span>(true);
+p.dance(); // =&gt; true
+
+var n = new Ninja();
+n.dance(); // =&gt; false
+n.swingSword(); // =&gt; true
+
+// Should all be true
+p instanceof <span class="keyword">Person</span> &amp;&amp; p instanceof Class &amp;&amp;
+n instanceof Ninja &amp;&amp; n instanceof <span class="keyword">Person</span> &amp;&amp; n instanceof Class
+</code></pre><h3 id="源码-1">源码</h3><pre><code><span class="comment">/* Simple JavaScript Inheritance
+ * By John Resig http://ejohn.org/
+ * MIT Licensed.
+ */</span>
+<span class="comment">// Inspired by base2 and Prototype</span>
+(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
+
+    <span class="comment">//fnTest 如果浏览器支持 Function.prototype.toString 打印自身内容，则匹配里面有没有 _super</span>
+    <span class="comment">//        如果不支持，fnTest匹配结果为 true</span>
+  <span class="keyword">var</span> initializing = <span class="literal">false</span>, fnTest = <span class="regexp">/xyz/</span>.test(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{xyz;}) ? <span class="regexp">/\b_super\b/</span> : <span class="regexp">/.*/</span>;
+
+  <span class="comment">// The base Class implementation (does nothing)</span>
+  <span class="keyword">this</span>.Class = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{};
+
+  <span class="comment">// Create a new Class that inherits from this class</span>
+  Class.extend = <span class="function"><span class="keyword">function</span>(<span class="params">prop</span>) </span>{
+      <span class="comment">//先保存当前 Class 的原型</span>
+    <span class="keyword">var</span> _super = <span class="keyword">this</span>.prototype;
+
+    <span class="comment">// Instantiate a base class (but only create the instance,</span>
+    <span class="comment">// don't run the init constructor)</span>
+    <span class="comment">//    有一种实现继子的方式是 Child.prototype = new Parent()</span>
+    <span class="comment">//    这种方式的好处是隔离了 Child.prototype 和 Parent.prototype</span>
+    <span class="comment">//    坏处是调用了一次 Parent 的构造函数，构造函数中的一些初始化操作对子类来说是多余的</span>
+    <span class="comment">//    开关 initializing 能控制在 new this() 时不进行初始化操作</span>
+    initializing = <span class="literal">true</span>;
+    <span class="keyword">var</span> prototype = <span class="keyword">new</span> <span class="keyword">this</span>();
+    initializing = <span class="literal">false</span>;
+
+    <span class="comment">// Copy the properties over onto the new prototype</span>
+    <span class="keyword">for</span> (<span class="keyword">var</span> name <span class="keyword">in</span> prop) {
+      <span class="comment">// Check if we're overwriting an existing function</span>
+      prototype[name] = <span class="keyword">typeof</span> prop[name] == <span class="string">"function"</span> &amp;&amp;
+        <span class="keyword">typeof</span> _super[name] == <span class="string">"function"</span> &amp;&amp; fnTest.test(prop[name]) ?
+        <span class="comment">//    如果在 proto 里有跟父类同名的函数，而且函数里面有 _super</span>
+        <span class="comment">//    则用父类的同名函数覆盖 this._super</span>
+        (<span class="function"><span class="keyword">function</span>(<span class="params">name, fn</span>)</span>{
+          <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
+              <span class="comment">//    this._super 不一定存在，但先保存下来肯定没错</span>
+            <span class="keyword">var</span> tmp = <span class="keyword">this</span>._super;
+
+            <span class="comment">// Add a new ._super() method that is the same method</span>
+            <span class="comment">// but on the super-class</span>
+            <span class="keyword">this</span>._super = _super[name];
+
+            <span class="comment">// The method only need to be bound temporarily, so we</span>
+            <span class="comment">// remove it when we're done executing</span>
+            <span class="comment">//    作者假设 fn 里面调用了 this._super</span>
+            <span class="comment">//    所以 fn 执行时会调用父类的同名函数</span>
+            <span class="keyword">var</span> ret = fn.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);        
+            <span class="keyword">this</span>._super = tmp;
+
+            <span class="keyword">return</span> ret;
+          };
+        })(name, prop[name]) :
+        prop[name];
+    }
+
+    <span class="comment">// The dummy class constructor</span>
+    <span class="function"><span class="keyword">function</span> <span class="title">Class</span>(<span class="params"></span>) </span>{
+      <span class="comment">// All construction is actually done in the init method</span>
+      <span class="comment">// 在 extend 时不会调用 this.init</span>
+      <span class="keyword">if</span> ( !initializing &amp;&amp; <span class="keyword">this</span>.init )
+        <span class="keyword">this</span>.init.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);
+    }
+
+    <span class="comment">// Populate our constructed prototype object</span>
+    Class.prototype = prototype;
+
+    <span class="comment">// Enforce the constructor to be what we expect</span>
+    Class.prototype.constructor = Class;
+
+    <span class="comment">// And make this class extendable</span>
+    <span class="comment">//    让子类也有 extend 方法</span>
+    <span class="comment">//    在 es5 严格模式下，禁止使用 arguments.callee ，原因见 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions_and_function_scope/arguments/callee</span>
+    <span class="comment">//    可以使用命名函数解决此问题</span>
+    Class.extend = <span class="built_in">arguments</span>.callee;
+
+    <span class="keyword">return</span> Class;
+  };
+})();
+</code></pre></span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/frontend/" rel="tag">#frontend</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/07/31/reading-notes-2-5/" rel="prev">阅读小摘</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.jpg" alt="jude zhu" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">jude zhu</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description"></p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">29</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#阅读前，希望你了解javascript的原型链"><span class="nav-number">1.</span> <span class="nav-text">阅读前，希望你了解javascript的原型链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#P-js"><span class="nav-number">2.</span> <span class="nav-text">P.js</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目地址"><span class="nav-number">2.1.</span> <span class="nav-text">项目地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基础用法："><span class="nav-number">2.2.</span> <span class="nav-text">基础用法：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码"><span class="nav-number">2.3.</span> <span class="nav-text">源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Simple_JavaScript_Inheritance"><span class="nav-number">3.</span> <span class="nav-text">Simple JavaScript Inheritance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#地址"><span class="nav-number">3.1.</span> <span class="nav-text">地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法"><span class="nav-number">3.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码-1"><span class="nav-number">3.3.</span> <span class="nav-text">源码</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2015</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jude zhu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+    
+
+  
+
+
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.5.1" id="motion.global"></script>
+
+
+
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

@@ -185,9 +185,9 @@ th {
 }
 body {
   position: relative;
-  font-family: Lato, "Microsoft Jhenghei", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-family: "Microsoft YaHei", Verdana, sans-serif;
   font-size: 16px;
-  line-height: 1.8;
+  line-height: 1.7;
   color: #555;
   background: #fff;
 }
@@ -211,7 +211,7 @@ h6 {
   padding: 0;
   font-weight: bold;
   line-height: 1;
-  font-family: Cambria, Georgia, "Microsoft Jhenghei", "Hiragino Sans GB", "Microsoft YaHei", "Times New Roman", serif;
+  font-family: Georgia, sans;
 }
 h1 {
   font-size: 26px;
@@ -262,7 +262,7 @@ h6 {
   }
 }
 p {
-  margin: 20px 0;
+  margin: 0 0 25px 0;
 }
 a {
   color: #222;
@@ -579,7 +579,7 @@ td {
   overflow: auto;
   font-size: 13px;
   color: #4d4d4c;
-  line-height: 1.2;
+  line-height: 1.6;
 }
 .post .highlight .gutter pre,
 .post .gist .gist-file .gist-data .line-numbers {
@@ -606,7 +606,7 @@ td {
 }
 .post .highlight table {
   margin: 0;
-  width: 100%;
+  width: auto;
   border: none;
 }
 .post .highlight td {
@@ -670,7 +670,7 @@ td {
 .post .gist .gist-file .gist-meta {
   background: #f7f7f7;
   color: #8e908c;
-  font: 13px Lato, "Microsoft Jhenghei", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font: 13px "Microsoft YaHei", Verdana, sans-serif;
   text-shadow: 0 0;
   padding: 0;
   margin-top: 1em;
@@ -1055,7 +1055,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #d00671;
+  background: #a879a4;
 }
 .sidebar-nav {
   margin: 0;
@@ -1961,4 +1961,30 @@ body {
   .use-motion .site-search form {
     top: 0 !important;
   }
+}
+.post-body p img {
+  margin: 0 auto;
+  cursor: pointer;
+  cursor: zoom-out;
+  cursor: -webkit-zoom-in;
+  display: block !important;
+}
+.post-body p .pic-title {
+  margin: 0 auto;
+  text-align: center;
+}
+.post-body p .pic-title span {
+  min-width: 20%;
+  min-height: 22px;
+  display: inline-block;
+  padding: 10px;
+  margin: 0 auto;
+  border-bottom: 1px solid #d9d9d9;
+  font-size: 18px;
+  color: #999;
+  font-style: italic;
+  line-height: 1.7;
+}
+.posts-expand .post-body .fancybox img {
+  margin: 0 auto;
 }

@@ -1,10 +1,8 @@
 $(document).ready(function () {
-  var isSidebarVisible, isNavbarVisible;
+  var isSidebarVisible;
   var DURATION = 300;
   var SIDEBAR_WIDTH = 320;
-  var NAVBAR_HEIGHT = 200;
 
-  navbar();
   sidebar();
   backToTop();
 
@@ -24,17 +22,6 @@ $(document).ready(function () {
         scrollTop: 0
       }, DURATION);
     });
-  }
-
-  function navbar(){
-    $('.site-nav-toggle').on('click', function () {
-      var navbarHeight = isNavbarVisible ? 0 : NAVBAR_HEIGHT;
-      $('.site-nav').animate({
-        height: navbarHeight
-      }, DURATION);
-      isNavbarVisible = !isNavbarVisible;
-    });
-
   }
 
 });

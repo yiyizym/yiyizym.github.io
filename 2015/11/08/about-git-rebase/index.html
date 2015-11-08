@@ -45,8 +45,8 @@
 <meta property="og:url" content="http://judes.me/2015/11/08/about-git-rebase/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="令人糊涂的 git rebase">
-<meta property="og:image" content="http://judes.me/2015/11/08/about-git-rebase/rebase.png">
-<meta property="og:updated_time" content="2015-11-08T04:59:57.000Z">
+<meta property="og:image" content="http://judes.me/2015/11/08/about-git-rebase/rebase.jpg">
+<meta property="og:updated_time" content="2015-11-08T06:13:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="小心使用 git rebase">
 <meta name="twitter:description" content="令人糊涂的 git rebase">
@@ -258,8 +258,7 @@
 <p> <code>created by remote user, the second submit on master branch</code> / <code>add this line by remote user, the third submit on master branch</code> ，</p>
 <p> 不过除此之外，不会出现像上面一样的意外</p>
 <p>再次推送到远程： <code>git push origin master</code></p>
-<p>在 github 上面看提交记录，显示如下：</p>
-<img src="/2015/11/08/about-git-rebase/rebase.png" alt="commitlog" title="commitlog">
+<p>在 github 上面看提交记录，显示如下：<br><img src="/2015/11/08/about-git-rebase/rebase.jpg" alt="commitlog" title="commitlog"></p>
 <p><strong> 结论 </strong></p>
 <p>不要在已发布到远程仓库的分支上进行衍合操作，否则后果可大可小，运气好就只会出现重复提交，运气差的还带有实际伤害。</p>
 <p><strong> 参考 </strong></p>

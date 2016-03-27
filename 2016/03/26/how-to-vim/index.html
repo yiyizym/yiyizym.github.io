@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="ADS, JSONP, script标签、服务器" />
+  <meta name="keywords" content="vim vundle auto-pairs YCM easy-motion," />
 
 
 
@@ -39,16 +39,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="ADS上一个JSONP的例子，服务器得知请求端函数名的具体实现">
+<meta name="description" content="vim 折腾之旅">
 <meta property="og:type" content="article">
-<meta property="og:title" content="一个应用JSONP的例子">
-<meta property="og:url" content="http://judes.me/2015/08/01/2014-05-26-JSONP/index.html">
+<meta property="og:title" content="vim 使用指南">
+<meta property="og:url" content="http://judes.me/2016/03/26/how-to-vim/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="ADS上一个JSONP的例子，服务器得知请求端函数名的具体实现">
-<meta property="og:updated_time" content="2015-07-31T14:37:59.000Z">
+<meta property="og:description" content="vim 折腾之旅">
+<meta property="og:updated_time" content="2016-03-27T03:38:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一个应用JSONP的例子">
-<meta name="twitter:description" content="ADS上一个JSONP的例子，服务器得知请求端函数名的具体实现">
+<meta name="twitter:title" content="vim 使用指南">
+<meta name="twitter:description" content="vim 折腾之旅">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +58,7 @@
   };
 </script>
 
-  <title> 一个应用JSONP的例子 | jude's life </title>
+  <title> vim 使用指南 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -175,7 +175,7 @@
           
           
             
-              一个应用JSONP的例子
+              vim 使用指南
             
           
         </h1>
@@ -184,8 +184,8 @@
       <div class="post-meta">
         <span class="post-time">
           Posted on
-          <time itemprop="dateCreated" datetime="2015-08-01T15:19:09+08:00" content="Aug 1 2015">
-            Aug 1 2015
+          <time itemprop="dateCreated" datetime="2016-03-26T12:07:28+08:00" content="Mar 26 2016">
+            Mar 26 2016
           </time>
         </span>
 
@@ -194,8 +194,8 @@
             &nbsp; | &nbsp; In
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/frontend/" itemprop="url" rel="index">
-                  <span itemprop="name">frontend</span>
+                <a href="/categories/tech/" itemprop="url" rel="index">
+                  <span itemprop="name">tech</span>
                 </a>
               </span>
 
@@ -210,8 +210,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/08/01/2014-05-26-JSONP/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/01/2014-05-26-JSONP/" itemprop="commentsCount"></span>
+              <a href="/2016/03/26/how-to-vim/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/26/how-to-vim/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -225,102 +225,49 @@
       
 
       
-        <span itemprop="articleBody"><p>javascript出于安全考虑，禁止跨域访问资源。跨域是指以下情况：各级域名、端口、协议有任何一处不相同。</p>
-<p>因此AJAX是不能跨域请求数据的。但在页面中载入来源指向其他域的 script 标签却可以跨域下载javascript脚本。这种使用 script 标签从别的域请求数据的技术又叫JSONP。</p>
-<p>JSONP只能用 GET 方式获取数据。</p>
-<p>在ADS这本书中也提到JSONP，作者使用动态生成的 script 元素来模拟XMLHttpRequest对象。</p>
-<p>下面是实现的部分关键代码，初次看到的时候还没有看懂，特别是服务器端用PHP写的返回数据部分。</p>
-<pre><code>XssHttpRequest.prototype ={
-    <span class="comment">//...省略部分代码</span>
-    open:<span class="function"><span class="keyword">function</span>(<span class="params">url,timeout</span>)</span>{
-
-        <span class="comment">//...省略部分代码</span>
-
-        <span class="comment">//以下代码将一个名为XSS_HTTP_REQUEST_CALLBACK的变量附加到URL</span>
-        <span class="comment">//传给服务器，用以指定回调函数的名称</span>
-        <span class="keyword">this</span>.url = url
-            + ((url.indexOf(<span class="string">"?"</span>) != -<span class="number">1</span>) ? <span class="string">"&amp;"</span> : <span class="string">"?"</span>)
-            + <span class="string">"XSS_HTTP_REQUEST_CALLBACK="</span>
-            + <span class="keyword">this</span>.requestID
-            + <span class="string">"_CALLBACK"</span>;
-
-        <span class="comment">//...省略部分代码</span>
-
-        send:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
-         <span class="comment">//...省略部分代码</span>
-         <span class="comment">//以下代码生成javascript标签，但并没有赋给它src属性值，也没有将它加入DOM。</span>
-        <span class="keyword">this</span>.scriptObject = <span class="built_in">document</span>.createElement(<span class="string">"script"</span>);
-        <span class="keyword">this</span>.scriptObject.setAttribute(<span class="string">"id"</span>,<span class="keyword">this</span>.requestID);
-        <span class="keyword">this</span>.scriptObject.setAttribute(<span class="string">"type"</span>,<span class="string">"text/javascript"</span>);
-
-         <span class="comment">//...省略部分代码</span>
-         <span class="comment">//以下代码十分关键，在window环境中创建（声明）一个名为</span>
-         <span class="comment">//this.requestID+"_CALLBACK"的方法，JSON参数是服务器返回的数据</span>
-         <span class="built_in">window</span>[<span class="keyword">this</span>.requestID + <span class="string">"_CALLBACK"</span>] = <span class="function"><span class="keyword">function</span>(<span class="params">JSON</span>)</span>{
-            <span class="comment">//...省略部分代码</span>
-
-            requestObject.responseJSON = <span class="built_in">JSON</span>;
-        }
-        <span class="comment">//...省略部分代码</span>
-        <span class="comment">//此时再设置script标签的src属性及将其进入DOM</span>
-        <span class="keyword">this</span>.scriptObject.setAttribute(<span class="string">"src"</span>,<span class="keyword">this</span>.url);
-        <span class="keyword">var</span> head = <span class="built_in">document</span>.getElementsByTagName(<span class="string">"head"</span>)[<span class="number">0</span>];
-        head.appendChild(<span class="keyword">this</span>.scriptObject);
-
-        <span class="comment">//...省略部分代码</span>
-        <span class="comment">//以下是回调函数，</span>
-        req.onreadystatechange = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
-            <span class="keyword">switch</span> (req.readyState) {
-               <span class="comment">//...省略部分代码</span>
-                <span class="keyword">case</span> <span class="number">3</span>:
-                    <span class="comment">// Interactive</span>
-                    <span class="keyword">if</span>(options.ineractiveListener) {
-                        options.ineractiveListener.apply(req,<span class="built_in">arguments</span>);
-                    }
-                    <span class="keyword">break</span>;
-                <span class="comment">//...省略部分代码</span>
-            }
-        };
-</code></pre><p>服务器端PHP可以这样写：</p>
-<pre><code>&lt;?php
-header(<span class="string">'Content-type: text/javascript'</span>);
-//只允许回调函数存在数字、字母和下划线
-<span class="variable">$callback</span> = preg_replace(
-    <span class="string">'/[^A-Z0-9_]/i'</span>,
-    <span class="string">''</span>,
-    $_GET[’XSS_HTTP_REQUEST_CALLBACK‘]
-);
-<span class="keyword">if</span>($[callback]){
-    <span class="variable">$date</span> = date(<span class="string">'r'</span>);
-    echo
-//这是PHP输出字符串的一种方法，这里的 JSON只是作为定界符
-&lt;&lt;&lt;JSON
-//使用大括号可在字符串中输出变量，所以以下内容其实是一个函数调用，
-//传入一个json对象作为参数
-{<span class="variable">$callback</span>}({
-    message: <span class="string">'response on {$date}'</span>
-});
-JSON;
-}
-?&gt;
-</code></pre></span>
+        <span itemprop="articleBody"><p>想起一个笑话：</p>
+<ul>
+<li>问：要怎样才能生成一个随机字符串呢？</li>
+<li>答：让一个新手退出 vim</li>
+</ul>
+<p>为什么要学习使用 vim ？首先是有意思。它是基于模式的编辑器，与别不同。其次是显得特别专业。狂敲键盘，光标不停地在字里行间辗转腾挪，不需要鼠标就能做所有的事情。</p>
+<p>至于怎样学。有人建议打开vim之后输入<code>:help</code>查看教程，认认真真看个把小时。但有更好的办法：直接在terminal输入<code>vimtutor</code>打开教程（有中文版）一边动手一边学，只需要20-30分钟，你就上手了。</p>
+<p>用上几天之后，你可能觉得vim没有别人所说的那么强大，于是上网看看别人是怎么用的，多半你会跟随别人装上一堆插件，定制了好多命令，折腾一番后vim变得很慢有明显的卡顿感。一次偶然的机会你看到了一个号称“是21世纪的编辑器”的编辑器，它更酷。如果此时你离vim而去，那vim带给你的就只有挫败感和浪费时间。</p>
+<p>所以为避免这种情况发生，请你先不要太早装插件，定制命令倒是可以有一些，比如显示行号、语法高亮、自动缩进、快速回到normal模式等等。</p>
+<p>可以学习一些简单却十分强大的命令。之所以说简单，是因为你不需要学习新的命令，这些强大的命令全都由你已经知道的命令组成。</p>
+<p>不知道你有没有发觉，入门教程以及网上其他一些教程只会教你删除一个单词或者删除一行，并没有教你删除从光标所在位置到同一行指定位置之间的单词，例如要删除下面这行文字中从 happens 到 till 之间的所有文字：</p>
+<p>Magic happens when you combine the motions find and till with operators</p>
+<p>你大概会图省事一直按<code>x</code>，或者先按<code>dw</code>，再一直按<code>.</code>，直到删光till前面的单词；这里介绍另外一种方法：<code>dtt</code>命令。</p>
+<p><code>dtt</code>命令由三个字母组成，每个字母都有其意义：</p>
+<ul>
+<li><code>d</code> 代表一种操作，这里是删除，还可以是<code>yfcv</code>中的任意一个</li>
+<li><code>t</code> 代表一种匹配范围，这里是‘直到’，还可以是<code>fia</code>中的任意一个。举例解释比较好：<br>有这样一个字符串：<code>(How are you ?)</code>，假设光标在<code>a</code>的前面，如果你想删除直到问号前面的所有字符，就输入<code>dt?</code>；如果要删除直到右括号前面所有字符，就输入<code>df?</code>，可见<code>f</code>与<code>t</code>的区别就是一个包含第三个字母，另一个是不包含；如果你要删除括号内的所有内容，（注意当前你的光标是在<code>a</code>前面）你可以输入<code>di)</code>或者<code>di(</code>，都是删除括号之内的内容，如果想把括号也删除了，就输入<code>da)</code>或者<code>da(</code>，<code>a</code>与<code>i</code>的关系也是包含与不包含的关系。</li>
+<li><code>t</code> 代表一种对象，这里只是一个字母，还可以是一个位置，比如<code>^$</code>开头和结尾。</li>
+</ul>
+<p>如果你掌握了上面提到的常用命令，可以去装插件了。想装什么插件才去装，不要搞个 spf13 ，装一箩筐插件其实没什么好。<br>首先装个管理插件的插件：vundle，很多插件都支持用vundle安装，所以先装个vundle会方便很多。按<a href="https://github.com/VundleVim/Vundle.vim" target="_blank" rel="external">官方指南</a>一步步走也不难。<br>然后装个 <a href="https://github.com/jiangmiao/auto-pairs" target="_blank" rel="external">autopairs</a>，这样输入括号、引号会方便很多。<br>再装个<a href="https://github.com/Valloric/YouCompleteMe" target="_blank" rel="external">YouCompleteMe</a>，用来自动补全，官方说明比较详细，所有特性都装会比较麻烦一点，用vundle安装，等一会儿就好，如果它提示你要重新编译一下，你就按文档运行 install.py 脚本，如果运行脚本时出错，就按错误提示来做。<br>除此之外，推荐一个插件<a href="https://github.com/easymotion/vim-easymotion" target="_blank" rel="external">vim-easymotion</a>，用来快速跳转到页面的某个位置的。</p>
+<p>最后附上我的<a href="https://github.com/yiyizym/.vimrc/issues/1" target="_blank" rel="external">vimrc</a></p>
+</span>
       
     </div>
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vim-vundle-auto-pairs-YCM-easy-motion/" rel="tag">#vim vundle auto-pairs YCM easy-motion</a>
+          
+        </div>
       
 
       
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/08/01/科学说需求/" rel="prev">科学说需求 读书笔记</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/01/2014-09-27-gulp-task/" rel="next">gulp task</a>
+              <a href="/2015/12/12/react-webpack-starter-kit/" rel="next">react_webpack_starter_kit</a>
             
           </div>
         </div>
@@ -345,8 +292,8 @@ JSON;
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/08/01/2014-05-26-JSONP/"
-                   data-title="一个应用JSONP的例子" data-url="http://judes.me/2015/08/01/2014-05-26-JSONP/">
+              <div class="ds-thread" data-thread-key="2016/03/26/how-to-vim/"
+                   data-title="vim 使用指南" data-url="http://judes.me/2016/03/26/how-to-vim/">
               </div>
             
           </div>

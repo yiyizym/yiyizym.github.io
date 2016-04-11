@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="vim vundle auto-pairs YCM easy-motion," />
+  <meta name="keywords" content="algorithm kmp 回溯 算法第四版," />
 
 
 
@@ -39,16 +39,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="vim 折腾之旅">
+<meta name="description" content="理解算法第四版中 KMP 算法的关键点">
 <meta property="og:type" content="article">
-<meta property="og:title" content="vim 使用指南">
-<meta property="og:url" content="http://judes.me/2016/03/26/how-to-vim/index.html">
+<meta property="og:title" content="算法第四版 kmp 算法">
+<meta property="og:url" content="http://judes.me/2016/04/10/kmp/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="vim 折腾之旅">
-<meta property="og:updated_time" content="2016-03-27T03:38:56.000Z">
+<meta property="og:description" content="理解算法第四版中 KMP 算法的关键点">
+<meta property="og:updated_time" content="2016-04-11T13:29:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="vim 使用指南">
-<meta name="twitter:description" content="vim 折腾之旅">
+<meta name="twitter:title" content="算法第四版 kmp 算法">
+<meta name="twitter:description" content="理解算法第四版中 KMP 算法的关键点">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +58,7 @@
   };
 </script>
 
-  <title> vim 使用指南 | jude's life </title>
+  <title> 算法第四版 kmp 算法 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -175,7 +175,7 @@
           
           
             
-              vim 使用指南
+              算法第四版 kmp 算法
             
           
         </h1>
@@ -184,8 +184,8 @@
       <div class="post-meta">
         <span class="post-time">
           Posted on
-          <time itemprop="dateCreated" datetime="2016-03-26T12:07:28+08:00" content="Mar 26 2016">
-            Mar 26 2016
+          <time itemprop="dateCreated" datetime="2016-04-10T17:35:28+08:00" content="Apr 10 2016">
+            Apr 10 2016
           </time>
         </span>
 
@@ -210,8 +210,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2016/03/26/how-to-vim/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/26/how-to-vim/" itemprop="commentsCount"></span>
+              <a href="/2016/04/10/kmp/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/10/kmp/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -225,27 +225,41 @@
       
 
       
-        <span itemprop="articleBody"><p>想起一个笑话：</p>
+        <span itemprop="articleBody"><p>网上有很多关于KMP算法的文章。用google搜“kmp算法”，第一页的文章我都看过，唯一能看懂并看完的就只有阮一峰的<a href="http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html" target="_blank" rel="external">这篇</a>。</p>
+<p>KMP算法很难懂，难在它的具体代码实现十分简洁，简洁得一点都看不出其背后的思想。今天就着算法第四版说几个理解KMP的关键点：</p>
 <ul>
-<li>问：要怎样才能生成一个随机字符串呢？</li>
-<li>答：让一个新手退出 vim</li>
+<li>暴力字符串匹配的复杂度最差的情况可以达到 N*M ，而 KMP 算法最差是 N+M ，高效的原因之一在于文本指针永远不会回溯。每一次比较，文本指针都递增 1 ，只有模式字符串的指针在回溯</li>
+<li>KMP 高效的原因之二是就算匹配失败，模式字符串的指针在回溯也不是一味回到最初的位置，它会根据<strong>部分已经成功匹配的字符串</strong>以及当前匹配失败的输入决定回溯到哪个位置，参考上文提到的文章，会对这有感性的认识</li>
+<li><p>上文提到的 <strong>部分已经成功匹配的字符串</strong> ，具体举例说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...A B A B A D A... &#60;-------- &#25991;&#26412;&#20013;&#38388;&#30340;&#26576;&#19968;&#27573;&#10;   A B A B A C &#60;-------- &#27169;&#24335;&#23383;&#31526;&#20018;&#10;             &#8593;</span><br></pre></td></tr></table></figure>
+<p>箭头所指是匹配失败之处，当前输入是 D ，已经成功匹配的字符串是 A B A B A ，<strong>部分已经成功匹配的字符串</strong>是指 除去第一个字母 A 后的已经成功匹配的字符串： B A B A 。因为每一次比较，文本指针都递增 1 （本例中，文本指针将会指向 D 后面的 A ），再从模式字符串中选出一个字母与之比较。成功匹配的字符串中最左边的那个字母之后再也没有机会与模式字符串比较了。决定该从模式字符串中选出哪一个字母的是 <strong>部分已经成功匹配的字符串</strong>以及当前输入。</p>
+</li>
+<li><p>KMP 使用了有限状态自动机，要理解书中的图5.3.6以及图5.3.9，最好的办法是自己动手一步步实现dfa数组：</p>
+<p>1 首先说明数组行和列的意义，自动机最初处于 0 状态，结束于 6 状态，它将根据当前所在状态及输入决定下一个状态，数组中每个元素的值对应于自动机状态。输入只列出 A B C ，因为其它输入都会令自动机回退到状态 0 ，所以省去不写。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5 &#60;------ &#36825;&#26159;&#26377;&#38480;&#29366;&#24577;&#33258;&#21160;&#26426;&#30340;&#21508;&#20010;&#29366;&#24577;&#10;  A B A B A C &#60;------ &#36825;&#26159;&#27169;&#24335;&#23383;&#31526;&#20018;&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A &#10;B&#10;C&#10;&#8593;&#10;&#36825;&#10;&#26159;&#10;&#36755;&#10;&#20837;</span><br></pre></td></tr></table></figure>
+<p>2 当自动机处于 0 状态，且输入 A 时，就会进入 1 状态；输入 B 或 C 时，还是处于 0 状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1&#10;B 0&#10;C 0</span><br></pre></td></tr></table></figure>
+<p>3 可以先把能让自动机从 0 到 6 状态的输入写出来。当自动机处于 1 状态，且输入 B 时，就会进入 2 状态，依次类推：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1   3   5&#10;B 0 2   4&#10;C 0         6</span><br></pre></td></tr></table></figure>
+<p>4 那些空白的数组元素又该怎样处理呢？具体举一例来说，当自动机处于 1 状态，且输入 A 时，会进入哪个状态呢？首先自动机肯定不能进入下一个状态 2 ，只能是回退到状态 0 或者 状态 1 ；然后请回答一个问题：已知自动机当前状态是 1 ，当前输入是 A （当前输入是什么都无所谓），请问前一个输入是什么？ 答案是 A ，因为只有输入 A 才能使自动机由前一个状态 0 进入到当前状态 1 。这个 A 就是上文所说的已经成功匹配的字符串，那么<strong>部分已经成功匹配的字符串</strong>是已经成功匹配的字符串除去最左边的字母(A)，即：空字符串。 最后假设因为当前的输入与模式字符串失配，导致自动机直接回退到状态 0 ，自动机要先跟<strong>部分已经成功匹配的字符串</strong>逐个匹配，再与当前输入匹配，才能得出下一个状态。<strong>部分已经成功匹配的字符串</strong>是空字符串，当前输入是 A ，所以自动机由状态 0 进入到状态 1 。同理，当自动机处于 1 状态，且输入 C 时，会回退到 0 状态。我们填好了第二列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3   5&#10;B 0 2   4&#10;C 0 0       6</span><br></pre></td></tr></table></figure>
+<p>5 接下来填写第三列，当自动机处于 2 状态，且输入 B 时，会进入哪个状态呢？首先自动机肯定不能进入下一个状态 3 ，只能是回退到状态 0 或者 状态 1 或者 状态 2；然后请回答一个问题：已知自动机当前状态是 2 ，请问前两个输入是什么？ 答案是 AB ，因为只有输入 AB 才能使自动机由初始状态 0 进入到当前状态 2 。 AB 就是上文所说的已经成功匹配的字符串，<strong>部分已经成功匹配的字符串</strong>是 B 。最后假设因为当前的输入与模式字符串失配，导致自动机直接回退到状态 0 ，<strong>部分已经成功匹配的字符串</strong>是 B ，当前输入是 B ，自动机处于状态 0 时先与<strong>部分已经成功匹配的字符串</strong>逐个匹配，再与当前输入匹配。显然在输入了两个 B 之后，自动机还是处于状态 0。同理，当自动机处于 2 状态，且输入 C 时，会回退到 0 状态。我们填好了第三列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3   5&#10;B 0 2 0 4&#10;C 0 0 0     6</span><br></pre></td></tr></table></figure>
+<p>6 当自动机处于 3 状态，且输入 A 时，会进入哪个状态呢？长话短说，已知自动机当前状态是 3 ，已经成功匹配的字符串是 A B A ，<strong>部分已经成功匹配的字符串</strong>是 B A ，当前输入是 A ，假设自动机因失配直接回退到状态 0 ，自动机处于状态 0 时先与<strong>部分已经成功匹配的字符串</strong>逐个匹配，再与当前输入匹配（合起来就是 B A A），最后会停留在状态 1 。输入 C 时，同理。我们填好了第四列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3 1 5&#10;B 0 2 0 4 0&#10;C 0 0 0 0 0 6</span><br></pre></td></tr></table></figure>
+<p>7 同理，我们填好了第五列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3 1 5 1&#10;B 0 2 0 4 0 4&#10;C 0 0 0 0 0 6</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来说说书中构造dfa代码中的X。书中说X是重启位置。我更倾向于认为 X 是自动机的状态。拿更新X时用到的代码<code>X = dfa[pat.charAt(j)][X]</code>来说，等号左边的 X 代表了自动机的下一个状态，<code>pat.charAt(j)</code>表示当前的输入，等号右边的 X 表示自动机当前的状态。举例来说，dfa第二列，X 等于 0，j 等于 1，c 从 0 到 R ，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dfa[0][1] = dfa[0][0]&#10;dfa[1][1] = dfa[1][0]&#10;dfa[2][1] = dfa[2][0]&#10;.&#10;.&#10;.&#10;dfa[R][1] = dfa[R][0]</span><br></pre></td></tr></table></figure>
+<p>上面等式的意义就在于，它能根据当前状态 0 ，以及当前输入 0 ~ R ，得出自动机——除成功匹配的下一状态之外——的下一状态。你也可以认为它只是简单地把在当前状态匹配输入后的状态，直接赋值给下一状态匹配输入后的状态。<br>在给dfa第二列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(1)][0] = dfa[&#39;B&#39;][0] = 0</code>，<br>在给dfa第三列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(2)][0] = dfa[&#39;A&#39;][0] = 1</code>，<br>在给dfa第四列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(3)][1] = dfa[&#39;B&#39;][1] = 2</code>，<br>在给dfa第五列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(4)][2] = dfa[&#39;A&#39;][2] = 3</code>，<br>在给dfa第六列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(5)][3] = dfa[&#39;C&#39;][3] = 0</code></p>
+</li>
 </ul>
-<p>为什么要学习使用 vim ？首先是有意思。它是基于模式的编辑器，与别不同。其次是显得特别专业。狂敲键盘，光标不停地在字里行间辗转腾挪，不需要鼠标就能做所有的事情。</p>
-<p>至于怎样学。有人建议打开vim之后输入<code>:help</code>查看教程，认认真真看个把小时。但有更好的办法：直接在terminal输入<code>vimtutor</code>打开教程（有中文版）一边动手一边学，只需要20-30分钟，你就上手了。</p>
-<p>用上几天之后，你可能觉得vim没有别人所说的那么强大，于是上网看看别人是怎么用的，多半你会跟随别人装上一堆插件，定制了好多命令，折腾一番后vim变得很慢有明显的卡顿感。一次偶然的机会你看到了一个号称“是21世纪的编辑器”的编辑器，它更酷。如果此时你离vim而去，那vim带给你的就只有挫败感和浪费时间。</p>
-<p>所以为避免这种情况发生，请你先不要太早装插件，定制命令倒是可以有一些，比如显示行号、语法高亮、自动缩进、快速回到normal模式等等。</p>
-<p>可以学习一些简单却十分强大的命令。之所以说简单，是因为你不需要学习新的命令，这些强大的命令全都由你已经知道的命令组成。</p>
-<p>不知道你有没有发觉，入门教程以及网上其他一些教程只会教你删除一个单词或者删除一行，并没有教你删除从光标所在位置到同一行指定位置之间的单词，例如要删除下面这行文字中从 happens 到 till 之间的所有文字：</p>
-<p>Magic happens when you combine the motions find and till with operators</p>
-<p>你大概会图省事一直按<code>x</code>，或者先按<code>dw</code>，再一直按<code>.</code>，直到删光till前面的单词；这里介绍另外一种方法：<code>dtt</code>命令。</p>
-<p><code>dtt</code>命令由三个字母组成，每个字母都有其意义：</p>
+<p>##参考</p>
 <ul>
-<li><code>d</code> 代表一种操作，这里是删除，还可以是<code>yfcv</code>中的任意一个</li>
-<li><code>t</code> 代表一种匹配范围，这里是‘直到’，还可以是<code>fia</code>中的任意一个。举例解释比较好：<br>有这样一个字符串：<code>(How are you ?)</code>，假设光标在<code>a</code>的前面，如果你想删除直到问号前面的所有字符，就输入<code>dt?</code>；如果要删除直到右括号前面所有字符，就输入<code>df?</code>，可见<code>f</code>与<code>t</code>的区别就是一个包含第三个字母，另一个是不包含；如果你要删除括号内的所有内容，（注意当前你的光标是在<code>a</code>前面）你可以输入<code>di)</code>或者<code>di(</code>，都是删除括号之内的内容，如果想把括号也删除了，就输入<code>da)</code>或者<code>da(</code>，<code>a</code>与<code>i</code>的关系也是包含与不包含的关系。</li>
-<li><code>t</code> 代表一种对象，这里只是一个字母，还可以是一个位置，比如<code>^$</code>开头和结尾。</li>
+<li><a href="https://book.douban.com/subject/19952400/discussion/59623403/" target="_blank" rel="external">对我启发最大的一篇文章</a></li>
+<li><a href="https://luodichen.com/blog/2015/04/10/kmp-algorithm/" target="_blank" rel="external">用状态函数严谨地推导出状态机状态，关键还清晰易懂</a></li>
 </ul>
-<p>如果你掌握了上面提到的常用命令，可以去装插件了。想装什么插件才去装，不要搞个 spf13 ，装一箩筐插件其实没什么好。<br>首先装个管理插件的插件：vundle，很多插件都支持用vundle安装，所以先装个vundle会方便很多。按<a href="https://github.com/VundleVim/Vundle.vim" target="_blank" rel="external">官方指南</a>一步步走也不难。<br>然后装个 <a href="https://github.com/jiangmiao/auto-pairs" target="_blank" rel="external">autopairs</a>，这样输入括号、引号会方便很多。<br>再装个<a href="https://github.com/Valloric/YouCompleteMe" target="_blank" rel="external">YouCompleteMe</a>，用来自动补全，官方说明比较详细，所有特性都装会比较麻烦一点，用vundle安装，等一会儿就好，如果它提示你要重新编译一下，你就按文档运行 install.py 脚本，如果运行脚本时出错，就按错误提示来做。<br>除此之外，推荐一个插件<a href="https://github.com/easymotion/vim-easymotion" target="_blank" rel="external">vim-easymotion</a>，用来快速跳转到页面的某个位置的。</p>
-<p>最后附上我的<a href="https://github.com/yiyizym/.vimrc/issues/1" target="_blank" rel="external">vimrc</a></p>
 </span>
       
     </div>
@@ -254,7 +268,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/vim-vundle-auto-pairs-YCM-easy-motion/" rel="tag">#vim vundle auto-pairs YCM easy-motion</a>
+            <a href="/tags/algorithm-kmp-回溯-算法第四版/" rel="tag">#algorithm kmp 回溯 算法第四版</a>
           
         </div>
       
@@ -263,13 +277,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/04/10/kmp/" rel="prev">算法第四版 kmp 算法</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/12/12/react-webpack-starter-kit/" rel="next">react_webpack_starter_kit</a>
+              <a href="/2016/03/26/how-to-vim/" rel="next">vim 使用指南</a>
             
           </div>
         </div>
@@ -294,8 +306,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2016/03/26/how-to-vim/"
-                   data-title="vim 使用指南" data-url="http://judes.me/2016/03/26/how-to-vim/">
+              <div class="ds-thread" data-thread-key="2016/04/10/kmp/"
+                   data-title="算法第四版 kmp 算法" data-url="http://judes.me/2016/04/10/kmp/">
               </div>
             
           </div>

@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="gulp task, 异步, stream, callback, deferred" />
+  <meta name="keywords" content="request promisify node es2015," />
 
 
 
@@ -39,16 +39,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="gulp task 笔记">
+<meta name="description" content="把 nodejs 中的 request 模块 转换为 es2015 的 Promise">
 <meta property="og:type" content="article">
-<meta property="og:title" content="gulp task">
-<meta property="og:url" content="http://judes.me/2015/08/01/2014-09-27-gulp-task/index.html">
+<meta property="og:title" content="from nodejs request to promise">
+<meta property="og:url" content="http://judes.me/2016/04/16/request-to-promise/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="gulp task 笔记">
-<meta property="og:updated_time" content="2015-07-31T14:37:01.000Z">
+<meta property="og:description" content="把 nodejs 中的 request 模块 转换为 es2015 的 Promise">
+<meta property="og:updated_time" content="2016-04-16T13:56:24.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="gulp task">
-<meta name="twitter:description" content="gulp task 笔记">
+<meta name="twitter:title" content="from nodejs request to promise">
+<meta name="twitter:description" content="把 nodejs 中的 request 模块 转换为 es2015 的 Promise">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +58,7 @@
   };
 </script>
 
-  <title> gulp task | jude's life </title>
+  <title> from nodejs request to promise | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -175,7 +175,7 @@
           
           
             
-              gulp task
+              from nodejs request to promise
             
           
         </h1>
@@ -184,8 +184,8 @@
       <div class="post-meta">
         <span class="post-time">
           Posted on
-          <time itemprop="dateCreated" datetime="2015-08-01T15:19:09+08:00" content="Aug 1 2015">
-            Aug 1 2015
+          <time itemprop="dateCreated" datetime="2016-04-16T19:50:24+08:00" content="Apr 16 2016">
+            Apr 16 2016
           </time>
         </span>
 
@@ -194,8 +194,8 @@
             &nbsp; | &nbsp; In
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/tech/" itemprop="url" rel="index">
-                  <span itemprop="name">tech</span>
+                <a href="/categories/frontend/" itemprop="url" rel="index">
+                  <span itemprop="name">frontend</span>
                 </a>
               </span>
 
@@ -210,8 +210,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/08/01/2014-09-27-gulp-task/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/01/2014-09-27-gulp-task/" itemprop="commentsCount"></span>
+              <a href="/2016/04/16/request-to-promise/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/16/request-to-promise/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -225,86 +225,33 @@
       
 
       
-        <span itemprop="articleBody"><p>阅读 <a href="https://github.com/gulpjs/gulp/blob/master/docs/API.md" target="_blank" rel="external">gulp API</a>，有一点要注意的就是：</p>
-<p><strong>gulp默认以最大并发执行任务，怎样保证某些任务按顺序（即 task A 在 task B 完成之后）执行呢？</strong></p>
-<p>先来看一下gulp task的形式：</p>
-<pre><code>gulp.<span class="function"><span class="title">task</span><span class="params">(name[,deps],fn)</span></span>
-</code></pre><p><strong>gulp</strong> 用 <a href="https://github.com/orchestrator/orchestrator" target="_blank" rel="external">Orchestrator</a> 定义一个任务，Orchestrator 是一个把任务和依赖串联起来并以最大并发执行的模块。所以gulp默认以最大并发执行任务。</p>
-<p><strong>name</strong> [string]</p>
-<p>任务的名字，如果要在命令行中执行任务，name中不能有空格。</p>
-<p><strong>deps</strong> [Array]</p>
-<p>任务的依赖，是由一系列任务组成的数组。用意是：要等这一系列任务执行完之后再执行定义的任务。实际上要达到这个目的，光这样写是不够的。接下来会说到。</p>
-<p><strong>fn</strong></p>
-<p>任务要执行的操作。通常形式是这样的：</p>
-<pre><code><span class="function"><span class="keyword">function</span><span class="params">()</span>{</span>
-    gulp.src<span class="params">()</span>.pipe<span class="params">(someplugin<span class="params">()</span>)</span>;
-}
-</code></pre><p>上面说到要让依赖先执行完毕再启动定义的任务，只在定义任务时写上依赖数组是不够的，要达到这个目的，每个依赖的任务都要是异步执行的。</p>
-<p>如果说按顺序排行任务是同步执行的话，那么这里就是通过异步来实现同步：每个异步执行的任务在执行完之后会发一个信号告知gulp，等集齐数组所有的完成信号后再执行定义的任务。（不知道理解得对不对）</p>
-<p><strong>fn</strong>采取如下三种形式之一就能让任务变成异步执行：</p>
-<p>###传入回调函数</p>
-<pre><code><span class="comment">// run a command in a shell</span>
-<span class="keyword">var</span> exec = <span class="built_in">require</span>(<span class="string">'child_process'</span>).exec;
-gulp.task(<span class="string">'jekyll'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">cb</span>) </span>{
-  <span class="comment">// build Jekyll</span>
-  exec(<span class="string">'jekyll build'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>{
-    <span class="keyword">if</span> (err) <span class="keyword">return</span> cb(err); <span class="comment">// return error</span>
-    cb(); <span class="comment">// finished task</span>
-  });
-});
-</code></pre><p>###返回一个流</p>
-<pre><code>gulp.task(<span class="string">'somename'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{
-  <span class="keyword">var</span> stream = gulp.src(<span class="string">'client/**/*.js'</span>)
-    .pipe(minify())
-    .pipe(gulp.dest(<span class="string">'build'</span>));
-  <span class="keyword">return</span> stream;
-});
-</code></pre><p>###返回一个promise</p>
-<pre><code><span class="keyword">var</span> Q = <span class="built_in">require</span>(<span class="string">'q'</span>);
-gulp.task(<span class="string">'somename'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
-  <span class="keyword">var</span> deferred = Q.defer();
-
-  <span class="comment">// do async stuff</span>
-  setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
-    deferred.resolve();
-  }, <span class="number">1</span>);
-
-  <span class="keyword">return</span> deferred.promise;
-});
-</code></pre><p>以下是一个实现 task two 在 task two 执行完毕后再开始执行的例子：</p>
-<pre><code><span class="keyword">var</span> gulp = <span class="built_in">require</span>(<span class="string">'gulp'</span>);
-
-<span class="comment">// takes in a callback so the engine knows when it'll be done</span>
-gulp.task(<span class="string">'one'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">cb</span>) </span>{
-    <span class="comment">// do stuff -- async or otherwise</span>
-    cb(err); <span class="comment">// if err is not null and not undefined, the run will stop, and note that it failed</span>
-});
-
-<span class="comment">// identifies a dependent task must be complete before this one begins</span>
-gulp.task(<span class="string">'two'</span>, [<span class="string">'one'</span>], <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>{
-    <span class="comment">// task 'one' is done now</span>
-});
-
-gulp.task(<span class="string">'default'</span>, [<span class="string">'one'</span>, <span class="string">'two'</span>]);
-</code></pre><p><strong>以上所有代码来源于 <a href="https://github.com/gulpjs/gulp/blob/master/docs/API.md" target="_blank" rel="external">gulp API</a></strong></p>
-</span>
+        <span itemprop="articleBody"><h2 id="声明">声明</h2><p>文中的 promisify 函数原型出自 月影 的<a href="http://blog.h5jun.com/post/decorator-functional.html" target="_blank" rel="external">这篇博客</a>。</p>
+<h2 id="了解Promise">了解<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="external">Promise</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// &#21021;&#22987;&#21270;&#26102;&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910;&#21478;&#22806;&#20004;&#20010;&#26041;&#27861;&#10;new Promise(function(resolve, reject)&#123;&#10;//&#22312;&#27492;&#26041;&#27861;&#20013;&#20570;&#19968;&#20123;&#24322;&#27493;&#25805;&#20316;&#10;//&#22312;&#24322;&#27493;&#25805;&#20316;&#30340;&#22238;&#35843;&#26041;&#27861;&#20013;&#26681;&#25454;&#24773;&#20917;&#65292;&#20998;&#21035;&#35843;&#29992; resolve &#25110;&#32773; reject&#10;&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="了解request">了解<a href="https://github.com/request/request" target="_blank" rel="external">request</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//request &#26368;&#31616;&#21333;&#30340;&#29992;&#27861;&#10;request(url, function(err, response, body)&#123;&#10;  if(err)&#123;&#10;    //&#22788;&#29702;&#38169;&#35823;&#10;  &#125; else if(response.statusCode == 200)&#123;&#10;    //&#22788;&#29702;&#25104;&#21151;&#21709;&#24212;&#10;  &#125;&#10;&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="把_request_转换为_promise_的用例">把 request 转换为 promise 的用例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function()&#123;&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="promisify_实现">promisify 实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="完整示例">完整示例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;var getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function(content)&#123;&#10;  console.log(content);&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;).catch(function(reason)&#123;&#10;  //&#24322;&#24120;&#22238;&#35843;&#10;  console.log(reason);&#10;&#125;);</span><br></pre></td></tr></table></figure></span>
       
     </div>
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/request-promisify-node-es2015/" rel="tag">#request promisify node es2015</a>
+          
+        </div>
       
 
       
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/08/01/2013-11-17-JemeryLin/" rel="prev">林书豪：被忽视的屌丝、最耀眼的金子</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/07/31/reading-notes-2-5/" rel="next">阅读小摘</a>
+              <a href="/2016/04/10/kmp/" rel="next">算法第四版 kmp 算法</a>
             
           </div>
         </div>
@@ -329,8 +276,8 @@ gulp.task(<span class="string">'default'</span>, [<span class="string">'one'</sp
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/08/01/2014-09-27-gulp-task/"
-                   data-title="gulp task" data-url="http://judes.me/2015/08/01/2014-09-27-gulp-task/">
+              <div class="ds-thread" data-thread-key="2016/04/16/request-to-promise/"
+                   data-title="from nodejs request to promise" data-url="http://judes.me/2016/04/16/request-to-promise/">
               </div>
             
           </div>
@@ -412,7 +359,7 @@ gulp.task(<span class="string">'default'</span>, [<span class="string">'one'</sp
           <div class="post-toc">
             
             
-              <p class="post-toc-empty">This post does not have a Table Of Contents</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#了解Promise"><span class="nav-number">2.</span> <span class="nav-text">了解Promise</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#了解request"><span class="nav-number">3.</span> <span class="nav-text">了解request</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#把_request_转换为_promise_的用例"><span class="nav-number">4.</span> <span class="nav-text">把 request 转换为 promise 的用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#promisify_实现"><span class="nav-number">5.</span> <span class="nav-text">promisify 实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整示例"><span class="nav-number">6.</span> <span class="nav-text">完整示例</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

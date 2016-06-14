@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-14T00:10:16.000Z">
+<meta property="og:updated_time" content="2016-06-14T00:23:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -318,19 +318,31 @@ class <span class="type">TestClassEval</span>
 </code></pre><h2 id="事件处理_event-rb">事件处理 event.rb</h2><p><strong> EventManager </strong></p>
 <p>EventManager 模块里有一个 extend self 方法调用，值得学习。</p>
 <p>extend 方法是把 module 的实例方法加入到 class 的类单例方法中，其常规用法如下：</p>
+<pre><code>module M
+  def p_method
+    p '<span class="keyword">method</span>'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+class C
+  extend M
+<span class="keyword">end</span>
+
+C.p_method <span class="comment"># 'method'</span>
+</code></pre><p>如果不使用 extend ，也有其他途径的实现，如下：</p>
 <pre><code><span class="class"><span class="keyword">module</span> <span class="title">M</span></span>
   <span class="function"><span class="keyword">def</span> <span class="title">p_method</span></span>
     p <span class="string">'method'</span>
   <span class="keyword">end</span>
 <span class="keyword">end</span>
 
-<span class="class"><span class="keyword">class</span> <span class="title">C</span></span>
+<span class="class"><span class="keyword">class</span> <span class="title">D</span></span>
   <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
     <span class="keyword">include</span> <span class="constant">M</span>
   <span class="keyword">end</span>
 <span class="keyword">end</span>
 
-<span class="constant">C</span>.p_method <span class="comment"># 'method'</span>
+<span class="constant">D</span>.p_method <span class="comment"># 'method'</span>
 </code></pre><p>在 EventManager 中，self 指向 module 自身， 因此 extend self 是用来高效地生成单例方法，可见<a href="http://ozmm.org/posts/singin_singletons.html" target="_blank" rel="external">链接</a> </p>
 <p>20160614 To be continue.</p>
 </span>

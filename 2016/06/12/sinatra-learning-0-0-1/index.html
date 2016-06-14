@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-12T14:49:16.000Z">
+<meta property="og:updated_time" content="2016-06-14T00:10:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -310,7 +310,29 @@ class <span class="type">TestClassEval</span>
 <span class="keyword">end</span>
 
 <span class="type">TestClassEval</span>.another_class_method <span class="comment"># 'another class method'  </span>
-</code></pre><p>To be continue.</p>
+</code></pre><p><strong> hash.rb </strong></p>
+<p>hash.rb 里使用了 inject 方法 symbolize  hash 的 key </p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">symbolize_keys</span></span>
+  <span class="keyword">self</span>.inject({}) { |h, (k, v)| h[k.to_sym] = v;h}
+<span class="keyword">end</span>
+</code></pre><h2 id="事件处理_event-rb">事件处理 event.rb</h2><p><strong> EventManager </strong></p>
+<p>EventManager 模块里有一个 extend self 方法调用，值得学习。</p>
+<p>extend 方法是把 module 的实例方法加入到 class 的类单例方法中，其常规用法如下：</p>
+<pre><code><span class="class"><span class="keyword">module</span> <span class="title">M</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">p_method</span></span>
+    p <span class="string">'method'</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">C</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="keyword">include</span> <span class="constant">M</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">C</span>.p_method <span class="comment"># 'method'</span>
+</code></pre><p>在 EventManager 中，self 指向 module 自身， 因此 extend self 是用来高效地生成单例方法，可见<a href="http://ozmm.org/posts/singin_singletons.html" target="_blank" rel="external">链接</a> </p>
+<p>20160614 To be continue.</p>
 </span>
       
     </div>
@@ -414,7 +436,7 @@ class <span class="type">TestClassEval</span>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">34</span>
+              <span class="site-state-item-count">23</span>
               <span class="site-state-item-name">tags</span>
               </a>
           </div>
@@ -442,7 +464,7 @@ class <span class="type">TestClassEval</span>
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">2.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#core_ext"><span class="nav-number">3.</span> <span class="nav-text">core_ext</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">2.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#core_ext"><span class="nav-number">3.</span> <span class="nav-text">core_ext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理_event-rb"><span class="nav-number">4.</span> <span class="nav-text">事件处理 event.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

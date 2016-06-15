@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-14T00:23:51.000Z">
+<meta property="og:updated_time" content="2016-06-14T23:59:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -344,7 +344,53 @@ C.p_method <span class="comment"># 'method'</span>
 
 <span class="constant">D</span>.p_method <span class="comment"># 'method'</span>
 </code></pre><p>在 EventManager 中，self 指向 module 自身， 因此 extend self 是用来高效地生成单例方法，可见<a href="http://ozmm.org/posts/singin_singletons.html" target="_blank" rel="external">链接</a> </p>
-<p>20160614 To be continue.</p>
+<p><strong> EventContext </strong></p>
+<p>为 block 提供执行上下文， block 借此可以访问 request/params ，可以设置和访问 status/headers/body</p>
+<p>这里用到 alias, <code>alias :header :headers</code> ， ruby 中类似的用法还有 alias_method ，如果使用 alias_method ，要这样写 <code>alias_method :header, :headers</code> ，多一个逗号。</p>
+<p>alias 与 alias_method 还有其他区别，前者是关键字，后者是定义在 Module 的方法，这意味着 alias_method 可以被重写；调用 alias 时，其 self 是在定义时就已经决定下来，而 alias_method 的 self 是在运行时才决定的，见下面的例子<a href="http://blog.bigbinary.com/2012/01/08/alias-vs-alias-method.html" target="_blank" rel="external">(出自)</a>:</p>
+<pre><code><span class="comment"># alias_method</span>
+<span class="class"><span class="keyword">class</span> <span class="title">User</span></span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Johnnie Walker"</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">add_rename</span></span>
+    alias_method <span class="symbol">:name</span>, <span class="symbol">:full_name</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Developer</span> <span class="inheritance">&lt; <span class="parent">User</span></span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Geeky geek"</span>
+  <span class="keyword">end</span>
+  add_rename
+<span class="keyword">end</span>
+
+<span class="constant">Developer</span>.new.name <span class="comment">#=&gt; 'Gekky geek'</span>
+
+<span class="comment"># alias</span>
+<span class="class"><span class="keyword">class</span> <span class="title">User</span></span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Johnnie Walker"</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">add_rename</span></span>
+    <span class="keyword">alias</span> <span class="symbol">:name</span> <span class="symbol">:full_name</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Developer</span> <span class="inheritance">&lt; <span class="parent">User</span></span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Geeky geek"</span>
+  <span class="keyword">end</span>
+  add_rename
+<span class="keyword">end</span>
+
+<span class="constant">Developer</span>.new.name <span class="comment">#=&gt; 'Johnnie Walker'</span>
+</code></pre><p>基于上面的介绍，社区推荐使用 alias_method 。</p>
+<p>20160615 To be continue.</p>
 </span>
       
     </div>

@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-14T23:59:41.000Z">
+<meta property="og:updated_time" content="2016-06-16T15:04:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -390,7 +390,29 @@ C.p_method <span class="comment"># 'method'</span>
 
 <span class="constant">Developer</span>.new.name <span class="comment">#=&gt; 'Johnnie Walker'</span>
 </code></pre><p>基于上面的介绍，社区推荐使用 alias_method 。</p>
-<p>20160615 To be continue.</p>
+<p><strong> Event </strong></p>
+<p>Event 在定义 initialize 方法时<strong>最后一个参数</strong>是 <code>&amp;block</code> ，这表明在调用 Event.new 时如果接收到一个 block ，用 &amp; 操作符把 block 转化为 proc 之后，在 initialize 方法内部可以调用 proc 的 call 方法。</p>
+<p>如果没有在方法内部调用 call 方法的需求，或者没有把 block 当成变量传给别的方法的需求，就没必要在定义方法时写上 &amp;block ，直接用 yield 关键字调用就行。</p>
+<p>可以用 &amp; 把 proc 转变为 block 。这个技巧用在 attend 方法里面，因为 instance_eval 只有<a href="http://ruby-doc.org/core-1.9.3/BasicObject.html#method-i-instance_eval" target="_blank" rel="external">两种调用方式</a>：要么接收一个字符串，要么接收一个 block ，所以要把 proc 转变为 block 当作参数传进去。</p>
+<p>如果跟在 &amp; 操作符后面的对象不是 proc ，&amp; 会调用跟在它后面的对象的 :to_proc 方法。 symbol 对象也有自己的 :to_proc 方法，你经常能看到类似下面的代码：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">tag_names</span></span>
+  <span class="variable">@tag_names</span> || tags.map(&amp;<span class="symbol">:name</span>).join(<span class="string">' '</span>)
+<span class="keyword">end</span>
+</code></pre><p>事实上这跟下面的代码是等效的：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">tag_names</span></span>
+  <span class="variable">@tag_names</span> || tags.map({ |tag| tag.name }).join(<span class="string">' '</span>)
+<span class="keyword">end</span>
+</code></pre><p>symbol 对象的 :to_proc 方法最早是 Rails 引进的，后面合并到 ruby 1.8.7 版本：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Symbol</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
+    <span class="constant">Proc</span>.new <span class="keyword">do</span> |obj, *args|
+      obj.send <span class="keyword">self</span>, *args
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>上面整个例子都出自 <a href="http://stackoverflow.com/questions/1217088/what-does-mapname-mean-in-ruby" target="_blank" rel="external">stackoverflow</a></p>
+<p>关于 &amp; ，更多资料可以看看<a href="http://weblog.raganwald.com/2008/06/what-does-do-when-used-as-unary.html" target="_blank" rel="external">这篇文章</a></p>
+<p>20160616 To be continue.</p>
 </span>
       
     </div>

@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-21T00:32:44.000Z">
+<meta property="og:updated_time" content="2016-06-21T13:00:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -259,6 +259,9 @@
 
 <span class="number">12</span> directories, <span class="number">17</span> files
 </code></pre><p>跳到 examples/hello 目录下运行 <code>ruby test.rb</code> ，用浏览器打开 localhost:4567 便看到一个提交表单的页面。把文件里的路由都玩一遍，就能感觉到 sinatra 麻雀虽小，但五脏俱全。</p>
+<p>test.rb 采用 <code>$LOAD_PATH.unshift &#39;../../lib/&#39;</code> 把 lib 目录放进加载路径中。</p>
+<p>这种写法会导致如果在别的目录下执行 <code>ruby test.rb</code> 报错，可以改为：</p>
+<p><code>$LOAD_PATH.unshift File.expand_path(&#39;../../lib&#39;,File.dirname(__FILE__))</code></p>
 <h2 id="rubygems_和_rack">rubygems 和 rack</h2><p>根据 lib/sinatra/sinatra.rb 里加载文件的顺序，逐一看看这个版本的 sinatra 做了些什么。</p>
 <p>sinatra.rb 第1到7行加载 两个 gem</p>
 <pre><code><span class="string">%w(rubygems rack)</span>.each <span class="keyword">do</span> |library|

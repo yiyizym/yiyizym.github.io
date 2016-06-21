@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-18T01:56:05.000Z">
+<meta property="og:updated_time" content="2016-06-21T00:31:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -418,7 +418,8 @@ C.p_method <span class="comment"># 'method'</span>
 <p>这里的 ifnone 是一个 lambda</p>
 <pre><code><span class="title">lambda</span> { <span class="title">not_found</span> }
 </code></pre><p>调用 lambda 的 call 会执行 not_found 方法，而 not_found 返回一个 Event 实例。</p>
-<p>20160618 To be continue.</p>
+<h2 id="server-rb">server.rb</h2><p><a href="https://github.com/rack/rack/tree/2.0.0.alpha" target="_blank" rel="external">rack 2.0</a> 开始不支持 Mongrel 的 handler 。<code>trap(&quot;INT&quot;) do ... end</code> 这段代码会捕获 <code>ctrl + c</code> ，从而调用 Mongrel::HttpServer 的 <a href="https://github.com/mongrel/mongrel/blob/master/lib/mongrel.rb#L344" target="_blank" rel="external">stop</a> 方法。</p>
+<p>20160621 To be continue.</p>
 </span>
       
     </div>
@@ -550,7 +551,7 @@ C.p_method <span class="comment"># 'method'</span>
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">2.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心扩展_core_ext"><span class="nav-number">3.</span> <span class="nav-text">核心扩展 core_ext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理_event-rb"><span class="nav-number">4.</span> <span class="nav-text">事件处理 event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由请求，封装响应_dispatcher-rb"><span class="nav-number">5.</span> <span class="nav-text">路由请求，封装响应 dispatcher.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">2.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心扩展_core_ext"><span class="nav-number">3.</span> <span class="nav-text">核心扩展 core_ext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理_event-rb"><span class="nav-number">4.</span> <span class="nav-text">事件处理 event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由请求，封装响应_dispatcher-rb"><span class="nav-number">5.</span> <span class="nav-text">路由请求，封装响应 dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">6.</span> <span class="nav-text">server.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-21T00:31:07.000Z">
+<meta property="og:updated_time" content="2016-06-21T00:32:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -418,7 +418,8 @@ C.p_method <span class="comment"># 'method'</span>
 <p>这里的 ifnone 是一个 lambda</p>
 <pre><code><span class="title">lambda</span> { <span class="title">not_found</span> }
 </code></pre><p>调用 lambda 的 call 会执行 not_found 方法，而 not_found 返回一个 Event 实例。</p>
-<h2 id="server-rb">server.rb</h2><p><a href="https://github.com/rack/rack/tree/2.0.0.alpha" target="_blank" rel="external">rack 2.0</a> 开始不支持 Mongrel 的 handler 。<code>trap(&quot;INT&quot;) do ... end</code> 这段代码会捕获 <code>ctrl + c</code> ，从而调用 Mongrel::HttpServer 的 <a href="https://github.com/mongrel/mongrel/blob/master/lib/mongrel.rb#L344" target="_blank" rel="external">stop</a> 方法。</p>
+<h2 id="server-rb">server.rb</h2><p><a href="https://github.com/rack/rack/tree/2.0.0.alpha" target="_blank" rel="external">rack 2.0</a> 开始不支持 Mongrel 的 handler 。</p>
+<p><code>trap(&quot;INT&quot;) do ... end</code> 这段代码会捕获用户输入的 <code>ctrl + c</code> ，从而调用 Mongrel::HttpServer 的 <a href="https://github.com/mongrel/mongrel/blob/master/lib/mongrel.rb#L344" target="_blank" rel="external">stop</a> 方法。</p>
 <p>20160621 To be continue.</p>
 </span>
       

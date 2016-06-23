@@ -32,7 +32,7 @@
 
 
 
-  <meta name="keywords" content="manjaro linux, sublime text 3, 中文" />
+  <meta name="keywords" content="algorithm,sort," />
 
 
 
@@ -41,16 +41,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="sublime text 很好用，但不能輸入中文就很蛋疼了。水文一篇">
+<meta name="description" content="为什么知道原理还是写不出正确的程序来呢？">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在 manjaro sublime text 3 中輸入中文">
-<meta property="og:url" content="http://judes.me/2015/08/01/2014-09-23-typingChineseInSB3/index.html">
+<meta property="og:title" content="我尝试去写一个快排，结果失败了">
+<meta property="og:url" content="http://judes.me/2016/06/23/see-how-i-write-quick-sort/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="sublime text 很好用，但不能輸入中文就很蛋疼了。水文一篇">
-<meta property="og:updated_time" content="2015-07-31T14:37:11.000Z">
+<meta property="og:description" content="为什么知道原理还是写不出正确的程序来呢？">
+<meta property="og:updated_time" content="2016-06-23T13:33:53.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="在 manjaro sublime text 3 中輸入中文">
-<meta name="twitter:description" content="sublime text 很好用，但不能輸入中文就很蛋疼了。水文一篇">
+<meta name="twitter:title" content="我尝试去写一个快排，结果失败了">
+<meta name="twitter:description" content="为什么知道原理还是写不出正确的程序来呢？">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -60,7 +60,7 @@
   };
 </script>
 
-  <title> 在 manjaro sublime text 3 中輸入中文 | jude's life </title>
+  <title> 我尝试去写一个快排，结果失败了 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -177,7 +177,7 @@
           
           
             
-              在 manjaro sublime text 3 中輸入中文
+              我尝试去写一个快排，结果失败了
             
           
         </h1>
@@ -186,8 +186,8 @@
       <div class="post-meta">
         <span class="post-time">
           Posted on
-          <time itemprop="dateCreated" datetime="2015-08-01T15:19:09+08:00" content="Aug 1 2015">
-            Aug 1 2015
+          <time itemprop="dateCreated" datetime="2016-06-23T20:56:50+08:00" content="Jun 23 2016">
+            Jun 23 2016
           </time>
         </span>
 
@@ -212,8 +212,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/08/01/2014-09-23-typingChineseInSB3/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/01/2014-09-23-typingChineseInSB3/" itemprop="commentsCount"></span>
+              <a href="/2016/06/23/see-how-i-write-quick-sort/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/23/see-how-i-write-quick-sort/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -227,36 +227,40 @@
       
 
       
-        <span itemprop="articleBody"><p>网上有不少文档说明怎样在 linux sublime text 中输入中文的，比如<a href="http://c4fun.cn/blog/2013/11/30/linux-sublimetext-chinese/" target="_blank" rel="external">这篇</a>。本人操作系统是 manjaro linux，按照文档操作能在命令行运行能输入中文的sublime text，但要想在桌面上点击图标运行，就出问题了。</p>
-<p>一番折腾之后，终于发现点击图标运行能输入中文sublime text的方法，跟着步骤来：</p>
-<ol>
-<li><p>通过 pacman 安装 sublime text 3 dev 版 和 Fcitx</p>
-</li>
-<li><p>按照上面提到的那篇文档安装补丁，完成之后就可以在命令行中运行能输入中文的sublime text啦</p>
-</li>
-<li><p>把 sublime text 放到桌面（不要忘了我们的目标是在桌面上点击运行XD），右键点击找到“编辑启动器”，在“命令”一栏，把原来的<code>subl3 %F</code>替换成<code>bash -c &#39;LD_PRELOAD=/usr/lib/libsublime_imfix.so /opt/sublime_text_3/sublime_text&#39; %F</code>，这跟你在命令行中执行的那条命令本质上是一样的，只是两个文件的路径变成了绝对路径。</p>
-</li>
-<li><p>没有第四步啊，双击打开就OK啦。</p>
-</li>
-</ol>
+        <span itemprop="articleBody"><p>《编程珠玑》第 32 页，提到：“尽管第一个二分查找程序于1946年就已经公布了，但是第一个没有 bug 的二分查找程序在 1962 年才出现。”</p>
+<p>书中说参加课堂测试的专业程序员中， 90% 写的二分查找程序都有 bug ，看来测试用例很重要啊。</p>
+<p>我心血来潮，动手写起了快排。隐约记得快排的原理如下：</p>
+<ul>
+<li>在要排序的元素集合中选定一个，当作比较标杆；其他元素分别与此标杆比较，比它小的放在标杆前面，比它大的放在它后面；</li>
+<li>这样整个集合就一分为二，对这两部分分别应用步骤一的方法，直接每部分只有一个元素。</li>
+</ul>
+<p>我还简单地写几个测试用例。结果第二个测试就跑不过。</p>
+<p>为什么知道原理还是写不出正确的程序来呢？</p>
+<p>20160623 To be continue.</p>
 </span>
       
     </div>
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
+          
+            <a href="/tags/sort/" rel="tag">#sort</a>
+          
+        </div>
+      
 
       
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/08/01/2014-09-27-gulp-task/" rel="prev">gulp task</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/01/2014-08-24-yedushu/" rel="next">奢餐，绝食，读《玻璃天》偶感</a>
+              <a href="/2016/06/12/sinatra-learning-0-0-1/" rel="next">sinatra 源码学习</a>
             
           </div>
         </div>
@@ -281,8 +285,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/08/01/2014-09-23-typingChineseInSB3/"
-                   data-title="在 manjaro sublime text 3 中輸入中文" data-url="http://judes.me/2015/08/01/2014-09-23-typingChineseInSB3/">
+              <div class="ds-thread" data-thread-key="2016/06/23/see-how-i-write-quick-sort/"
+                   data-title="我尝试去写一个快排，结果失败了" data-url="http://judes.me/2016/06/23/see-how-i-write-quick-sort/">
               </div>
             
           </div>

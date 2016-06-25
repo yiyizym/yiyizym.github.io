@@ -32,7 +32,7 @@
 
 
 
-  <meta name="keywords" content="algorithm,sort," />
+  <meta name="keywords" content="algorithm,quick sort," />
 
 
 
@@ -41,16 +41,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="为什么知道原理还是写不出正确的程序来呢？">
+<meta name="description" content="为什么知道原理还是写不出正确的程序呢？">
 <meta property="og:type" content="article">
-<meta property="og:title" content="我尝试去写一个快排，结果失败了">
+<meta property="og:title" content="我尝试去写快排，结果。。。">
 <meta property="og:url" content="http://judes.me/2016/06/23/see-how-i-write-quick-sort/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="为什么知道原理还是写不出正确的程序来呢？">
-<meta property="og:updated_time" content="2016-06-23T13:33:53.000Z">
+<meta property="og:description" content="为什么知道原理还是写不出正确的程序呢？">
+<meta property="og:updated_time" content="2016-06-25T03:00:26.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="我尝试去写一个快排，结果失败了">
-<meta name="twitter:description" content="为什么知道原理还是写不出正确的程序来呢？">
+<meta name="twitter:title" content="我尝试去写快排，结果。。。">
+<meta name="twitter:description" content="为什么知道原理还是写不出正确的程序呢？">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -60,7 +60,7 @@
   };
 </script>
 
-  <title> 我尝试去写一个快排，结果失败了 | jude's life </title>
+  <title> 我尝试去写快排，结果。。。 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -177,7 +177,7 @@
           
           
             
-              我尝试去写一个快排，结果失败了
+              我尝试去写快排，结果。。。
             
           
         </h1>
@@ -227,17 +227,210 @@
       
 
       
-        <span itemprop="articleBody"><p>《编程珠玑》第 32 页，提到：“尽管第一个二分查找程序于1946年就已经公布了，但是第一个没有 bug 的二分查找程序在 1962 年才出现。”</p>
-<p>书中说参加课堂测试的专业程序员中， 90% 写的二分查找程序都有 bug ，看来测试用例很重要啊。</p>
-<p>我心血来潮，动手写起了快排。隐约记得快排的原理如下：</p>
+        <span itemprop="articleBody"><p>《编程珠玑》第 32 页，提到：“尽管第一个二分查找程序于1946年就已经公布了，但是第一个没有 bug 的二分查找程序在 1962 年才出现。”还说参加课堂测试的专业程序员中， 90% 写的二分查找程序都有 bug 。</p>
+<p>真的有那么难吗？我心血来潮，动手写起了快排（不要问为什么不是二分查找）。隐约记得快排的原理如下：</p>
 <ul>
-<li>在要排序的元素集合中选定一个，当作比较标杆；其他元素分别与此标杆比较，比它小的放在标杆前面，比它大的放在它后面；</li>
-<li>这样整个集合就一分为二，对这两部分分别应用步骤一的方法，直接每部分只有一个元素。</li>
+<li>在要排序的元素集合中选定一个元素作比较标杆；其他元素分别与此标杆比较，比它小的放在标杆前面，比它大的放在它后面；</li>
+<li>这样集合就一分为二，对这两部分分别应用步骤一的方法，直到每部分只有一个元素。</li>
 </ul>
-<p>我还简单地写几个测试用例。结果第二个测试就跑不过。</p>
-<p>为什么知道原理还是写不出正确的程序来呢？</p>
-<p>20160623 To be continue.</p>
-</span>
+<p>简单地写几个测试用例。结果第二个测试就跑不过。<strong>为什么知道原理还是写不出正确的程序呢？</strong></p>
+<p>聪明的人很快就能调试好出错的程序；记忆力好的，大概见过一次正确的写法后就不会忘。可惜普通人这两样都不占。</p>
+<p>那如果普通人的目标是以后能很快地写出快排，应该怎样做呢？我暂时能想到：</p>
+<ul>
+<li><p>在原理之上唤醒更多写快排的基本算法思想：一分为二用到分治法；算法会反复用到步骤一，所以有递归；算法不需要额外空间。</p>
+</li>
+<li><p>用少量的待排序元素辅助书写算法。</p>
+</li>
+<li><p>用测试用例保证算法正确性。</p>
+</li>
+</ul>
+<p>根据这个思路，首先要定义使用快排程序的方法：</p>
+<pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = QS.sort(array)
+</code></pre><p>然后定义程序的大致框架：</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+
+module QS
+  extend self
+  def sort<span class="instruction"> array
+</span>    inner_sort array, 0, array.size - 1
+   <span class="instruction"> array
+</span>  end
+  def inner_sort array, low_pos, hight_pos
+  end
+  def divide array, low_pos, hight_pos
+  end
+  def exchange array, i, j
+  end
+
+end
+</code></pre><p>inner_sort 跟 divide 为什么要接受两个位置参数？我们没有额外储存空间可用，所以要用上下边界划定排序的作用范围。inner_sort 没有返回值，而 divide 要返回一个位置，确立递归排序的界限。exchange 用来交换元素。</p>
+<p>开始写 inner_sort ：</p>
+<pre><code><span class="preprocessor">#!/usr/bin/env ruby</span>
+
+module QS
+  ...
+
+  def inner_sort <span class="built_in">array</span>, low_pos, hight_pos
+    <span class="keyword">return</span> <span class="keyword">if</span> low_pos &gt;= hight_pos
+    division = divide <span class="built_in">array</span>, low_pos, hight_pos
+    inner_sort <span class="built_in">array</span>, low_pos, division - <span class="number">1</span>
+    inner_sort <span class="built_in">array</span>, division + <span class="number">1</span>, hight_pos
+  end
+
+  ...
+
+end
+</code></pre><p>程序会递归调用 inner_sort 。写递归要注意两点：</p>
+<ul>
+<li>递归要有终止条件</li>
+<li>每次递归都要朝着终止条件迈一步</li>
+</ul>
+<p>接下来写 divide ：</p>
+<pre><code>#!/usr/bin/env ruby
+
+<span class="keyword">module</span> <span class="type">QS</span>
+  ...
+
+  def divide <span class="built_in">array</span>, low_pos, hight_pos
+    target = <span class="built_in">array</span>[low_pos]
+    lo = low_pos
+    hi = hight_pos
+    <span class="keyword">while</span> low_pos &lt; hight_pos
+      <span class="keyword">while</span> <span class="built_in">array</span>[low_pos] &lt;= target &amp;&amp; low_pos &lt; hi
+        low_pos += <span class="number">1</span>
+      <span class="keyword">end</span>
+      <span class="keyword">while</span> <span class="built_in">array</span>[hight_pos] &gt;= target &amp;&amp; hight_pos &gt; lo
+        hight_pos -= <span class="number">1</span>
+      <span class="keyword">end</span>
+      exchange(<span class="built_in">array</span> low_pos, hight_pos) <span class="keyword">if</span> low_pos &lt; hight_pos
+    <span class="keyword">end</span>
+    exchange(<span class="built_in">array</span>, lo, hight_pos)
+    hight_pos
+  <span class="keyword">end</span>
+
+  ...
+
+<span class="keyword">end</span>
+</code></pre><p>divide 方法是快排中最难写、最容易出错的，为免出错：</p>
+<ul>
+<li>要记住重排元素的技巧<br>  从待排序集合的头部开始找到一个比标杆元素大的，从尾部开始找到一个比标杆元素小的，然后交换两者位置</li>
+<li>要正确写出比较、查找的上下界限<br>  在遍历元素时要注意数组越界问题和交换元素位置的附加条件： low_pos 必须小于 hight_pos</li>
+<li>最后要把标杆元素与某个元素交换位置<br>  把标杆元素摆到中间，至于是通过跟 low_pos 还是跟 hight_pos 交换达到这个目的。可以用简单的例子（这个例子是尝试出来的，记不住也没关系）确定，假设待排序的元素集是 <code>[2,1,3]</code>，很容易就能得到要跟 hight_pos 交换。</li>
+</ul>
+<p>把 exchange 方法补充好，测试用例也写上，完整的程序是这样的：</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+<span class="comment"># usage QS.sort(array) =&gt; sorted array</span>
+
+module QS
+  extend self
+
+  def sort<span class="instruction"> array
+</span>    inner_sort array, 0, array.size - 1
+   <span class="instruction"> array
+</span>  end
+
+  def inner_sort array, low_pos, hight_pos
+   <span class="instruction"> return </span>if low_pos &gt;= hight_pos
+    division = divide array, low_pos, hight_pos
+    inner_sort array, low_pos, division - 1
+    inner_sort array, division + 1, hight_pos
+  end
+
+  def divide array, low_pos, hight_pos
+    target = array<span class="keyword">[</span>low_pos]
+    lo = low_pos
+    hi = hight_pos
+    while low_pos &lt; hight_pos
+      while array<span class="keyword">[</span>low_pos] &lt;= target &amp;&amp; low_pos &lt; hi
+        low_pos += 1
+      end
+      while array<span class="keyword">[</span>hight_pos] &gt;= target &amp;&amp; hight_pos &gt; lo
+        hight_pos -= 1
+      end
+     <span class="function"> exchange(</span>array low_pos, hight_pos<span class="function">)</span><span class="instruction"> if </span>low_pos &lt; hight_pos
+    end
+   <span class="function"> exchange(</span>array, lo, hight_pos<span class="function">)</span>
+    hight_pos
+  end
+
+  def exchange array, i, j
+    array<span class="keyword">[</span>i], array<span class="keyword">[</span>j] = array<span class="keyword">[</span>j], array<span class="keyword">[</span>i]
+  end
+
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+  require 'test/unit'
+  class TestQS &lt; Test::Unit::TestCase
+    def test_0
+     <span class="instruction"> array </span>= <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_1
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_2_0
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,2]
+      expected = <span class="keyword">[</span>1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_2_1
+     <span class="instruction"> array </span>= <span class="keyword">[</span>2,1]
+      expected = <span class="keyword">[</span>1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_2_2
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_0
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,2,3]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_1
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,3,2]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_2
+     <span class="instruction"> array </span>= <span class="keyword">[</span>3,2,1]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_3
+     <span class="instruction"> array </span>= <span class="keyword">[</span>2,1,3]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_4
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,1,2]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_5
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_6
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,2,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_7
+     <span class="instruction"> array </span>= <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+  end
+end
+</code></pre></span>
       
     </div>
 
@@ -247,7 +440,7 @@
           
             <a href="/tags/algorithm/" rel="tag">#algorithm</a>
           
-            <a href="/tags/sort/" rel="tag">#sort</a>
+            <a href="/tags/quick-sort/" rel="tag">#quick sort</a>
           
         </div>
       
@@ -286,7 +479,7 @@
           <div class="comments" id="comments">
             
               <div class="ds-thread" data-thread-key="2016/06/23/see-how-i-write-quick-sort/"
-                   data-title="我尝试去写一个快排，结果失败了" data-url="http://judes.me/2016/06/23/see-how-i-write-quick-sort/">
+                   data-title="我尝试去写快排，结果。。。" data-url="http://judes.me/2016/06/23/see-how-i-write-quick-sort/">
               </div>
             
           </div>

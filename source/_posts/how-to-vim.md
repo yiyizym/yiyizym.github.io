@@ -1,7 +1,8 @@
 title: vim 使用指南
 description: vim 折腾之旅
 categories: tech
-tags: vim vundle auto-pairs YCM easy-motion
+tags: 
+- vim
 date: 2016-03-26 12:07:28
 ---
 

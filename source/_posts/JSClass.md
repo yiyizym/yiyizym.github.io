@@ -3,7 +3,8 @@ description: "es6才原生支持 class ，来看看在此之前大神们怎样�
 keywords: "p.js , 原型链"
 date: 2015-07-31 23:02:51
 categories: frontend
-tags: frontend
+tags: 
+- javascript类
 ---
 
 ## 阅读前，希望你了解javascript的原型链

@@ -1,7 +1,8 @@
 title: 小心使用 git rebase
 description: 令人糊涂的 git rebase
 categories: tech
-tags: git
+tags:
+- git
 date: 2015-11-08 09:49:08
 ---
 

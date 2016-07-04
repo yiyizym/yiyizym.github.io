@@ -1,7 +1,9 @@
 title: react_webpack_starter_kit
 description: 这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~
 categories: frontend
-tags: 'react, webpack, react-router, react-bootstrap'
+tags: 
+- react
+- webpack
 date: 2015-12-12 15:40:40
 ---
 

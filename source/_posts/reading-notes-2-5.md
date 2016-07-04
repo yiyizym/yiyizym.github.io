@@ -2,7 +2,7 @@ title: 阅读小摘
 description: "201502-05"
 keywords: 阅读
 categories: DailyReadingRecord
-tags: "阅读"
+tags: reading
 date: 2015-07-31 23:17:03
 ---
 

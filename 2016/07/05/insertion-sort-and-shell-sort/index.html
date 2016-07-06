@@ -30,7 +30,7 @@
 
 
 
-  <meta name="keywords" content="川端康成,雪国,古都,千只鹤,男性" />
+  <meta name="keywords" content="algorithm,insertion sort,ruby," />
 
 
 
@@ -39,16 +39,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="川端康成擅长描写女性，他书中出现的男性则往往是为了展现女性美。">
+<meta name="description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
 <meta property="og:type" content="article">
-<meta property="og:title" content="川端康成三部名作中的男主人">
-<meta property="og:url" content="http://judes.me/2015/08/01/2014-08-09-theManInYasunariNovel/index.html">
+<meta property="og:title" content="写写插入排序">
+<meta property="og:url" content="http://judes.me/2016/07/05/insertion-sort-and-shell-sort/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="川端康成擅长描写女性，他书中出现的男性则往往是为了展现女性美。">
-<meta property="og:updated_time" content="2015-07-31T14:37:39.000Z">
+<meta property="og:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
+<meta property="og:updated_time" content="2016-07-06T14:45:52.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="川端康成三部名作中的男主人">
-<meta name="twitter:description" content="川端康成擅长描写女性，他书中出现的男性则往往是为了展现女性美。">
+<meta name="twitter:title" content="写写插入排序">
+<meta name="twitter:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +58,7 @@
   };
 </script>
 
-  <title> 川端康成三部名作中的男主人 | jude's life </title>
+  <title> 写写插入排序 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -167,7 +167,7 @@
           
           
             
-              川端康成三部名作中的男主人
+              写写插入排序
             
           
         </h1>
@@ -176,8 +176,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-08-01T15:19:09+08:00" content="Aug 1 2015">
-            Aug 1 2015
+          <time itemprop="dateCreated" datetime="2016-07-05T08:06:17+08:00" content="Jul 5 2016">
+            Jul 5 2016
           </time>
         </span>
 
@@ -186,8 +186,8 @@
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/reading/" itemprop="url" rel="index">
-                  <span itemprop="name">reading</span>
+                <a href="/categories/tech/" itemprop="url" rel="index">
+                  <span itemprop="name">tech</span>
                 </a>
               </span>
 
@@ -202,8 +202,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2015/08/01/2014-08-09-theManInYasunariNovel/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/01/2014-08-09-theManInYasunariNovel/" itemprop="commentsCount"></span>
+              <a href="/2016/07/05/insertion-sort-and-shell-sort/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/05/insertion-sort-and-shell-sort/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -217,31 +217,195 @@
       
 
       
-        <span itemprop="articleBody"><p>这篇小短文只是谈谈自己仅仅读过川端康成的三篇名作（雪国,古都,千只鹤）之后的一些感想。</p>
-<p>这三篇作品中的男主，分别是冬季来雪国疗养的岛村、千重子的父亲绸缎批发店老板太吉郞、身份不明的菊治。</p>
-<p>先说这三位男主自身的生活状态。岛村美其名曰“舞蹈艺术研究家”，但“他没能亲眼看到西方人的舞蹈”，也“向来不看日本人跳西方舞蹈”，他研究舞蹈艺术，“其实是任意想象”。太吉郞是生意日渐清减的绸缎批发店老板，年轻时他父亲就知道“太吉郞没有天才，难以进步，并想借助麻药的魔力给出奇怪的友禅画稿”，直到中年，“他为了得到一些构图的灵感，经常独自躲进嵯峨的尼姑庵里深居简出”，即便如此，他设计的花样既没有迎合了世人的喜好，也没有令自己满意。菊治，故事中没有描述他的身份、工作和社会地位。</p>
-<p>这三位男主的生活状态即便不是可有可无的（如菊治），也给人一种停滞不进、脱离现世的感觉。跟女主的“现世存在感”有很强烈的对比。不管最终是不是图劳的，驹子没有掩饰过自己对岛村的爱；千重子的孝顺、对身世的纠结、对苗子的愧欠，都比他父亲显得要正常很多；太田夫人忘不了菊治的父亲、文子为母亲的出格行为感到羞耻、拼命阻止母亲去见菊治，相比之下，菊治只是一个旁观者。</p>
-<p>说到旁观者，这三位男主的确都有一双发现美的眼睛，可以说，虽然他们的内心是空洞的，但却又似海绵般感受到了自然、女性满满的美。雪国中的例子数不胜数，开场不久映在列车窗玻璃上的叶子的脸庞和映着晨雪与朝阳的梳妆镜中的驹子，夕照下冷峻的群山和边上寂静挺直的杉树。古都中太吉郞到南神寺附近看房子时“在门前伫立，欣赏着胡枝子白花，看得都入迷了”，“或许是对那一溜胡枝子白花恋恋不舍吧，走了七八步，又独自折回去再观赏一番”。千只鹤中菊治自从注意到雪子的千只鹤包袱皮就念念不忘。</p>
-<p>这三位男主心里都有“两位”女性，一位是已经追求到手或者是与自己亲近的，很真实且有个性，而另一位则是远远观望，只有过简短的接触，显得很纯洁美好。雪国中的驹子、叶子；古都中的太吉郞在七轩中遇到的年轻艺妓、在电车中见到的小千子；千只鹤中的太田夫人、文子和雪子。男主对前一位不敢说有爱，他只是被动地接受，而对后一位也没有主动热烈的追求。（这一点对太吉郞来说有点牵强）</p>
-<p>总的来说，这三位男主的存在感不弱，但真正属于自身的内容并不多，与女主相比显得有点虚空。</p>
-</span>
+        <span itemprop="articleBody"><p>这是一个基础算法系列，主题是：为什么知道原理还是写不出正确的程序呢？</p>
+<p>第一篇已经写好，叫做<a href="">我尝试去写快排，结果。。。</a>。文章结构都差不多：原理、联想、用法、框架、分步实现、完整代码及测试用例。</p>
+<h2 id="原理">原理</h2><p>插入排序的原理是：</p>
+<ul>
+<li>将集合分为两个部分：已排好的部分和待排序的部分</li>
+<li>每次从待排序部分抽一个元素跟已排好部分中的元素逐一比较，直到找到合适的位置，插入待排序元素</li>
+<li>合适的位置可以是第一个比待排序元素小（大）的，也可能是已排好部分的下界</li>
+</ul>
+<h2 id="联想">联想</h2><ul>
+<li>可以用一个数组下标将集合分成两部分，比下标小的是已排好部分，比下标大的是待排序部分</li>
+<li>整个排序过程可以用嵌套两层循环，外层遍历待排序部分，内层遍历已排好部分</li>
+<li>每次比较都有可能发生一次元素交换</li>
+</ul>
+<h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = IS.sort(array)
+</code></pre><h2 id="大致框架">大致框架</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+<span class="class"><span class="keyword">class</span> <span class="title">IS</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="function"><span class="keyword">def</span> <span class="title">sort</span> <span class="title">array</span></span>
+      <span class="keyword">while</span> condition1
+        <span class="keyword">while</span> condition2
+
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="function"><span class="keyword">def</span> <span class="title">exchange</span> <span class="title">array</span>, <span class="title">i</span>, <span class="title">j</span></span>
+      array[i], array[j] = array[j], array[i]
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="外层循环的上下界">外层循环的上下界</h2><p>容易想到外层循环的下界小于数组的大小，但上界是什么呢？选 0 是可以的，只是会浪费一次外层循环（因为它前面没有可比较元素），出于不浪费的考虑，选 1 。源码：</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+<span class="class"><span class="keyword">class</span> <span class="title">IS</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="function"><span class="keyword">def</span> <span class="title">sort</span> <span class="title">array</span></span>
+      <span class="comment"># 外层循环</span>
+      index = <span class="number">1</span>
+      len = array.size
+      <span class="keyword">while</span> index &lt; len
+        <span class="comment">#inner loop</span>
+      index += <span class="number">1</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="内层循环要做什么？">内层循环要做什么？</h2><p>内层循环要做的就是把待排序元素的第一个元素通过一次次比较，放到已排序集合中合适的位置。循环的上界是外层循环中的 index ，下界是什么呢？ 因为每次都是与索引值小 1 的元素比较，为免数组越界，当前索引值最小是 1 。源码：</p>
+<pre><code>#!/usr/bin/env ruby
+<span class="keyword">class</span> <span class="keyword">IS</span>
+  <span class="keyword">class</span> &lt;&lt; <span class="keyword">self</span>
+    def sort <span class="keyword">array</span>
+      <span class="keyword">index</span> = <span class="number">1</span>
+      len = <span class="keyword">array</span>.size
+      <span class="keyword">while</span> <span class="keyword">index</span> &lt; len
+        inner_index = <span class="keyword">index</span>
+        # 内层循环
+        <span class="keyword">while</span> inner_index &gt;= <span class="number">1</span> &amp;&amp; <span class="keyword">array</span>[inner_index] &lt; <span class="keyword">array</span>[inner_index - <span class="number">1</span>]
+          exchange(<span class="keyword">array</span>, inner_index, inner_index - <span class="number">1</span>)
+          inner_index -= <span class="number">1</span>
+        <span class="keyword">end</span>
+        <span class="keyword">index</span> += <span class="number">1</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+class IS
+  class &lt;&lt; self
+    def sort<span class="instruction"> array
+</span>      index = 1
+      len = array.size
+      while index &lt; len
+        inner_index = index
+        while inner_index &gt; 0 &amp;&amp; array<span class="keyword">[</span>inner_index] &lt; array<span class="keyword">[</span>inner_index-1]
+         <span class="function"> exchange(</span>array, inner_index, inner_index-1<span class="function">)</span>
+          inner_index -= 1
+        end
+        index += 1
+      end
+     <span class="instruction"> array
+</span>    end
+    def exchange array, i, j
+      array<span class="keyword">[</span>i], array<span class="keyword">[</span>j] = array<span class="keyword">[</span>j], array<span class="keyword">[</span>i]
+    end
+  end
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+
+  require 'test/unit'
+
+  class TestIS &lt; Test::Unit::TestCase
+    def test_0
+      input = <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
+    end
+    def test_1_0
+      input = <span class="keyword">[</span>0]
+      expected = <span class="keyword">[</span>0]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_1_1
+      input = <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_0
+      input = <span class="keyword">[</span>0,1]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_1
+      input = <span class="keyword">[</span>1,0]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_2
+      input = <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_0
+      input = <span class="keyword">[</span>0,1,2]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_1
+      input = <span class="keyword">[</span>0,2,1]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_2
+      input = <span class="keyword">[</span>2,1,0]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_3
+      input = <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_4
+      input = <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_0
+      input = <span class="keyword">[</span>0,1,2,3]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_1
+      input = <span class="keyword">[</span>3,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_2
+      input = <span class="keyword">[</span>3,1,2,1]
+      expected = <span class="keyword">[</span>1,1,2,3]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+  end
+end
+</code></pre></span>
       
     </div>
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
+          
+            <a href="/tags/insertion-sort/" rel="tag">#insertion sort</a>
+          
+            <a href="/tags/ruby/" rel="tag">#ruby</a>
+          
+        </div>
       
 
       
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2015/08/01/2014-08-24-yedushu/" rel="prev">奢餐，绝食，读《玻璃天》偶感</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/08/01/2014-07-18-big-fish/" rel="next">大鱼</a>
+              <a href="/2016/07/02/wechat-reload/" rel="next">微信浏览器 location reload 失效解决办法</a>
             
           </div>
         </div>
@@ -266,8 +430,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2015/08/01/2014-08-09-theManInYasunariNovel/"
-                   data-title="川端康成三部名作中的男主人" data-url="http://judes.me/2015/08/01/2014-08-09-theManInYasunariNovel/">
+              <div class="ds-thread" data-thread-key="2016/07/05/insertion-sort-and-shell-sort/"
+                   data-title="写写插入排序" data-url="http://judes.me/2016/07/05/insertion-sort-and-shell-sort/">
               </div>
             
           </div>
@@ -349,7 +513,7 @@
           <div class="post-toc">
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联想"><span class="nav-number">2.</span> <span class="nav-text">联想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法"><span class="nav-number">3.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大致框架"><span class="nav-number">4.</span> <span class="nav-text">大致框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#外层循环的上下界"><span class="nav-number">5.</span> <span class="nav-text">外层循环的上下界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内层循环要做什么？"><span class="nav-number">6.</span> <span class="nav-text">内层循环要做什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整的代码，加测试用例如下："><span class="nav-number">7.</span> <span class="nav-text">完整的代码，加测试用例如下：</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

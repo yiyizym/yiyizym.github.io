@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/05/insertion-sort/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
-<meta property="og:updated_time" content="2016-07-06T14:45:55.000Z">
+<meta property="og:updated_time" content="2016-07-08T00:34:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="写写插入排序">
 <meta name="twitter:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
@@ -289,7 +289,7 @@ class IS
       len = array.size
       while index &lt; len
         inner_index = index
-        while inner_index &gt; 0 &amp;&amp; array<span class="keyword">[</span>inner_index] &lt; array<span class="keyword">[</span>inner_index-1]
+        while inner_index &gt;= 1 &amp;&amp; array<span class="keyword">[</span>inner_index] &lt; array<span class="keyword">[</span>inner_index-1]
          <span class="function"> exchange(</span>array, inner_index, inner_index-1<span class="function">)</span>
           inner_index -= 1
         end

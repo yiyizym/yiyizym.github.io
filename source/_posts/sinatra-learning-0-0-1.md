@@ -1,11 +1,25 @@
-title: sinatra 源码学习
+title: sinatra 0.0.1 源码学习
 date: 2016-06-12 20:14:30
-description: 选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧
+description: 通过 sinatra 学习 ruby 编程技巧（系列）
 categories: ruby
 tags: 
 - sinatra
 - ruby
 ---
+
+## 声明
+
+本文系 **sinatra 源码系列**第 1 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。
+
+## 重要提醒
+
+**一定要先安装 1.8 版本的 ruby** ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 [rvm](https://rvm.io/) 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。
+
+列一下本人运行 sinatra 0.0.1 用到的 ruby 和关键 gem 的版本：
+
+- ruby-1.8.7-p374
+- rack 1.4.1
+- mongrel 1.1.5
 
 ## 前期准备
 
@@ -46,11 +60,13 @@ checkout 到 0.0.1 分支可以看到目录十分简单
     12 directories, 17 files
 
 
+
+
 跳到 examples/hello 目录下运行 `ruby test.rb` ，用浏览器打开 localhost:4567 便看到一个提交表单的页面。把文件里的路由都玩一遍，就能感觉到 sinatra 麻雀虽小，但五脏俱全。
 
 test.rb 采用 `$LOAD_PATH.unshift '../../lib/'` 把 lib 目录放进加载路径中。
 
-这种写法会导致如果在别的目录下执行 `ruby test.rb` 报错，可以改为：
+这种写法会导致如果在别的目录下，比如根目录，执行 `ruby examples/hello/test.rb` 报错，可以改为：
 
 `$LOAD_PATH.unshift File.expand_path('../../lib',File.dirname(__FILE__))`
 

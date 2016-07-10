@@ -39,16 +39,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
+<meta name="description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="sinatra 源码学习">
+<meta property="og:title" content="sinatra 0.0.1 源码学习">
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-07-10T06:30:20.000Z">
+<meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+<meta property="og:updated_time" content="2016-07-10T06:53:46.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="sinatra 源码学习">
-<meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
+<meta name="twitter:title" content="sinatra 0.0.1 源码学习">
+<meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +58,7 @@
   };
 </script>
 
-  <title> sinatra 源码学习 | jude's life </title>
+  <title> sinatra 0.0.1 源码学习 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -167,7 +167,7 @@
           
           
             
-              sinatra 源码学习
+              sinatra 0.0.1 源码学习
             
           
         </h1>
@@ -217,7 +217,8 @@
       
 
       
-        <span itemprop="articleBody"><h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+        <span itemprop="articleBody"><h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 1 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
 <p>列一下本人运行 sinatra 0.0.1 用到的 ruby 和关键 gem 的版本：</p>
 <ul>
 <li>ruby-1.8.7-p374</li>
@@ -523,7 +524,7 @@ end
           <div class="comments" id="comments">
             
               <div class="ds-thread" data-thread-key="2016/06/12/sinatra-learning-0-0-1/"
-                   data-title="sinatra 源码学习" data-url="http://judes.me/2016/06/12/sinatra-learning-0-0-1/">
+                   data-title="sinatra 0.0.1 源码学习" data-url="http://judes.me/2016/06/12/sinatra-learning-0-0-1/">
               </div>
             
           </div>
@@ -563,7 +564,7 @@ end
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">47</span>
+              <span class="site-state-item-count">48</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -605,7 +606,7 @@ end
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">1.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">2.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">3.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心扩展_core_ext"><span class="nav-number">4.</span> <span class="nav-text">核心扩展 core_ext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理_event-rb"><span class="nav-number">5.</span> <span class="nav-text">事件处理 event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由请求，封装响应_dispatcher-rb"><span class="nav-number">6.</span> <span class="nav-text">路由请求，封装响应 dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">7.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dsl-rb"><span class="nav-number">8.</span> <span class="nav-text">dsl.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#erb"><span class="nav-number">9.</span> <span class="nav-text">erb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后，_at_exit"><span class="nav-number">10.</span> <span class="nav-text">最后， at_exit</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">3.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">4.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心扩展_core_ext"><span class="nav-number">5.</span> <span class="nav-text">核心扩展 core_ext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理_event-rb"><span class="nav-number">6.</span> <span class="nav-text">事件处理 event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由请求，封装响应_dispatcher-rb"><span class="nav-number">7.</span> <span class="nav-text">路由请求，封装响应 dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">8.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dsl-rb"><span class="nav-number">9.</span> <span class="nav-text">dsl.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#erb"><span class="nav-number">10.</span> <span class="nav-text">erb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后，_at_exit"><span class="nav-number">11.</span> <span class="nav-text">最后， at_exit</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/06/12/sinatra-learning-0-0-1/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
-<meta property="og:updated_time" content="2016-06-22T23:54:02.000Z">
+<meta property="og:updated_time" content="2016-07-10T06:30:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 源码学习">
 <meta name="twitter:description" content="选取 0.0.1 版本的 sinatra 学习里面的 ruby 编程技巧">
@@ -217,7 +217,14 @@
       
 
       
-        <span itemprop="articleBody"><h2 id="前期准备">前期准备</h2><p>把 <a href="https://github.com/sinatra/sinatra" target="_blank" rel="external">sinatra</a>克隆下来，用 <code>git tag</code> 可以看到最开始的版本是 0.0.1 。</p>
+        <span itemprop="articleBody"><h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>列一下本人运行 sinatra 0.0.1 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="前期准备">前期准备</h2><p>把 <a href="https://github.com/sinatra/sinatra" target="_blank" rel="external">sinatra</a>克隆下来，用 <code>git tag</code> 可以看到最开始的版本是 0.0.1 。</p>
 <p>checkout 到 0.0.1 分支可以看到目录十分简单</p>
 <pre><code>├── examples
 │   └── hello
@@ -252,7 +259,7 @@
 <span class="number">12</span> directories, <span class="number">17</span> files
 </code></pre><p>跳到 examples/hello 目录下运行 <code>ruby test.rb</code> ，用浏览器打开 localhost:4567 便看到一个提交表单的页面。把文件里的路由都玩一遍，就能感觉到 sinatra 麻雀虽小，但五脏俱全。</p>
 <p>test.rb 采用 <code>$LOAD_PATH.unshift &#39;../../lib/&#39;</code> 把 lib 目录放进加载路径中。</p>
-<p>这种写法会导致如果在别的目录下执行 <code>ruby test.rb</code> 报错，可以改为：</p>
+<p>这种写法会导致如果在别的目录下，比如根目录，执行 <code>ruby examples/hello/test.rb</code> 报错，可以改为：</p>
 <p><code>$LOAD_PATH.unshift File.expand_path(&#39;../../lib&#39;,File.dirname(__FILE__))</code></p>
 <h2 id="rubygems_和_rack">rubygems 和 rack</h2><p>根据 lib/sinatra/sinatra.rb 里加载文件的顺序，逐一看看这个版本的 sinatra 做了些什么。</p>
 <p>sinatra.rb 第1到7行加载 两个 gem</p>
@@ -598,7 +605,7 @@ end
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">2.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心扩展_core_ext"><span class="nav-number">3.</span> <span class="nav-text">核心扩展 core_ext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理_event-rb"><span class="nav-number">4.</span> <span class="nav-text">事件处理 event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由请求，封装响应_dispatcher-rb"><span class="nav-number">5.</span> <span class="nav-text">路由请求，封装响应 dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">6.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dsl-rb"><span class="nav-number">7.</span> <span class="nav-text">dsl.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#erb"><span class="nav-number">8.</span> <span class="nav-text">erb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后，_at_exit"><span class="nav-number">9.</span> <span class="nav-text">最后， at_exit</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">1.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">2.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rubygems_和_rack"><span class="nav-number">3.</span> <span class="nav-text">rubygems 和 rack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#核心扩展_core_ext"><span class="nav-number">4.</span> <span class="nav-text">核心扩展 core_ext</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理_event-rb"><span class="nav-number">5.</span> <span class="nav-text">事件处理 event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由请求，封装响应_dispatcher-rb"><span class="nav-number">6.</span> <span class="nav-text">路由请求，封装响应 dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">7.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dsl-rb"><span class="nav-number">8.</span> <span class="nav-text">dsl.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#erb"><span class="nav-number">9.</span> <span class="nav-text">erb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后，_at_exit"><span class="nav-number">10.</span> <span class="nav-text">最后， at_exit</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

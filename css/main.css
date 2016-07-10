@@ -1049,7 +1049,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #7f1a4f;
+  background: #30ff86;
 }
 .sidebar-nav {
   margin: 0;
@@ -1221,10 +1221,10 @@ section.posts-expand article {
   margin: 25px auto;
   padding: 10px;
   border: 1px solid #eee;
-  transition: border 0.5s;
+  transition: box-shadow 0.5s;
 }
 section.posts-expand article:hover {
-  border: 1px solid #000;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 .posts-expand {
   padding-top: 40px;

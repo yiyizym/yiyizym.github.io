@@ -1055,7 +1055,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #66cb69;
+  background: #fff;
 }
 .sidebar-nav {
   margin: 0;
@@ -1242,7 +1242,6 @@ body {
 }
 .posts-expand .post-title {
   font-size: 26px;
-  text-align: center;
 }
 @media (max-width: 767px) {
   .posts-expand .post-title {
@@ -1276,10 +1275,9 @@ body {
   transform: scaleX(1);
 }
 .posts-expand .post-meta {
-  margin: 3px 0 60px 0;
+  margin: 3px 0 20px 0;
   color: #999;
   font-size: 12px;
-  text-align: center;
 }
 .posts-expand .post-meta .post-category-list {
   display: inline-block;
@@ -1372,7 +1370,7 @@ body {
 }
 .posts-expand .post-eof {
   display: block;
-  margin: 160px auto 120px;
+  margin: 10px auto 10px;
   width: 8%;
   height: 1px;
   background: #ccc;
@@ -1811,6 +1809,8 @@ body {
 }
 .use-motion .post {
   opacity: 0;
+  border: 1px solid #eee;
+  border-radius: 3%;
 }
 .page-archive .archive-page-counter {
   position: relative;

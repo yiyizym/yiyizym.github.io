@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-10T07:40:08.000Z">
+<meta property="og:updated_time" content="2016-07-11T13:56:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -233,6 +233,38 @@
   <span class="keyword">value</span> = noisy_call # <span class="keyword">no</span> <span class="keyword">warning</span> voiced
 <span class="keyword">end</span></span>
 </code></pre><p>sinatra 只想在调用 silence_warnings 时屏蔽警告，其他时候显示警告。有时候我们也有类似的需求：调用某个方法之前改变某个配置，调用完了再把配置改回去。这涉及到保存配置和处理异常，可以借鉴 sinatra 在此处的做法。</p>
+<h2 id="继承关系及至对象模型">继承关系及至对象模型</h2><p>sinatra 在 core_ext 目录下，先后扩展了 Class, Module, Kernel, Object, Hash 等多个类，它们之间是什么关系呢？这个问题又牵扯到另一个终极问题： ruby 的对象模型是什么？当你清楚 ruby 的对象模型后，众多类之间的关系就不在话下了。</p>
+<p>空说无益，先教大家几个探索对象模型的方法，打开 irb ，写两个简单的类：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">A</span>;</span> <span class="keyword">end</span>
+<span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="inheritance">&lt; <span class="parent">A</span></span>;</span> <span class="keyword">end</span>
+</code></pre><p>我们知道 B 继承自 A ，B 有一个方法可以显示自己的父类是谁：</p>
+<pre><code>B.superclass <span class="comment">#=&gt; A</span>
+<span class="comment"># 当 B 继承了 A ，我们就说 A 是 B 的超类（这是 ruby 的中文术语吧，一般都叫父类的）</span>
+</code></pre><p>我们从 B 实例化出一个对象 b ，b 也有方法可以打印自己是属于哪个类的实例：</p>
+<pre><code><span class="tag">b</span> = B<span class="class">.new</span>
+<span class="tag">b</span><span class="class">.class</span> #=&gt; B
+</code></pre><p>我们要知道 ruby 中，类也是实例，如果在类上面调用 class 方法会打印什么呢？</p>
+<pre><code>A.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+B.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+Hash.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+<span class="keyword">Class</span>.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+<span class="keyword">Module</span>.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+</code></pre><p>就连在 Class 上调用 class 方法也得到 Class 。这里得出一个结论，所有类都是 Class 类的实例。</p>
+<p>我们再回到继承这个话题，除了有办法看到一个类的超类，还有办法看到一个类的祖先链：</p>
+<pre><code>B.ancestors <span class="preprocessor">#=&gt; [B, A, Object, Kernel, BasicObject]</span>
+<span class="preprocessor">#=&gt; 上面的结果是在 ruby <span class="number">2.0</span><span class="number">.0</span> 版本中得到的，你的版本可能有少许不同</span>
+</code></pre><p>可以看到 B 继承自 A ，A 继承自 Object , Object 继承自 Kernel , Kernel 继承自 BasicObject 。嗯，这种说法是不对的，实际上 Object 继承自 BasicObject ， Kernel 模块是被 Object include 进来的：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Object</span> <span class="inheritance">&lt; <span class="parent">BasicObject</span></span></span>
+  <span class="keyword">include</span> <span class="constant">Kernel</span>
+<span class="keyword">end</span>
+</code></pre><p>被 include 进来的模块，都是刚好插入到类的祖先链的超类位置。</p>
+<p>你会发现，几乎所有的类的祖先链都包含 Object, Kernel, BasicObject 这三个类：</p>
+<pre><code>A.ancestors #=&gt; [A, <span class="built_in">Object</span>, Kernel, BasicObject]
+Array.ancestors #=&gt; [Array, Enumerable, <span class="built_in">Object</span>, Kernel, BasicObject]
+Fixnum.ancestors #=&gt; [Fixnum, Integer, Numeric, <span class="built_in">Comparable</span>, <span class="built_in">Object</span>, Kernel, BasicObject]
+<span class="built_in">String</span>.ancestors #=&gt; [<span class="built_in">String</span>, <span class="built_in">Comparable</span>, <span class="built_in">Object</span>, Kernel, BasicObject]
+</code></pre><p>这三个类可是继承链的发源地啊。</p>
+<p>以上是基础版的 ruby 对象模型，其实也没说多少，你会发觉我们还没有讲到 Module 。这个留下明天再说吧。</p>
 </span>
       
     </div>
@@ -365,7 +397,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

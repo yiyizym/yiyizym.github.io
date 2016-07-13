@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-12T00:35:55.000Z">
+<meta property="og:updated_time" content="2016-07-13T00:38:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -267,7 +267,64 @@ Fixnum.ancestors #=&gt; [Fixnum, Integer, Numeric, <span class="built_in">Compar
 <p>你会发觉我们还没有讲到 Module ， Module 是 Class 的超类：</p>
 <pre><code><span class="keyword">Class</span>.ancestors #=&gt; [<span class="keyword">Class</span>, Module, <span class="keyword">Object</span>, Kernel, BasicObject]
 </code></pre><p>以上是基础版的 ruby 对象模型，其实也没说多少。</p>
-<h2 id="metaid-rb">metaid.rb</h2><p>TODO.</p>
+<h2 id="metaid-rb">metaid.rb</h2><p>sinatra 在这个里做了一个相当顶层的——Object——扩展，要理解这样做的目的，首先要明白 ruby 是怎样寻找一个方法的。打开 irb ，输入：</p>
+<pre><code>class A
+  def method_1
+    puts 'I am instance <span class="keyword">method</span>'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>首先要知道：方法都是存放在 类 ，而不是类的实例中的。如果类实例调用了某个方法，而在实例的类中找不到该方法，那么会沿着祖先链一直往上面找。如果最终还是找不到，就会转而调用该类的 method_missing 方法，如果该类没定义 method_missing 方法，也会沿祖先链一直往上找，直到 BasicObject(2.3.1 版 ruby ，1.8.7 版 ruby 是在 Kernel 上定义) 的 method_missing 方法。拿上面的例子来说：</p>
+<pre><code>a = <span class="type">A</span>.<span class="keyword">new</span>
+a.method_1 #=&gt; <span class="symbol">'I</span> am instance method'
+<span class="keyword">class</span> <span class="type">A</span>
+  def method_missing(method_name, *args, &amp;block)
+    puts <span class="string">"you have called method #{method_name}"</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a.method_2 #=&gt; <span class="symbol">'you</span> have called <span class="keyword">method</span> method_2'
+
+<span class="keyword">class</span> <span class="type">B</span> &lt; <span class="type">A</span>; <span class="keyword">end</span>
+
+b = <span class="type">B</span>.<span class="keyword">new</span>
+b.method_1 #=&gt; <span class="symbol">'I</span> am instance method'
+b.method_3 #=&gt; <span class="symbol">'you</span> have called <span class="keyword">method</span> method_3'
+</code></pre><p>有时候我们还会定义这样的方法：</p>
+<pre><code>class A
+  def self.method_4
+    puts 'I am singleton <span class="keyword">method</span> method_4'
+  <span class="keyword">end</span>
+
+  class &lt;&lt; self
+    def method_5
+      puts 'I am singleton <span class="keyword">method</span> method_5'
+    <span class="keyword">end</span>  
+  <span class="keyword">end</span>
+
+  def A.method_6
+    puts 'I am singleton <span class="keyword">method</span> method_6'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>以上三种方法不同之处只在于名字不同，它们都是类的单例方法（singleton method）。刚说过：“方法都是存放在 类 ，而不是类的实例中的”，单例方法也是如此，它存在于实例的 metaclass 中（或者叫做 eigenclass ，官方称作 singleton class）。metaclass 一直待在我们的视野范围之外，官方没有提供让它们现形的方法， sinatra 要做的就是扩展一套这样的方法。</p>
+<p>metaid.rb 第 6、7 行的写法很帅气，但也很难看懂，稍为整理一下：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">metaclass</span></span>
+  <span class="comment">#1</span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span> <span class="comment">#2</span></span>
+    <span class="comment">#3</span>
+    <span class="keyword">self</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">meta_eval</span> <span class="title">&amp;</span><span class="title">blk</span></span>
+  metaclass.instance_eval &amp;blk
+<span class="keyword">end</span>
+</code></pre><p>分析 metaclass 方法，在 #1 处，如果把 self 打印出来，这个 self 会是 Object 的实例（具体得看是谁调用 metaclass 方法）；在 #2 处，运用 ruby 提供的语法 <code>class &lt;&lt; self</code> ，把 <code>class &lt;&lt; self; self; end</code> 块中的 self 设置为 Object 实例的 metaclass ；所以在 #3 处，如果把 self 打印出来，这个 self 会是 Object 实例的 metaclass ，而这个 self 会作为块的结果返回， metaclass 方法又将块的结果返回，最终得到 Object 实例的 metaclass 。</p>
+<p>附上对 metaclass 的分析参考资料：</p>
+<ul>
+<li><a href="https://www.amazon.com/Metaprogramming-Ruby-Program-Like-Facets/dp/1941222129" target="_blank" rel="external">Metaprogramming Ruby 2: Program Like the Ruby Pros (Facets of Ruby)</a></li>
+<li><a href="http://viewsourcecode.org/why/hacking/seeingMetaclassesClearly.html" target="_blank" rel="external">seeingMetaclassesClearly</a></li>
+<li><a href="http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/" target="_blank" rel="external">Metaprogramming in Ruby: It’s All About the Self</a></li>
+</ul>
 </span>
       
     </div>

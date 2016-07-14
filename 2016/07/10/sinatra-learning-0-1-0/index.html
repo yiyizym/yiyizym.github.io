@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-13T00:38:19.000Z">
+<meta property="og:updated_time" content="2016-07-14T15:23:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -325,6 +325,26 @@ b.method_3 #=&gt; <span class="symbol">'you</span> have called <span class="keyw
 <li><a href="http://viewsourcecode.org/why/hacking/seeingMetaclassesClearly.html" target="_blank" rel="external">seeingMetaclassesClearly</a></li>
 <li><a href="http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/" target="_blank" rel="external">Metaprogramming in Ruby: It’s All About the Self</a></li>
 </ul>
+<h2 id="symbol-rb">symbol.rb</h2><p>在系列第 1 篇文章说过，可以给 Symbol 定义一个 to_proc 方法，方便与 &amp; 操作符配合使用。 sinatra 定义了一个看上去不一样的 to_proc ：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
+  <span class="constant">Proc.</span>new { |*args| args.shitf.<span class="constant">__send__(</span><span class="keyword">self</span>, *args) }
+<span class="keyword">end</span>
+</code></pre><p>但做的事情跟第 1 篇文章中的一样。</p>
+<p><code>*</code> （splat operator）出现了两次，意义刚好相反，第一次出现是把调用方法时传进来的参数变为一个数组，第二次出现是把一个数组拆散成一个个的参数传到方法中。在 1.8 版本的 ruby ，只要是能响应 to_ary 方法的对象都可以这样用：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Foo</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_ary</span></span>
+    [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a, *b = <span class="constant">Foo</span>.new <span class="comment">#=&gt; a = 1, b = [2,3]</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">some_method</span><span class="params">(p1,p2,p3)</span></span>
+  p <span class="string">"<span class="subst">#{p1}</span> <span class="subst">#{p2}</span> <span class="subst">#{p3}</span>"</span>
+<span class="keyword">end</span>
+
+some_method(*<span class="constant">Foo</span>.new) <span class="comment">#=&gt; 1 2 3</span>
+</code></pre><p>上面这个例子出自<a href="https://blog.pivotal.io/labs/labs/ruby-pearls-vol-1-the-splat" target="_blank" rel="external">此处</a></p>
 </span>
       
     </div>
@@ -457,7 +477,7 @@ b.method_3 #=&gt; <span class="symbol">'you</span> have called <span class="keyw
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

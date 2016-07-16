@@ -491,6 +491,9 @@ td {
 .use-motion .motion-element {
   opacity: 0;
 }
+.hidden {
+  display: none !important;
+}
 @font-face {
   font-family: 'default';
   src: url("../fonts/icon-default/icomoon.eot?-9394c0");
@@ -1049,7 +1052,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ffe465;
+  background: #1d4b87;
 }
 .sidebar-nav {
   margin: 0;
@@ -1221,6 +1224,7 @@ section.posts-expand article {
   margin: 25px auto;
   padding: 10px;
   border: 1px solid #eee;
+  cursor: pointer;
   transition: box-shadow 0.5s;
 }
 section.posts-expand article:hover {

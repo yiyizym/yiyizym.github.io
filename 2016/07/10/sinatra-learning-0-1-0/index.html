@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-15T00:22:45.000Z">
+<meta property="og:updated_time" content="2016-07-16T03:00:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -349,7 +349,44 @@ some_method(*<span class="constant">Foo</span>.new) <span class="comment">#=&gt;
 <p><code>__send__</code> 方法跟 <code>send</code> 方法做的事情一样。因为 send 这个单词太普通、常用了，很容易被程序员覆写，所以 ruby 又另外提供一个 <code>__send__</code> ，如果不小心覆写这个方法， ruby 会提示警告：</p>
 <pre><code><span class="attribute">warning</span>: <span class="string">redefining `__send__' may cause serious problem</span>
 </code></pre><p>附上对这个方法讨论的<a href="http://stackoverflow.com/questions/4658269/ruby-send-vs-send" target="_blank" rel="external">链接</a></p>
-</span>
+<h2 id="module-rb">module.rb</h2><p>module.rb 在 Module 扩展了一个 attr_with_default 方法，这个方法类似 Class 中的 cattr_accessor ，只不过多了个默认值。</p>
+<p>这里出现元编程中常见的 <code>define_method</code> 方法，它是定义在 Module 中的私有方法，用来动态地生成方法。完整文档可以看<a href="http://ruby-doc.org/core-2.2.0/Module.html" target="_blank" rel="external">这里</a>。</p>
+<p>一般情况下 <code>define_method</code> 只能在定义类时直接调用（此时 self 指向类本身），如：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>
+  define_method(<span class="symbol">:m_a</span>) { p <span class="string">'m_a'</span> }
+<span class="keyword">end</span>
+
+<span class="constant">A</span>.new.m_a <span class="comment">#=&gt; m_a</span>
+</code></pre><p>如果要在实例方法里调用 <code>define_method</code> ，这样写会出报找不到方法错误：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    define_method(sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>} <span class="comment">#=&gt; NoMethodError: undefined method `define_method'</span>
+</code></pre><p>回顾 ruby 寻找方法的步骤：先到实例的类中找，找不到就沿着类的祖先链找，打印 B 的祖先链，里面并没有 Module ，这就是出错的原因：</p>
+<pre><code><span class="keyword">B.ancestors </span>#=&gt; [<span class="keyword">B, </span>Object, Kernel]
+</code></pre><p>而在定义类时直接调用 <code>define_method</code> 不报错，是因为此时 self 指向 A ，而 A 作为实例的话，它的类是 Class ，打印 Class 的祖先链，里面就有 Module：</p>
+<pre><code><span class="keyword">Class</span>.ancestors #=&gt; [<span class="keyword">Class</span>, Module, <span class="keyword">Object</span>, Kernel]
+</code></pre><p>在调用 <code>define_method</code> 时把 self 指向 B ，还是会报错：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    <span class="keyword">self</span>.<span class="keyword">class</span>.define_method(sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>} <span class="comment">#=&gt; NoMethodError: private method `define_method' called for B:Class</span>
+</code></pre><p>因为 <code>define_method</code> 是私有方法，不能显式调用，官方文档给出了解决办法：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    <span class="keyword">self</span>.<span class="keyword">class</span>.send(<span class="symbol">:define_method</span>, sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+b = <span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>}
+b.m_b <span class="comment">#=&gt; m_b</span>
+</code></pre></span>
       
     </div>
 
@@ -481,7 +518,7 @@ some_method(*<span class="constant">Foo</span>.new) <span class="comment">#=&gt;
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

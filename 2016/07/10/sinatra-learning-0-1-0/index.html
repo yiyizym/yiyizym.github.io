@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-16T03:00:18.000Z">
+<meta property="og:updated_time" content="2016-07-17T04:45:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -387,7 +387,17 @@ some_method(*<span class="constant">Foo</span>.new) <span class="comment">#=&gt;
 
 b = <span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>}
 b.m_b <span class="comment">#=&gt; m_b</span>
-</code></pre></span>
+</code></pre><h2 id="request-rb">request.rb</h2><p>这里重新打开了 Rack::Request ，扩展了 request_method 方法。这样做的缘由是：html 的 form 元素只支持 GET 和 POST 方法， RESTful 定义的方法至少有 GET/POST/PUT/DELETE 四种，为了让 form 也用上 PUT 和 DELETE 方法， sinatra 检测 POST 请求中的 _method 参数，如果是 PUT 或者 DELETE ，就直接替换 POST 。相关讨论<a href="http://stackoverflow.com/questions/16805956/why-dont-browsers-support-put-and-delete-requests-and-when-will-they" target="_blank" rel="external">见此</a></p>
+<h2 id="environment-rb">environment.rb</h2><p>在加载完 core_ext 和 rack_ext 目录下的文件后，会加载 sinatra 目录下的文件，一时不知从何下手分析，看到后面有行代码：</p>
+<pre><code><span class="label">Sinatra::</span>Environment.prepare
+</code></pre><p>就从 environment.rb 说起吧。</p>
+<p><strong> ARGV </strong></p>
+<p>Environment 的 prepare 方法用来解释参数。 <code>ARGV</code> 是定义在 Object 中的常量，并且是 Array 的实例，表示在命令行运行脚本文件时传入的参数列表。</p>
+<h2 id="options-rb">options.rb</h2><p>parse! 实际上没有用到传进来的参数，它用的还是 ARGV 。</p>
+<p>这个版本的 sinatra 开始区分运行脚本的环境（test/development/production），如果当前处在 test 环境， parse! 方法立即返回。</p>
+<p>接下来解释参数的任务就交给 <a href="http://ruby-doc.org/stdlib-1.8.7/libdoc/optparse/rdoc/OptionParser.html" target="_blank" rel="external">OptionParser</a> 了。</p>
+<p>这里有一句 <code>env.intern</code> 。 env 是一个 String 实例， intern 方法获取字符串在 ruby 的内部实现（internal representation）。 ruby 最终会把字符串转换为符号，所以这个方法跟 to_sym 方法做一样的事情。 参见<a href="https://www.codecademy.com/en/forum_questions/512a675cf116c52d0d00674b" target="_blank" rel="external">相关讨论</a> (PS. 讨论中提及为什么 ruby 给同一个方法取不同的名字，很有启发意义)</p>
+</span>
       
     </div>
 
@@ -519,7 +529,7 @@ b.m_b <span class="comment">#=&gt; m_b</span>
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

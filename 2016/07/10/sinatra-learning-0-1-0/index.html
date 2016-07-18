@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-17T04:45:11.000Z">
+<meta property="og:updated_time" content="2016-07-18T14:00:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -397,6 +397,24 @@ b.m_b <span class="comment">#=&gt; m_b</span>
 <p>这个版本的 sinatra 开始区分运行脚本的环境（test/development/production），如果当前处在 test 环境， parse! 方法立即返回。</p>
 <p>接下来解释参数的任务就交给 <a href="http://ruby-doc.org/stdlib-1.8.7/libdoc/optparse/rdoc/OptionParser.html" target="_blank" rel="external">OptionParser</a> 了。</p>
 <p>这里有一句 <code>env.intern</code> 。 env 是一个 String 实例， intern 方法获取字符串在 ruby 的内部实现（internal representation）。 ruby 最终会把字符串转换为符号，所以这个方法跟 to_sym 方法做一样的事情。 参见<a href="https://www.codecademy.com/en/forum_questions/512a675cf116c52d0d00674b" target="_blank" rel="external">相关讨论</a> (PS. 讨论中提及为什么 ruby 给同一个方法取不同的名字，很有启发意义)</p>
+<h2 id="logger-rb">logger.rb</h2><p>与前一个版本相比，这个文件多了一行代码：</p>
+<pre><code>define_method n <span class="keyword">do</span> |message|
+  <span class="variable">@stream</span>.puts message
+  <span class="variable">@stream</span>.flush <span class="comment">#多了这一行</span>
+<span class="keyword">end</span>
+</code></pre><p>@stream 是一个 IO 实例， flush 方法将 IO 实例中缓存的数据写到操作系统中去（<a href="http://ruby-doc.org/core-2.2.3/IO.html#method-i-flush" target="_blank" rel="external">官方文档</a>中解释操作系统仍然有可能缓存起来，所以并没有保证写到设备/文件中）。举个例子，在早期的 ruby 中，下面这段代码会等待 10 秒，然后在同一行打印 5 个点：</p>
+<pre><code><span class="number">5</span>.<span class="keyword">times</span> <span class="keyword">do</span>
+  <span class="keyword">print</span> <span class="string">'.'</span>
+  <span class="keyword">sleep</span> <span class="number">2</span>
+end
+</code></pre><p>要想每 2 秒打印一个点，可以在 <code>print &#39;.&#39;</code> 下面加上一句 <code>$stdout.flush</code>。</p>
+<p>缓存输出，直到打印换行符或者缓存满了，这个特性来源于 c 言语标准库，初衷应该是减少系统调用。后来不知道是 c 言语标准库还是 ruby 作了改动，修复了上面那个问题。</p>
+<p>推荐几篇有关 Ruby IO 的文章：</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/io-in-ruby" target="_blank" rel="external">IO in Ruby</a></li>
+<li><a href="https://www.ruby-forum.com/topic/208856" target="_blank" rel="external">Use of STDOUT.flush after puts</a></li>
+<li><a href="https://matt.berther.io/2009/02/11/puts-vs-print-in-ruby/" target="_blank" rel="external">puts vs print in ruby</a></li>
+</ul>
 </span>
       
     </div>
@@ -529,7 +547,7 @@ b.m_b <span class="comment">#=&gt; m_b</span>
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

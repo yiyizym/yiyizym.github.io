@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-18T14:00:31.000Z">
+<meta property="og:updated_time" content="2016-07-19T14:59:17.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -415,6 +415,42 @@ end
 <li><a href="https://www.ruby-forum.com/topic/208856" target="_blank" rel="external">Use of STDOUT.flush after puts</a></li>
 <li><a href="https://matt.berther.io/2009/02/11/puts-vs-print-in-ruby/" target="_blank" rel="external">puts vs print in ruby</a></li>
 </ul>
+<h2 id="irb-rb">irb.rb</h2><p>在运行 sinatra 时加上 -c 参数，就会用 console 模式启动 sinatra 。</p>
+<p>这个文件只定义了 start! 方法。在 ruby 中定义末尾带感叹号(!)的方法，意味着这个方法比不带感叹号的危险，要小心使用。</p>
+<p>start! 方法首先让 Object 加载 TestMethods 模块， <code>include</code> 方法是 Object 的私有方法，所以要使用 Object.send 加载（还记得这个技巧在 module.rb 那一节说过吗）。</p>
+<p>接着给 Object 类扩展了 reload! 和 show! 两个方法（建议现在就运行 sinatra 的 console 模式，动手玩玩这两个方法）。</p>
+<p>show! 调用了 IO.popen 方法。如果你想开一个子进程来调用外部命令，而且还想把外部命令的标准输入和标准输出跟 ruby 连接起来，那这个方法能满足你的需求。 popen 里的 p 指代 pipeline （管道）。管道是进程间通信的一种方式。</p>
+<p>举个使用 popen 的例子：</p>
+<pre><code>IO.popen(<span class="string">'tail -3'</span>, <span class="string">'w+'</span>) <span class="keyword">do</span> |<span class="keyword">pipe</span>|
+
+  <span class="comment"># ruby 会开一个子进程来运行这个 block </span>
+  <span class="comment"># 管道中属于 ruby 的这一头会作为参数传进来</span>
+
+  <span class="number">1</span>.upto(<span class="number">100</span>) <span class="keyword">do</span> { |i| <span class="keyword">pipe</span>.puts <span class="string">"line #{i}"</span> } 
+  <span class="keyword">pipe</span>.close_write <span class="comment">#在读取流之前一定要先把写入关闭，否则读取会阻塞</span>
+  puts <span class="keyword">pipe</span>.<span class="keyword">read</span>
+end
+
+<span class="comment"># line 98</span>
+<span class="comment"># line 99</span>
+<span class="comment"># line 100</span>
+</code></pre><p>show! 方法的意图是打开文本编辑器，并写入 TestMethods 模块中的几个方法 status / headers / body 的返回结果。</p>
+<p>举个例子，假设你能在命令行使用 <code>subl</code> 命令打开 sublime text 。你可以先跳转到 examples/hello 目录下，输入：</p>
+<pre><code>EDITOR=subl ruby hello<span class="class">.rb</span> -c
+</code></pre><p>这时你会进入 irb ，然后输入：</p>
+<pre><code><span class="function_or_atom">show</span><span class="exclamation_mark">!</span>
+</code></pre><p>这时你的 sublime text 就会被打开，里面已经写入了一些内容：</p>
+<pre><code><span class="xml"><span class="comment">&lt;!--
+        # Status: 404
+        # Headers: </span></span><span class="expression">{<span class="string">"Content-Type"</span>=&gt;<span class="string">"text/html"</span>, <span class="string">"Content-Length"</span>=&gt;<span class="string">"0"</span>}</span><span class="xml"><span class="comment">
+--&gt;</span></span>
+</code></pre><p>推荐一本用 ruby 来描述的关于进程的入门书 <a href="http://www.ituring.com.cn/minibook/347" target="_blank" rel="external">理解Unix进程</a>，里面有提及进程间通信的方式。</p>
+<p>还有几个关于 popen 的文档/讨论</p>
+<ul>
+<li><a href="http://www.rubydoc.info/stdlib/core/IO.popen" target="_blank" rel="external">IO.popen</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/ruby-cookbook/0596523696/ch20s08.html" target="_blank" rel="external">Driving an External Process with popen</a></li>
+</ul>
+<p>PS. 今晚连不上 ruby-doc.org ，只能用 ri 查命令了，心好累。</p>
 </span>
       
     </div>
@@ -547,7 +583,7 @@ end
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

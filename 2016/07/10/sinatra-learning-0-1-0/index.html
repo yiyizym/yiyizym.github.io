@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-19T14:59:17.000Z">
+<meta property="og:updated_time" content="2016-07-20T00:37:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -450,7 +450,9 @@ end
 <li><a href="http://www.rubydoc.info/stdlib/core/IO.popen" target="_blank" rel="external">IO.popen</a></li>
 <li><a href="https://www.safaribooksonline.com/library/view/ruby-cookbook/0596523696/ch20s08.html" target="_blank" rel="external">Driving an External Process with popen</a></li>
 </ul>
-<p>PS. 今晚连不上 ruby-doc.org ，只能用 ri 查命令了，心好累。</p>
+<p>接下来 sinatra 先清空 ARGV 。如果当前目录（启动 sinatra 时所在的目录，而不是当前文件所在的目录， 运行 <code>Dir.pwd</code> 可以看到）下有 ‘.irbrc’ 文件，就把它保存到环境变量中， irb 会在启动时加载这个文件。</p>
+<p>当用户退出 irb 时，立即运行 <code>exit!</code> ，这样就退出了 sinatra 。</p>
+<p><code>exit!</code> 和 <code>exit</code> 的区别是前者会跳过退出时的处理程序(比如 at_exit )，前者默认的退出状态是 false ，而后者默认的退出状态是 true ( ruby 不同版本有不同的退出返回值， 1.8.7 版本 <code>exit</code> 默认返回 0 ， <code>exit!</code> 默认返回 -1 。 unix 会把返回值 0 当成 true ，其它返回值当成 false )。</p>
 </span>
       
     </div>

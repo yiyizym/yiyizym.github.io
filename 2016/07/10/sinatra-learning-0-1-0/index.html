@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-20T00:37:32.000Z">
+<meta property="og:updated_time" content="2016-07-20T14:47:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -453,6 +453,16 @@ end
 <p>接下来 sinatra 先清空 ARGV 。如果当前目录（启动 sinatra 时所在的目录，而不是当前文件所在的目录， 运行 <code>Dir.pwd</code> 可以看到）下有 ‘.irbrc’ 文件，就把它保存到环境变量中， irb 会在启动时加载这个文件。</p>
 <p>当用户退出 irb 时，立即运行 <code>exit!</code> ，这样就退出了 sinatra 。</p>
 <p><code>exit!</code> 和 <code>exit</code> 的区别是前者会跳过退出时的处理程序(比如 at_exit )，前者默认的退出状态是 false ，而后者默认的退出状态是 true ( ruby 不同版本有不同的退出返回值， 1.8.7 版本 <code>exit</code> 默认返回 0 ， <code>exit!</code> 默认返回 -1 。 unix 会把返回值 0 当成 true ，其它返回值当成 false )。</p>
+<h2 id="server-rb">server.rb</h2><p>Server#start 方法首先调用 Server#tail 方法打印 log file 里面的内容。 tail 方法另开一个线程打开 log file ，然后不断地检查（ 1 秒 1 次）它有没有被改动，如果有则打印自上一次文件流的位置到最新文件流的末尾之间的内容。这段代码可以再精简一点：</p>
+<pre><code>File.open(log_file, 'r') <span class="operator"><span class="keyword">do</span> |<span class="keyword">f</span>|
+  <span class="keyword">loop</span> <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="keyword">f</span>.mtime &gt; last_checked
+      last_checked = <span class="keyword">f</span>.mtime
+      puts <span class="keyword">f</span>.<span class="keyword">read</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span></span>
+</code></pre><p>IO#read 方法会把 cursor 的位置定位到流的末尾，所以不需要手动调用 IO#seek 重新定位 cursor 的位置，这一点可以在调用 IO#read 之后再 打印 IO#pos 的结果证明。</p>
 </span>
       
     </div>
@@ -585,7 +595,7 @@ end
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

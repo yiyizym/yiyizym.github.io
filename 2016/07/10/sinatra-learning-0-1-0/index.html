@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-20T14:47:39.000Z">
+<meta property="og:updated_time" content="2016-07-21T13:34:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -463,6 +463,12 @@ end
   <span class="keyword">end</span>
 <span class="keyword">end</span></span>
 </code></pre><p>IO#read 方法会把 cursor 的位置定位到流的末尾，所以不需要手动调用 IO#seek 重新定位 cursor 的位置，这一点可以在调用 IO#read 之后再 打印 IO#pos 的结果证明。</p>
+<p>Server#start 最后调用 Thread#kill 方法杀掉这个线程。这一步很有可能是多余的，因为如果当前线程（ main thread ）结束了，所有其他线程都将会被杀死。</p>
+<p>sinatra 用到多进程和多线程，两者的区别以及使用时机可参考<a href="http://jayant7k.blogspot.com/2010/01/for.html" target="_blank" rel="external">这篇文章</a>和<a href="http://stackoverflow.com/questions/18575235/what-do-multi-processes-vs-multi-threaded-servers-most-benefit-from" target="_blank" rel="external">这篇文章</a></p>
+<p>stackoverflow 的一些讨论：</p>
+<ul>
+<li><a href="http://stackoverflow.com/questions/3481866/thread-join-blocks-the-main-thread" target="_blank" rel="external">Thread.join blocks the main thread</a></li>
+</ul>
 </span>
       
     </div>

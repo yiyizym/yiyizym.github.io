@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-21T13:34:04.000Z">
+<meta property="og:updated_time" content="2016-07-22T00:06:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -469,6 +469,22 @@ end
 <ul>
 <li><a href="http://stackoverflow.com/questions/3481866/thread-join-blocks-the-main-thread" target="_blank" rel="external">Thread.join blocks the main thread</a></li>
 </ul>
+<h2 id="dispatcher-rb">dispatcher.rb</h2><p>在开发环境(development)中，sinatra 响应每一个请求前都会重新加载依赖文件以及在命令行中被 ruby 直接执行的脚本文件:</p>
+<pre><code>Loader.reload! <span class="keyword">if</span> Options<span class="class">.environment</span> == :development
+</code></pre><p>这样在开发环境中改动文件不需要重启就生效。 <code>Loader.reload!</code> 方法会重新加载被执行的脚本文件，看上去会产生循环加载的问题，举个例子，跳转到 examples/hello/ 目录下，在命令行中输入：</p>
+<pre><code>ruby hello.rb -c
+<span class="preprocessor"># =&gt; 通过 require <span class="string">'sinatra'</span> ， 加载 /lib/sinatra 目录下的相关文件，也把这些文件加载到 loaded_files 中</span>
+</code></pre><p>此时在命令行中输入：</p>
+<pre><code>reload!
+<span class="preprocessor"># =&gt; 重新加载 loaded_files 中的文件，然后加载 hello.rb 文件</span>
+</code></pre><p>hello.rb 文件中有 <code>require &#39;sinatra&#39;</code> ，这会不会导致 ruby 重新加载 sinatra 呢？</p>
+<p>不会。</p>
+<p><code>Kernel#require</code> 方法会在 <code>$LOAD_PATH</code> 中查找要加载的文件，它也会帮你加上 .rb 或者 .so 文件后缀。比如此处的 <code>require &#39;sinatra&#39;</code> ，它会在 lib/ 目录下找到 sinatra.rb 文件。</p>
+<p>已经被 <code>Kernel#require</code> 加载过的文件会保存在 <code>$&quot;</code> 变量中，<code>Kernel#require</code> 不会再次加载已经加载过的文件。</p>
+<p><code>Kernel#load</code> 方法要求在使用时写上文件路径以及文件后缀，如果文件路径不是绝对路径，会在 <code>$LOAD_PATH</code> 中查找文件。</p>
+<p><code>Kernel#load</code> 会再次加载已经加载过的文件。</p>
+<p>想关讨论可参考<a href="http://stackoverflow.com/questions/3170638/how-does-load-differ-from-require-in-ruby" target="_blank" rel="external">How does load differ from require in Ruby?</a></p>
+<p>ruby 预先定义了不少变量、常量，<a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/variable.html#dquote" target="_blank" rel="external">这是列表</a></p>
 </span>
       
     </div>
@@ -601,7 +617,7 @@ end
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">15.</span> <span class="nav-text">dispatcher.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

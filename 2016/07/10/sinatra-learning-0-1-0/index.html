@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-22T00:06:02.000Z">
+<meta property="og:updated_time" content="2016-07-23T03:40:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -485,6 +485,25 @@ end
 <p><code>Kernel#load</code> 会再次加载已经加载过的文件。</p>
 <p>想关讨论可参考<a href="http://stackoverflow.com/questions/3170638/how-does-load-differ-from-require-in-ruby" target="_blank" rel="external">How does load differ from require in Ruby?</a></p>
 <p>ruby 预先定义了不少变量、常量，<a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/variable.html#dquote" target="_blank" rel="external">这是列表</a></p>
+<h2 id="sessions-rb">sessions.rb</h2><p>Rack::Session::Cookie 实现了基于 cookie 的 session 管理功能，只要浏览器发过来的 cookie 中有 key 为 session_id 的键值对，Rack 就能借此保存、读取数据。</p>
+<p>Rack::Session::Cookie 最初并没有实现基于 session_id 读写数据，所有数据都保存在 env[‘rack.session’] 下面，源码<a href="https://github.com/rack/rack/commit/417ac6a3d6b394dc2a2d30d9e1235148170dec50" target="_blank" rel="external">见此</a>。 0.1.0 的 sinatra 应该就是使用这个最初的实现，通过控制台可以看到 cookie 中直接使用 rack.session 保存加密后的数据。</p>
+<p>cookie 功能默认开启，如果要关闭它，可以在加载之后调用 dsl.rb 中定义的 <code>sessions</code> 方法：</p>
+<pre><code><span class="title">sessions</span> :<span class="built_in">off</span>
+</code></pre><p>sinatra 还提供 <code>session</code> 方法返回已保存的 session ，方便使用 cookie 功能，下面是一个例子：</p>
+<pre><code><span class="comment">#!usr/bin/env ruby</span>
+<span class="comment">#file examples/you_say.rb</span>
+<span class="keyword">require</span> <span class="string">'sinatra'</span>
+
+get <span class="string">'/'</span> <span class="keyword">do</span>
+  session[<span class="symbol">:you_say</span>] = params[<span class="symbol">:you_say</span>] || <span class="string">'no'</span>
+  <span class="comment"># 注意 session 和 params 都要用 symbol 作 key</span>
+  <span class="string">'hello'</span>
+<span class="keyword">end</span>
+
+get <span class="string">'/session'</span> <span class="keyword">do</span>
+  session[<span class="symbol">:you_say</span>]
+<span class="keyword">end</span>
+</code></pre><p>先访问 <code>localhost:4567/?you_say=hi</code> ，再访问 <code>localhost:4567/session</code> ，能看到页面显示 ‘hi’ 。</p>
 </span>
       
     </div>
@@ -617,7 +636,7 @@ end
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">15.</span> <span class="nav-text">dispatcher.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">15.</span> <span class="nav-text">dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sessions-rb"><span class="nav-number">16.</span> <span class="nav-text">sessions.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-24T10:12:35.000Z">
+<meta property="og:updated_time" content="2016-07-24T10:17:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -577,7 +577,7 @@ reg = a.to_regex_route('/:path/:to/:file.html')
 <p><code>Route#recognize</code> 会在 <code>Event#attend</code> 中调用，所以每次都得先清空 <code>@params</code> 。</p>
 <p>如果成功匹配用户请求的路径，接下来就把 symbol 和具体的路径组合起来：</p>
 <pre><code>@keys.<span class="function"><span class="title">zip</span><span class="params">(param_values)</span></span>.to_hash
-</code></pre><p><code>Array.zip</code> 方法用法举例：</p>
+</code></pre><p><code>Array#zip</code> 方法用法举例：</p>
 <pre><code>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].zip([<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]) <span class="preprocessor">#=&gt; [[<span class="number">1</span>,<span class="number">4</span>],[<span class="number">2</span>,<span class="number">5</span>],[<span class="number">3</span>,<span class="number">6</span>]]</span>
 </code></pre><p><code>Array#to_hash</code> 方法是 sinatra 扩展的。</p>
 <p>一些方法参考： </p>

@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-23T03:40:46.000Z">
+<meta property="og:updated_time" content="2016-07-24T06:14:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -504,6 +504,50 @@ get <span class="string">'/session'</span> <span class="keyword">do</span>
   session[<span class="symbol">:you_say</span>]
 <span class="keyword">end</span>
 </code></pre><p>先访问 <code>localhost:4567/?you_say=hi</code> ，再访问 <code>localhost:4567/session</code> ，能看到页面显示 ‘hi’ 。</p>
+<h2 id="event-rb">event.rb</h2><p><strong> EventManager </strong> 负责注册事件、匹配事件。</p>
+<p>它调用 <code>determine_event</code> 匹配路由、方法，如果匹配不到，就调用 <code>present_error</code> 去找用户自定义的 404 路由处理器，如果用户没有预先定义，就调用 <code>not_found</code> ，使用默认的 404 处理器。</p>
+<p><a href="http://ruby-doc.org/core-1.8.7/Object.html#method-i-method" target="_blank" rel="external">Object#method</a> 根据名字返回方法（或者抛出 NameError 异常），被返回方法的 receiver 就是调用 Object#method 的对象，而且被返回方法就像闭包一样，能访问此对象的实例变量以及方法。举例如下：</p>
+<pre><code>class <span class="constant">A</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>(v)
+    <span class="variable">@k</span> = v
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">get_put_k_method</span></span>
+    method(<span class="symbol">:put_k</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">put_k</span></span>
+    puts <span class="string">"k value is <span class="subst">#{<span class="variable">@k</span>}</span>"</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">get_another</span></span>
+    method(<span class="symbol">:set_put_k</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">set_put_k</span></span>(new_k=<span class="keyword">nil</span>)
+    <span class="variable">@k</span> = new_k
+    put_k
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a = <span class="constant">A.</span>new(<span class="string">'hi'</span>)
+m = a.get_put_k_method
+m.call <span class="comment">#=&gt; k value is hi</span>
+
+m2 = a.get_another
+m2.call(<span class="string">'hello'</span>) <span class="comment">#=&gt; k value is hello</span>
+</code></pre><p>Event 类把路由匹配交由 Route 处理，还增加了事件处理回调 after_filters 。</p>
+<p>StaticEvent 负责处理静态资源，用法跟其他路由一样：</p>
+<pre><code>get <span class="string">'/'</span>, <span class="string">'home'</span>
+<span class="keyword">static</span> <span class="string">'/p'</span>, <span class="string">'public'</span>
+<span class="preprocessor">#请求 <span class="string">'/p/css/bootstrap.css'</span> 会被映射到 <span class="string">'public/css/bootstrap.css'</span></span>
+</code></pre><p>StaticEvent 的 <code>attend</code> 方法中有这样一行： <code>context.body self</code> ，之后还定义了 <code>each</code> 方法。这样做全因为 Rack 要求 http body 对象响应 each 方法。</p>
+<p><code>each</code> 方法用二进制读取模式打开静态文件。 <a href="http://ruby-doc.org/core-2.2.0/IO.html#method-i-read" target="_blank" rel="external">IO#read</a> 接受字节长度作为参数，从流中读取指定长度的字节，如果一开始就读到 EOF ，会返回 nil 。</p>
+<p>8192 字节（8KB）是常用的 chunk size 。</p>
+<p>在设置响应头的 Content-Type 时，用到了<code>#[]</code>方法：</p>
+<pre><code>File.extname(<span class="constant">@filename</span>)[<span class="number">1.</span>.-<span class="number">1</span>]
+<span class="preprocessor"># <span class="string">'.rb'</span>[1..-1] =&gt; <span class="string">'rb'</span></span>
+</code></pre><p>此处传入的 Range 参数（(1..-1)），表示的范围是：从左边数起第 2 个元素到右边数起第 1 个元素。</p>
 </span>
       
     </div>
@@ -636,7 +680,7 @@ get <span class="string">'/session'</span> <span class="keyword">do</span>
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">15.</span> <span class="nav-text">dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sessions-rb"><span class="nav-number">16.</span> <span class="nav-text">sessions.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">15.</span> <span class="nav-text">dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sessions-rb"><span class="nav-number">16.</span> <span class="nav-text">sessions.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-rb"><span class="nav-number">17.</span> <span class="nav-text">event.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

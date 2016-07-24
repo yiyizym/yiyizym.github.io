@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-07-24T06:14:55.000Z">
+<meta property="og:updated_time" content="2016-07-24T10:12:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -548,6 +548,45 @@ m2.call(<span class="string">'hello'</span>) <span class="comment">#=&gt; k valu
 <pre><code>File.extname(<span class="constant">@filename</span>)[<span class="number">1.</span>.-<span class="number">1</span>]
 <span class="preprocessor"># <span class="string">'.rb'</span>[1..-1] =&gt; <span class="string">'rb'</span></span>
 </code></pre><p>此处传入的 Range 参数（(1..-1)），表示的范围是：从左边数起第 2 个元素到右边数起第 1 个元素。</p>
+<h2 id="renderer-rb">renderer.rb</h2><p>EventContext 加载了 Sinatra::Renderer 模块，此模块为其他渲染方法提供基础方法，比如 Sinatra::Erb 和 Sinatra::Haml ，你还可以定制自己的渲染方法。注释里写了一个定制的例子，如果还有不清楚的地方，可以查看对应的测试用例： renderer_test.rb 。 </p>
+<p><code>render</code> 方法会根据参数 renderer ，动态调用真正实现渲染的方法 result_method 。</p>
+<p><code>render</code> 方法把传进来的 block 当作 layout 的来源之一。如果请求有对应的 layout ，在第二次调用 result_method 方法时把 layout 当成是 template 参数传进去。</p>
+<h2 id="route-rb">route.rb</h2><p>在实例化每个 Event 时，会一并实例化一个 Route 。而每一次调用 <code>Event#attend</code> ，会先把 <code>@route.params</code> 合并到 <code>request.params</code> 中。这就把用户具体的请求路径与路由的 symbol 对应起来。如：</p>
+<pre><code>get '/:controller/:<span class="keyword">method</span>' <span class="keyword">do</span>
+  <span class="string">"you #{params[:controller]} #{params[:method]}"</span>
+<span class="keyword">end</span>
+<span class="comment"># 当用户请求 '/say/hi' 时</span>
+<span class="comment"># 会返回 "you say hi"</span>
+</code></pre><p><code>Route#extract_keys</code> 把路由中的 symbol 提取出来，如：</p>
+<pre><code>temp_arr = <span class="string">"/:some/:words"</span>.scan(/:\w+/)
+<span class="preprocessor">#=&gt; temp_arr = [<span class="string">":some"</span>,<span class="string">":words"</span>]</span>
+temp_arr.map { |raw| <span class="built_in">eval</span>(raw) } <span class="preprocessor">#=&gt; [:some, :words]</span>
+</code></pre><p><code>Route#genereate_route</code> 生成用于匹配用户请求的路由。路由又分两种，带格式(format)和不带格式的，默认格式是 html 。</p>
+<p><code>Route#to_regex_route</code> 把路由转换成正则表达式，在点(.)前面加上反斜杠，把 <code>symbol</code> 替换成 <code>&#39;([^\/.,;?]+)&#39;</code>。在匹配成功后可以用 <code>captures</code> 方法找到用户请求的路径。如：</p>
+<pre><code>class A
+  def to_regex_route(<span class="keyword">template</span>)
+    /^<span class="comment">#{template.gsub(/\./,'\.').gsub(/:\w+/,'([^\/.,;?]+)')}$/</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+a = A.new
+reg = a.to_regex_route('/:path/:to/:file.html')
+<span class="comment"># reg =&gt; (?-mix:^\/([^\/.+,;?])\/([^\/.+,;?])\/([^\/.+,;?])\.html$)</span>
+'/a/b/c.html'.match(reg).captures
+<span class="comment"># =&gt; ['a','b','c']</span>
+</code></pre><p><code>/([^\/.,;?]+)/</code> 匹配不是斜杠(/)，点(.)，逗号(,)，分号(;)，问号(?)的其他字符。</p>
+<p><code>Route#recognize</code> 会在 <code>Event#attend</code> 中调用，所以每次都得先清空 <code>@params</code> 。</p>
+<p>如果成功匹配用户请求的路径，接下来就把 symbol 和具体的路径组合起来：</p>
+<pre><code>@keys.<span class="function"><span class="title">zip</span><span class="params">(param_values)</span></span>.to_hash
+</code></pre><p><code>Array.zip</code> 方法用法举例：</p>
+<pre><code>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].zip([<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]) <span class="preprocessor">#=&gt; [[<span class="number">1</span>,<span class="number">4</span>],[<span class="number">2</span>,<span class="number">5</span>],[<span class="number">3</span>,<span class="number">6</span>]]</span>
+</code></pre><p><code>Array#to_hash</code> 方法是 sinatra 扩展的。</p>
+<p>一些方法参考： </p>
+<ul>
+<li><a href="http://ruby-doc.org/core-1.8.7/Object.html" target="_blank" rel="external">Object#freeze</a></li>
+<li><a href="http://ruby-doc.org/core-1.8.7/Array.html#method-i-compact" target="_blank" rel="external">Array#compact</a></li>
+<li><a href="http://ruby-doc.org/core-1.8.7/Object.html" target="_blank" rel="external">Object#dup</a></li>
+<li><a href="http://stackoverflow.com/questions/10183370/whats-the-difference-between-rubys-dup-and-clone-methods" target="_blank" rel="external">What’s the difference between Ruby’s dup and clone methods?</a></li>
+</ul>
 </span>
       
     </div>
@@ -680,7 +719,7 @@ m2.call(<span class="string">'hello'</span>) <span class="comment">#=&gt; k valu
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">15.</span> <span class="nav-text">dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sessions-rb"><span class="nav-number">16.</span> <span class="nav-text">sessions.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-rb"><span class="nav-number">17.</span> <span class="nav-text">event.rb</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">3.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">4.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">5.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">6.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">7.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">8.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">9.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">10.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">11.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">12.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">13.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">14.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">15.</span> <span class="nav-text">dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sessions-rb"><span class="nav-number">16.</span> <span class="nav-text">sessions.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-rb"><span class="nav-number">17.</span> <span class="nav-text">event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#renderer-rb"><span class="nav-number">18.</span> <span class="nav-text">renderer.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#route-rb"><span class="nav-number">19.</span> <span class="nav-text">route.rb</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

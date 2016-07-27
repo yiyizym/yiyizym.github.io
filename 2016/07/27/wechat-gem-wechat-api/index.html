@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="浏览器," />
+  <meta name="keywords" content="ruby,wechat," />
 
 
 
@@ -37,16 +37,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="浏览器会阻止不是由用户直接触发的弹窗">
+<meta name="description" content="本想着减少重复代码，把 wechat_api 从各个具体的 controller 挪动到 ApplicationController ，结果出错啦。为了找出原因，我又踏上了阅读源码的不归路。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="浏览器阻止弹窗">
-<meta property="og:url" content="http://judes.me/2016/04/24/block-new-window/index.html">
+<meta property="og:title" content="一个因挪动 wechat_api 引发的问题，以及问题探究">
+<meta property="og:url" content="http://judes.me/2016/07/27/wechat-gem-wechat-api/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="浏览器会阻止不是由用户直接触发的弹窗">
-<meta property="og:updated_time" content="2016-06-12T12:23:10.000Z">
+<meta property="og:description" content="本想着减少重复代码，把 wechat_api 从各个具体的 controller 挪动到 ApplicationController ，结果出错啦。为了找出原因，我又踏上了阅读源码的不归路。">
+<meta property="og:updated_time" content="2016-07-27T00:27:46.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="浏览器阻止弹窗">
-<meta name="twitter:description" content="浏览器会阻止不是由用户直接触发的弹窗">
+<meta name="twitter:title" content="一个因挪动 wechat_api 引发的问题，以及问题探究">
+<meta name="twitter:description" content="本想着减少重复代码，把 wechat_api 从各个具体的 controller 挪动到 ApplicationController ，结果出错啦。为了找出原因，我又踏上了阅读源码的不归路。">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -56,7 +56,7 @@
   };
 </script>
 
-  <title> 浏览器阻止弹窗 | jude's life </title>
+  <title> 一个因挪动 wechat_api 引发的问题，以及问题探究 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -158,7 +158,7 @@
     
   
   
-  <article class="post post-type-normal " data-path="/2016/04/24/block-new-window/" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal " data-path="/2016/07/27/wechat-gem-wechat-api/" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
       
@@ -167,7 +167,7 @@
           
           
             
-              浏览器阻止弹窗
+              一个因挪动 wechat_api 引发的问题，以及问题探究
             
           
         </h1>
@@ -176,8 +176,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2016-04-24T11:04:50+08:00" content="Apr 24 2016">
-            Apr 24 2016
+          <time itemprop="dateCreated" datetime="2016-07-27T07:36:56+08:00" content="Jul 27 2016">
+            Jul 27 2016
           </time>
         </span>
 
@@ -186,8 +186,8 @@
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/frontend/" itemprop="url" rel="index">
-                  <span itemprop="name">frontend</span>
+                <a href="/categories/ruby/" itemprop="url" rel="index">
+                  <span itemprop="name">ruby</span>
                 </a>
               </span>
 
@@ -202,8 +202,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2016/04/24/block-new-window/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/24/block-new-window/" itemprop="commentsCount"></span>
+              <a href="/2016/07/27/wechat-gem-wechat-api/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/27/wechat-gem-wechat-api/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -217,27 +217,11 @@
       
 
       
-        <span itemprop="articleBody"><p>产品的同事反映有时候浏览器会显示阻止了弹窗，问这是不是个bug 。</p>
-<p>有一个笑话，测试人员直接说某个功能出现了bug，开发人员往往怀疑问题出在测试人员身上；而如果测试人员委婉一点说某个功能出现了意外的效果，是不是自己搞错了什么地方，开发人员直觉上会认为出现了bug。</p>
-<p>当时我也是这样想的，我记得所有的弹窗用的代码都是 window.open(‘some_url’) ，如果有问题那就不会偶尔或者某个功能出现问题，应该所有地方出现问题才对，更何况我也有自测过，一次阻止弹窗的情况都没遇到过。</p>
-<p>问她用的是什么浏览器，说是360。难道是360的问题？我们内部只需兼容 Chrome ，如果是这样就万事大吉了。不幸的是，她后来补充在 Chrome 上也遇到过。</p>
-<p>问她 Chrome 的版本，比我的高，先升级到跟她一样的。</p>
-<p>定位到出问题的功能，再跟别的没出过问题的功能两相比较，发现出问题的功能，打开新窗口的代码写在异步回调里。隐约觉得这就是问题所在。</p>
-<p>先证实一下，把异步回调去掉，试了试，没问题；再把异步加回去，果然就显示阻止弹窗了。</p>
-<p>到 stackoverflow 上找找答案（面向 stackoverflow 编程 逃……）原来浏览器会阻止所有不是由用户直接触发的弹窗。当回调代码执行时，由用户直接触发的那些代码早就返回了。</p>
-<p>所以解决办法有两个：</p>
-<ul>
-<li><p>把异步变为同步，比如 ajax 请求加上 async: false ，只是这样会阻塞页面上其他代码执行</p>
-</li>
-<li><p>先打开一个空白标签，在执行异步代码时通过设置空白标签的 window.location 属性把 url 改回去</p>
-</li>
-</ul>
-<p>实测第二种方法没有让用户觉察到什么不妥，于是最终就这样定下。改改测试用例就上了。</p>
-<p><strong> 参考 </strong></p>
-<ul>
-<li><a href="http://stackoverflow.com/questions/2587677/avoid-browser-popup-blockers" target="_blank" rel="external">一点原理解释</a></li>
-<li><a href="http://theandystratton.com/2012/how-to-bypass-google-chromes-javascript-popup-blocker" target="_blank" rel="external">样例代码</a></li>
-</ul>
+        <span itemprop="articleBody"><p>公司的微信企业号用了 <a href="https://github.com/Eric-Guo/wechat" target="_blank" rel="external">wechat</a> 这个 gem 包。如果要在各个 controller 中调用 gem 包提供的 api ，就先得在 controller 定义各个方法前调用 <code>wechat_api</code> 。如果要使用微信的 JS-SDK ，也得在 controller 里面调用 <code>wechat_api</code> 。</p>
+<p>近日新增一个 controller ，没有用到 wechat gem 提供的 api ，所以就没调用 <code>wechat_api</code> ，也因为功能简单没有写测试（事后看来不写测试要打屁屁）；在另一次不相干的改动中，我们把微信 JS-SDK 的配置代码移动到 layout 文件中，跑过了所有测试、手动测试了关键功能没发现问题就上线了；几天后才发觉新增的那个 controller 功能有严重问题，正如前文所述，原因是在 layout 中使用微信的 JS-SDK ，而在 controller 中没有调用 <code>wechat_api</code> 。</p>
+<p>反思问题的原因，最重要的一个是：新增 controller 没写测试用例，其二是： 新增 controller 没调用 <code>wechat_api</code> 。</p>
+<p>测试用例是一定要补上的。</p>
+<p>问题是要加上 <code>wechat_api</code> 的调用。每增加一个 controller 都要写一遍，这很人肉啊！于是我尝试把这个调用挪动到所有 controller 的共同超类： ApplicationController 中，结果就引发了这篇文章的主题。</p>
 </span>
       
     </div>
@@ -246,7 +230,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/浏览器/" rel="tag">#浏览器</a>
+            <a href="/tags/ruby/" rel="tag">#ruby</a>
+          
+            <a href="/tags/wechat/" rel="tag">#wechat</a>
           
         </div>
       
@@ -255,13 +241,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/05/08/jokes-is-limited/" rel="prev">有限的笑话</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/04/23/joke-theory/" rel="next">最高的笑话</a>
+              <a href="/2016/07/10/sinatra-learning-0-1-0/" rel="next">sinatra 0.1.0 源码学习</a>
             
           </div>
         </div>
@@ -287,8 +271,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2016/04/24/block-new-window/"
-                   data-title="浏览器阻止弹窗" data-url="http://judes.me/2016/04/24/block-new-window/">
+              <div class="ds-thread" data-thread-key="2016/07/27/wechat-gem-wechat-api/"
+                   data-title="一个因挪动 wechat_api 引发的问题，以及问题探究" data-url="http://judes.me/2016/07/27/wechat-gem-wechat-api/">
               </div>
             
           </div>

@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="es2015,node,promisify,request," />
+  <meta name="keywords" content="algorithm,merge sort,ruby," />
 
 
 
@@ -37,16 +37,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="把 nodejs 中的 request 模块 转换为 es2015 的 Promise">
+<meta name="description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
 <meta property="og:type" content="article">
-<meta property="og:title" content="from nodejs request to promise">
-<meta property="og:url" content="http://judes.me/2016/04/16/request-to-promise/index.html">
+<meta property="og:title" content="写写归并排序">
+<meta property="og:url" content="http://judes.me/2016/07/29/try-merge-sort/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="把 nodejs 中的 request 模块 转换为 es2015 的 Promise">
-<meta property="og:updated_time" content="2016-06-12T12:25:38.000Z">
+<meta property="og:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
+<meta property="og:updated_time" content="2016-07-29T14:03:17.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="from nodejs request to promise">
-<meta name="twitter:description" content="把 nodejs 中的 request 模块 转换为 es2015 的 Promise">
+<meta name="twitter:title" content="写写归并排序">
+<meta name="twitter:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -56,7 +56,7 @@
   };
 </script>
 
-  <title> from nodejs request to promise | jude's life </title>
+  <title> 写写归并排序 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -158,7 +158,7 @@
     
   
   
-  <article class="post post-type-normal " data-path="/2016/04/16/request-to-promise/" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal " data-path="/2016/07/29/try-merge-sort/" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
       
@@ -167,7 +167,7 @@
           
           
             
-              from nodejs request to promise
+              写写归并排序
             
           
         </h1>
@@ -176,8 +176,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2016-04-16T19:50:24+08:00" content="Apr 16 2016">
-            Apr 16 2016
+          <time itemprop="dateCreated" datetime="2016-07-29T07:38:54+08:00" content="Jul 29 2016">
+            Jul 29 2016
           </time>
         </span>
 
@@ -186,8 +186,8 @@
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/frontend/" itemprop="url" rel="index">
-                  <span itemprop="name">frontend</span>
+                <a href="/categories/tech/" itemprop="url" rel="index">
+                  <span itemprop="name">tech</span>
                 </a>
               </span>
 
@@ -202,8 +202,8 @@
           
             <span class="post-comments-count">
               &nbsp; | &nbsp;
-              <a href="/2016/04/16/request-to-promise/#comments" itemprop="discussionUrl">
-                <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/16/request-to-promise/" itemprop="commentsCount"></span>
+              <a href="/2016/07/29/try-merge-sort/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/29/try-merge-sort/" itemprop="commentsCount"></span>
               </a>
             </span>
           
@@ -217,12 +217,201 @@
       
 
       
-        <span itemprop="articleBody"><h2 id="声明">声明</h2><p>文中的 promisify 函数原型出自 月影 的<a href="http://blog.h5jun.com/post/decorator-functional.html" target="_blank" rel="external">这篇博客</a>。</p>
-<h2 id="了解Promise">了解<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="external">Promise</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// &#21021;&#22987;&#21270;&#26102;&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910;&#21478;&#22806;&#20004;&#20010;&#26041;&#27861;&#10;new Promise(function(resolve, reject)&#123;&#10;//&#22312;&#27492;&#26041;&#27861;&#20013;&#20570;&#19968;&#20123;&#24322;&#27493;&#25805;&#20316;&#10;//&#22312;&#24322;&#27493;&#25805;&#20316;&#30340;&#22238;&#35843;&#26041;&#27861;&#20013;&#26681;&#25454;&#24773;&#20917;&#65292;&#20998;&#21035;&#35843;&#29992; resolve &#25110;&#32773; reject&#10;&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="了解request">了解<a href="https://github.com/request/request" target="_blank" rel="external">request</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//request &#26368;&#31616;&#21333;&#30340;&#29992;&#27861;&#10;request(url, function(err, response, body)&#123;&#10;  if(err)&#123;&#10;    //&#22788;&#29702;&#38169;&#35823;&#10;  &#125; else if(response.statusCode == 200)&#123;&#10;    //&#22788;&#29702;&#25104;&#21151;&#21709;&#24212;&#10;  &#125;&#10;&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="把_request_转换为_promise_的用例">把 request 转换为 promise 的用例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function()&#123;&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;)</span><br></pre></td></tr></table></figure>
-<h2 id="promisify_实现">promisify 实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="完整示例">完整示例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;var getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function(content)&#123;&#10;  console.log(content);&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;).catch(function(reason)&#123;&#10;  //&#24322;&#24120;&#22238;&#35843;&#10;  console.log(reason);&#10;&#125;);</span><br></pre></td></tr></table></figure></span>
+        <span itemprop="articleBody"><h2 id="原理">原理</h2><ul>
+<li>将待排序元素分为前后两部分，分别调用归并排序使它们有序</li>
+<li>从头开始逐个比较前后两部分的元素，根据比较结果先后放进新数组，最终返回这个新数组</li>
+</ul>
+<h2 id="联想">联想</h2><ul>
+<li>归并排序用到了递归，递归终止的条件是待排序元素数量小于 2</li>
+<li>归并排序比较之后不会交换元素，而是生成新的数组</li>
+</ul>
+<h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = MS.sort(array)
+</code></pre><h2 id="大体结构">大体结构</h2><pre><code><span class="class"><span class="keyword">module</span> <span class="title">MS</span></span>
+  extend <span class="keyword">self</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">sort</span><span class="params">(arr)</span></span>
+    merge_sort(arr.dup)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">merge_sort</span><span class="params">(arr)</span></span>
+    <span class="keyword">return</span> arr <span class="keyword">if</span> arr.length &lt; <span class="number">2</span>
+    <span class="comment">#将 arr 一分为二，分别调用归并排序</span>
+    <span class="comment">#逐一比较这两部分的元素，根据比较结果生成新数组</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="将待排序元素一分为二，分别调用归并排序">将待排序元素一分为二，分别调用归并排序</h2><pre><code><span class="function">def <span class="title">merge_sort</span><span class="params">(arr)</span>
+  #...
+
+  m_index </span>= arr.length / <span class="number">2</span>
+  <span class="preprocessor">#这两部分的命名真是头痛，原谅我英语不好</span>
+  low_part = merge_sort(arr[<span class="number">0.</span>..m_index]) <span class="preprocessor"># low_part 不包含位于 m_index 的元素</span>
+  high_part = merge_sort(arr[m_index..-<span class="number">1</span>])
+
+  <span class="preprocessor">#...</span>
+end
+</code></pre><h2 id="逐一比较这两部分的元素，根据比较结果生成新数组">逐一比较这两部分的元素，根据比较结果生成新数组</h2><pre><code><span class="function"><span class="keyword">def</span> <span class="title">merge_sort</span><span class="params">(arr)</span></span>
+  <span class="comment">#...</span>
+
+  l_index = <span class="number">0</span>
+  h_index = <span class="number">0</span>
+  new_arr = []
+
+  <span class="keyword">while</span> low_part[l_index] &amp;&amp; high_part[h_index]
+    <span class="keyword">if</span> low_part[l_index] &lt; high_part[h_index]
+      new_arr &lt;&lt; low_part[l_index]
+      l_index += <span class="number">1</span>
+    <span class="keyword">else</span>
+      new_arr &lt;&lt; high_part[h_index]
+      h_index += <span class="number">1</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">#如果第一部分还有未比较的元素，就放进新数组</span>
+  <span class="keyword">while</span> low_part[l_index]
+    new_arr &lt;&lt; low_part[l_index]
+    l_index += <span class="number">1</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">#同上</span>
+  <span class="keyword">while</span> high_part[h_index]
+    new_arr &lt;&lt; high_part[h_index]
+    h_index += <span class="number">1</span>
+  <span class="keyword">end</span>
+
+  new_arr
+
+<span class="keyword">end</span>
+</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!usr/bin/env ruby</span>
+
+module MS
+ extend self
+ def<span class="function"> sort(</span>arr<span class="function">)</span>
+  <span class="function"> merge_sort(</span>arr.dup<span class="function">)</span> 
+   end
+ def<span class="function"> merge_sort(</span>arr<span class="function">)</span>
+  <span class="instruction"> return </span>arr<span class="instruction"> if </span>arr.length &lt; 2
+   m_index = arr.length / 2
+   low_part =<span class="function"> merge_sort(</span>arr<span class="keyword">[</span>0...m_index]<span class="function">)</span>
+   high_part =<span class="function"> merge_sort(</span>arr<span class="keyword">[</span>m_index..-1]<span class="function">)</span>
+
+   l_index = 0
+   h_index = 0
+   new_arr = <span class="keyword">[</span>]
+
+   while low_part<span class="keyword">[</span>l_index] &amp;&amp; high_part<span class="keyword">[</span>h_index]
+    <span class="instruction"> if </span>low_part<span class="keyword">[</span>l_index] &lt; high_part<span class="keyword">[</span>h_index]
+       new_arr &lt;&lt; low_part<span class="keyword">[</span>l_index]
+       l_index += 1
+     else
+       new_arr &lt;&lt; high_part<span class="keyword">[</span>h_index]
+       h_index += 1
+     end
+   end
+
+   <span class="comment">#如果第一部分还有未比较的元素，就放进新数组</span>
+   while low_part<span class="keyword">[</span>l_index]
+     new_arr &lt;&lt; low_part<span class="keyword">[</span>l_index]
+     l_index += 1
+   end
+
+   <span class="comment">#同上</span>
+   while high_part<span class="keyword">[</span>h_index]
+     new_arr &lt;&lt; high_part<span class="keyword">[</span>h_index]
+     h_index += 1
+   end
+
+   new_arr
+
+  end
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+  require 'test/unit'
+  class TestMS &lt; Test::Unit::TestCase
+    def test_0
+      input = <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
+    end
+    def test_1_0
+      input = <span class="keyword">[</span>0]
+      expected = <span class="keyword">[</span>0]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_1_1
+      input = <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_0
+      input = <span class="keyword">[</span>0,1]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_1
+      input = <span class="keyword">[</span>1,0]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_2
+      input = <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_0
+      input = <span class="keyword">[</span>0,1,2]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_1
+      input = <span class="keyword">[</span>0,2,1]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_2
+      input = <span class="keyword">[</span>2,1,0]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_3
+      input = <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_4
+      input = <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_0
+      input = <span class="keyword">[</span>0,1,2,3]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_1
+      input = <span class="keyword">[</span>3,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_2
+      input = <span class="keyword">[</span>3,1,2,1]
+      expected = <span class="keyword">[</span>1,1,2,3]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_10_0
+      input = <span class="keyword">[</span>9,8,7,6,5,4,3,2,1,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'ten items<span class="instruction"> array </span>not equal'    
+    end
+    def test_10_1
+      input = <span class="keyword">[</span>9,5,7,3,8,4,6,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'ten items<span class="instruction"> array </span>not equal'    
+    end
+  end
+end
+</code></pre><p>PS. 想要跑某个特定的测试，可以这样写： <code>ruby test.rb -n test_method_name</code></p>
+</span>
       
     </div>
 
@@ -230,13 +419,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/es2015/" rel="tag">#es2015</a>
+            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
           
-            <a href="/tags/node/" rel="tag">#node</a>
+            <a href="/tags/merge-sort/" rel="tag">#merge sort</a>
           
-            <a href="/tags/promisify/" rel="tag">#promisify</a>
-          
-            <a href="/tags/request/" rel="tag">#request</a>
+            <a href="/tags/ruby/" rel="tag">#ruby</a>
           
         </div>
       
@@ -245,13 +432,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/04/23/joke-theory/" rel="prev">最高的笑话</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/04/10/kmp/" rel="next">算法第四版 kmp 算法</a>
+              <a href="/2016/07/27/wechat-gem-wechat-api/" rel="next">一个因挪动 wechat_api 引发的问题，以及问题探究</a>
             
           </div>
         </div>
@@ -277,8 +462,8 @@
         
           <div class="comments" id="comments">
             
-              <div class="ds-thread" data-thread-key="2016/04/16/request-to-promise/"
-                   data-title="from nodejs request to promise" data-url="http://judes.me/2016/04/16/request-to-promise/">
+              <div class="ds-thread" data-thread-key="2016/07/29/try-merge-sort/"
+                   data-title="写写归并排序" data-url="http://judes.me/2016/07/29/try-merge-sort/">
               </div>
             
           </div>
@@ -360,7 +545,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#了解Promise"><span class="nav-number">2.</span> <span class="nav-text">了解Promise</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#了解request"><span class="nav-number">3.</span> <span class="nav-text">了解request</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#把_request_转换为_promise_的用例"><span class="nav-number">4.</span> <span class="nav-text">把 request 转换为 promise 的用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#promisify_实现"><span class="nav-number">5.</span> <span class="nav-text">promisify 实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整示例"><span class="nav-number">6.</span> <span class="nav-text">完整示例</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联想"><span class="nav-number">2.</span> <span class="nav-text">联想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法"><span class="nav-number">3.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大体结构"><span class="nav-number">4.</span> <span class="nav-text">大体结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将待排序元素一分为二，分别调用归并排序"><span class="nav-number">5.</span> <span class="nav-text">将待排序元素一分为二，分别调用归并排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逐一比较这两部分的元素，根据比较结果生成新数组"><span class="nav-number">6.</span> <span class="nav-text">逐一比较这两部分的元素，根据比较结果生成新数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整的代码，加测试用例如下："><span class="nav-number">7.</span> <span class="nav-text">完整的代码，加测试用例如下：</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

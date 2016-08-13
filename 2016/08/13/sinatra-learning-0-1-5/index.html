@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="algorithm,merge sort,ruby," />
+  <meta name="keywords" content="ruby,sinatra," />
 
 
 
@@ -37,16 +37,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
+<meta name="description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="写写归并排序">
-<meta property="og:url" content="http://judes.me/2016/07/29/try-merge-sort/index.html">
+<meta property="og:title" content="sinatra 0.1.5 源码学习">
+<meta property="og:url" content="http://judes.me/2016/08/13/sinatra-learning-0-1-5/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
-<meta property="og:updated_time" content="2016-07-29T14:03:17.000Z">
+<meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+<meta property="og:updated_time" content="2016-08-13T05:39:38.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="写写归并排序">
-<meta name="twitter:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
+<meta name="twitter:title" content="sinatra 0.1.5 源码学习">
+<meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -56,7 +56,7 @@
   };
 </script>
 
-  <title> 写写归并排序 | jude's life </title>
+  <title> sinatra 0.1.5 源码学习 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -158,7 +158,7 @@
     
   
   
-  <article class="post post-type-normal " data-path="/2016/07/29/try-merge-sort/" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal " data-path="/2016/08/13/sinatra-learning-0-1-5/" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
       
@@ -167,7 +167,7 @@
           
           
             
-              写写归并排序
+              sinatra 0.1.5 源码学习
             
           
         </h1>
@@ -176,8 +176,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2016-07-29T07:38:54+08:00" content="Jul 29 2016">
-            Jul 29 2016
+          <time itemprop="dateCreated" datetime="2016-08-13T09:57:34+08:00" content="Aug 13 2016">
+            Aug 13 2016
           </time>
         </span>
 
@@ -186,8 +186,8 @@
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/tech/" itemprop="url" rel="index">
-                  <span itemprop="name">tech</span>
+                <a href="/categories/ruby/" itemprop="url" rel="index">
+                  <span itemprop="name">ruby</span>
                 </a>
               </span>
 
@@ -210,200 +210,32 @@
       
 
       
-        <span itemprop="articleBody"><h2 id="原理">原理</h2><ul>
-<li>将待排序元素分为前后两部分，分别调用归并排序使它们有序</li>
-<li>从头开始逐个比较前后两部分的元素，根据比较结果先后放进新数组，最终返回这个新数组</li>
+        <span itemprop="articleBody"><h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 3 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>列一下本人运行 sinatra 0.1.5 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
 </ul>
-<h2 id="联想">联想</h2><ul>
-<li>归并排序用到了递归，递归终止的条件是待排序元素数量小于 2</li>
-<li>归并排序比较之后不会交换元素，而是生成新的数组</li>
+<h2 id="change_log">change log</h2><ul>
+<li>增加 Mutex</li>
+<li>支持处理请求前的事件回调</li>
 </ul>
-<h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
-sorted_array = MS.sort(array)
-</code></pre><h2 id="大体结构">大体结构</h2><pre><code><span class="class"><span class="keyword">module</span> <span class="title">MS</span></span>
-  extend <span class="keyword">self</span>
-  <span class="function"><span class="keyword">def</span> <span class="title">sort</span><span class="params">(arr)</span></span>
-    merge_sort(arr.dup)
-  <span class="keyword">end</span>
-
-  <span class="function"><span class="keyword">def</span> <span class="title">merge_sort</span><span class="params">(arr)</span></span>
-    <span class="keyword">return</span> arr <span class="keyword">if</span> arr.length &lt; <span class="number">2</span>
-    <span class="comment">#将 arr 一分为二，分别调用归并排序</span>
-    <span class="comment">#逐一比较这两部分的元素，根据比较结果生成新数组</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-</code></pre><h2 id="将待排序元素一分为二，分别调用归并排序">将待排序元素一分为二，分别调用归并排序</h2><pre><code><span class="function">def <span class="title">merge_sort</span><span class="params">(arr)</span>
-  #...
-
-  m_index </span>= arr.length / <span class="number">2</span>
-  <span class="preprocessor">#这两部分的命名真是头痛，原谅我英语不好</span>
-  low_part = merge_sort(arr[<span class="number">0.</span>..m_index]) <span class="preprocessor"># low_part 不包含位于 m_index 的元素</span>
-  high_part = merge_sort(arr[m_index..-<span class="number">1</span>])
-
-  <span class="preprocessor">#...</span>
-end
-</code></pre><h2 id="逐一比较这两部分的元素，根据比较结果生成新数组">逐一比较这两部分的元素，根据比较结果生成新数组</h2><pre><code><span class="function"><span class="keyword">def</span> <span class="title">merge_sort</span><span class="params">(arr)</span></span>
-  <span class="comment">#...</span>
-
-  l_index = <span class="number">0</span>
-  h_index = <span class="number">0</span>
-  new_arr = []
-
-  <span class="keyword">while</span> low_part[l_index] &amp;&amp; high_part[h_index]
-    <span class="keyword">if</span> low_part[l_index] &lt; high_part[h_index]
-      new_arr &lt;&lt; low_part[l_index]
-      l_index += <span class="number">1</span>
-    <span class="keyword">else</span>
-      new_arr &lt;&lt; high_part[h_index]
-      h_index += <span class="number">1</span>
-    <span class="keyword">end</span>
-  <span class="keyword">end</span>
-
-  <span class="comment">#如果第一部分还有未比较的元素，就放进新数组</span>
-  <span class="keyword">while</span> low_part[l_index]
-    new_arr &lt;&lt; low_part[l_index]
-    l_index += <span class="number">1</span>
-  <span class="keyword">end</span>
-
-  <span class="comment">#同上</span>
-  <span class="keyword">while</span> high_part[h_index]
-    new_arr &lt;&lt; high_part[h_index]
-    h_index += <span class="number">1</span>
-  <span class="keyword">end</span>
-
-  new_arr
-
-<span class="keyword">end</span>
-</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!usr/bin/env ruby</span>
-
-module MS
- extend self
- def<span class="function"> sort(</span>arr<span class="function">)</span>
-  <span class="function"> merge_sort(</span>arr.dup<span class="function">)</span> 
-   end
- def<span class="function"> merge_sort(</span>arr<span class="function">)</span>
-  <span class="instruction"> return </span>arr<span class="instruction"> if </span>arr.length &lt; 2
-   m_index = arr.length / 2
-   low_part =<span class="function"> merge_sort(</span>arr<span class="keyword">[</span>0...m_index]<span class="function">)</span>
-   high_part =<span class="function"> merge_sort(</span>arr<span class="keyword">[</span>m_index..-1]<span class="function">)</span>
-
-   l_index = 0
-   h_index = 0
-   new_arr = <span class="keyword">[</span>]
-
-   while low_part<span class="keyword">[</span>l_index] &amp;&amp; high_part<span class="keyword">[</span>h_index]
-    <span class="instruction"> if </span>low_part<span class="keyword">[</span>l_index] &lt; high_part<span class="keyword">[</span>h_index]
-       new_arr &lt;&lt; low_part<span class="keyword">[</span>l_index]
-       l_index += 1
-     else
-       new_arr &lt;&lt; high_part<span class="keyword">[</span>h_index]
-       h_index += 1
-     end
-   end
-
-   <span class="comment">#如果第一部分还有未比较的元素，就放进新数组</span>
-   while low_part<span class="keyword">[</span>l_index]
-     new_arr &lt;&lt; low_part<span class="keyword">[</span>l_index]
-     l_index += 1
-   end
-
-   <span class="comment">#同上</span>
-   while high_part<span class="keyword">[</span>h_index]
-     new_arr &lt;&lt; high_part<span class="keyword">[</span>h_index]
-     h_index += 1
-   end
-
-   new_arr
-
-  end
-end
-<span class="instruction">
-if </span>__FILE__ == $0
-  require 'test/unit'
-  class TestMS &lt; Test::Unit::TestCase
-    def test_0
-      input = <span class="keyword">[</span>]
-      expected = <span class="keyword">[</span>]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
-    end
-    def test_1_0
-      input = <span class="keyword">[</span>0]
-      expected = <span class="keyword">[</span>0]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
-    end
-    def test_1_1
-      input = <span class="keyword">[</span>1]
-      expected = <span class="keyword">[</span>1]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
-    end
-    def test_2_0
-      input = <span class="keyword">[</span>0,1]
-      expected = <span class="keyword">[</span>0,1]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
-    end
-    def test_2_1
-      input = <span class="keyword">[</span>1,0]
-      expected = <span class="keyword">[</span>0,1]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
-    end
-    def test_2_2
-      input = <span class="keyword">[</span>1,1]
-      expected = <span class="keyword">[</span>1,1]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
-    end
-    def test_3_0
-      input = <span class="keyword">[</span>0,1,2]
-      expected = <span class="keyword">[</span>0,1,2]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
-    end
-    def test_3_1
-      input = <span class="keyword">[</span>0,2,1]
-      expected = <span class="keyword">[</span>0,1,2]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
-    end
-    def test_3_2
-      input = <span class="keyword">[</span>2,1,0]
-      expected = <span class="keyword">[</span>0,1,2]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
-    end
-    def test_3_3
-      input = <span class="keyword">[</span>2,1,1]
-      expected = <span class="keyword">[</span>1,1,2]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
-    end
-    def test_3_4
-      input = <span class="keyword">[</span>1,1,1]
-      expected = <span class="keyword">[</span>1,1,1]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
-    end
-    def test_4_0
-      input = <span class="keyword">[</span>0,1,2,3]
-      expected = <span class="keyword">[</span>0,1,2,3]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
-    end
-    def test_4_1
-      input = <span class="keyword">[</span>3,1,2,0]
-      expected = <span class="keyword">[</span>0,1,2,3]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
-    end
-    def test_4_2
-      input = <span class="keyword">[</span>3,1,2,1]
-      expected = <span class="keyword">[</span>1,1,2,3]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
-    end
-    def test_10_0
-      input = <span class="keyword">[</span>9,8,7,6,5,4,3,2,1,0]
-      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'ten items<span class="instruction"> array </span>not equal'    
-    end
-    def test_10_1
-      input = <span class="keyword">[</span>9,5,7,3,8,4,6,1,2,0]
-      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
-      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'ten items<span class="instruction"> array </span>not equal'    
-    end
-  end
-end
-</code></pre><p>PS. 想要跑某个特定的测试，可以这样写： <code>ruby test.rb -n test_method_name</code></p>
+<p>这一版改动主要集中在 event.erb 文件里。</p>
+<h2 id="event-erb">event.erb</h2><h3 id="Mutex_互斥锁">Mutex 互斥锁</h3><p>当多个线程读写公共资源时，要使用互斥锁保证每个线程在读或写时都是原子操作。</p>
+<p>使用互斥锁首先要区分哪些是公共资源，哪些代码会访问这些公共资源，然后用互斥锁隔离这些代码。</p>
+<p>sinatra 自身的代码不会既读又写公共资源（要么只读公共资源，要么每个线程使用自己的变量），因此可以在多线程中运行以同时处理多个请求，但是处理请求时执行的用户自定义的代码，有可能访问公共资源，这部分代码（处理请求的代码、处理请求之前和之后的事件回调）可能需要使用互斥锁。 sinatra 默认不使用互斥锁。</p>
+<p>sinatra 是否运行在多线程环境中取决于 Rack handler （这一版本的 sinatra 使用的是  Mongrel ）是否支持多线程，并且以多线程的方式运行。详见<a href="http://stackoverflow.com/questions/6278817/is-sinatra-multi-threaded" target="_blank" rel="external">此处</a></p>
+<p>接下来看 sinatra 互斥锁的实现。</p>
+<p>用 <code>Event</code> 类变量 <code>@@mutex</code> 保存 <a href="http://ruby-doc.org/core-1.9.3/Mutex.html" target="_blank" rel="external">Mutex</a> 实例，之后调用 <code>@@mutex.synchronize do ... end</code> 实现同一时间只有一个线程的代码——这些代码要么是 <code>Event</code> 的类方法，要么是 <code>Event</code> 的实例方法——能访问公共资源。一旦用上了互斥锁，同一时间 sinatra 只能响应一个请求。</p>
+<p><code>run_safely</code> 会先检查用户是否在运行程序时设置 <code>use_mutex</code> 为 <code>true</code> 。是则在 <code>synchronize</code> 中执行代码，否则直接执行代码。<code>use_mutex</code> 默认为 <code>false</code> 。</p>
+<p>另外几篇参考文章：</p>
+<ul>
+<li><a href="http://www.tutorialspoint.com/ruby/ruby_multithreading.htm" target="_blank" rel="external">Ruby - Multithreading</a></li>
+<li><a href="http://lucaguidi.com/2014/03/27/thread-safety-with-ruby.html" target="_blank" rel="external">Thread Safety With Ruby</a></li>
+<li><a href="http://www.tutorialspoint.com/ruby/ruby_multithreading.htm" target="_blank" rel="external">Signals, Traps and Rescues</a></li>
+</ul>
 </span>
       
     </div>
@@ -412,11 +244,9 @@ end
       
         <div class="post-tags">
           
-            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
-          
-            <a href="/tags/merge-sort/" rel="tag">#merge sort</a>
-          
             <a href="/tags/ruby/" rel="tag">#ruby</a>
+          
+            <a href="/tags/sinatra/" rel="tag">#sinatra</a>
           
         </div>
       
@@ -425,13 +255,11 @@ end
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/07/31/heap-sort/" rel="prev">写写堆排序</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/07/27/wechat-gem-wechat-api/" rel="next">一个因挪动 wechat_api 引发的问题，以及问题探究</a>
+              <a href="/2016/08/02/try-actioncable/" rel="next">试用 Action Cable</a>
             
           </div>
         </div>
@@ -536,7 +364,7 @@ end
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联想"><span class="nav-number">2.</span> <span class="nav-text">联想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法"><span class="nav-number">3.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大体结构"><span class="nav-number">4.</span> <span class="nav-text">大体结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将待排序元素一分为二，分别调用归并排序"><span class="nav-number">5.</span> <span class="nav-text">将待排序元素一分为二，分别调用归并排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逐一比较这两部分的元素，根据比较结果生成新数组"><span class="nav-number">6.</span> <span class="nav-text">逐一比较这两部分的元素，根据比较结果生成新数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整的代码，加测试用例如下："><span class="nav-number">7.</span> <span class="nav-text">完整的代码，加测试用例如下：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-erb"><span class="nav-number">4.</span> <span class="nav-text">event.erb</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mutex_互斥锁"><span class="nav-number">4.1.</span> <span class="nav-text">Mutex 互斥锁</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

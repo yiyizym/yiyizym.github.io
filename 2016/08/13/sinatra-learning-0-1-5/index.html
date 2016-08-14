@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/13/sinatra-learning-0-1-5/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-13T05:39:38.000Z">
+<meta property="og:updated_time" content="2016-08-14T03:32:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.1.5 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -236,7 +236,32 @@
 <li><a href="http://lucaguidi.com/2014/03/27/thread-safety-with-ruby.html" target="_blank" rel="external">Thread Safety With Ruby</a></li>
 <li><a href="http://www.tutorialspoint.com/ruby/ruby_multithreading.htm" target="_blank" rel="external">Signals, Traps and Rescues</a></li>
 </ul>
-</span>
+<h3 id="before_filters">before_filters</h3><p>用户可以使用 before_filters 来做授权、验证、参数过滤等等事情。</p>
+<p>sinatra 把 before_filters 跟 after_filters 合二为一，分别写成 <code>setup_filter</code> 和 <code>call_filters</code> 。</p>
+<p>得益于前面使用 cattr_accessor 设置了相应的 setter/getter ，  <code>setup_filter</code> 可以通过 <code>send(filter_set_name)</code> 来动态获取 filters 数组。</p>
+<p>只要 before_filters 中没有抛出 <code>:halt</code> 异常的方法，请求就会按照正常的流程执行下去。如果抛出了 <code>:halt</code> 异常，处理请求的方法会被跳过，但 after_filters 仍然会被执行。</p>
+<p>抛出 <code>:halt</code> 异常时可以带上参数，如果是 String 或 Symbol 类型的，就会被当作 helper 方法调用，如果是 Fixnum 类型则会被当成状态码。</p>
+<p>这里用到 <a href="http://ruby-doc.org/docs/keywords/1.9/Object.html#method-i-case" target="_blank" rel="external">Object#case</a> 方法， <code>case</code> 判断一个值是否满足某个条件，用的是这个条件的 <code>===</code> 方法，传入这个值作为参数，举个例子：</p>
+<pre><code>x = <span class="number">10</span>
+
+<span class="keyword">case</span> x
+<span class="keyword">when</span> <span class="number">10</span>
+  p <span class="attribute">'x</span> <span class="keyword">is</span> <span class="number">10</span>'
+<span class="keyword">end</span>
+
+# 上面的代码与下面的代码是一样的
+
+<span class="keyword">if</span> <span class="number">10</span> === x
+  p <span class="attribute">'x</span> <span class="keyword">is</span> <span class="number">10</span>'
+<span class="keyword">end</span>
+
+# 因为 Fixnum 实现了自己的 === 方法，所以下面的用法也没有问题
+
+<span class="keyword">case</span> x
+<span class="keyword">when</span> Fixnum
+  p <span class="attribute">'x</span> <span class="keyword">is</span> <span class="number">10</span>'
+<span class="keyword">end</span>
+</code></pre></span>
       
     </div>
 
@@ -364,7 +389,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-erb"><span class="nav-number">4.</span> <span class="nav-text">event.erb</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mutex_互斥锁"><span class="nav-number">4.1.</span> <span class="nav-text">Mutex 互斥锁</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-erb"><span class="nav-number">4.</span> <span class="nav-text">event.erb</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Mutex_互斥锁"><span class="nav-number">4.1.</span> <span class="nav-text">Mutex 互斥锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#before_filters"><span class="nav-number">4.2.</span> <span class="nav-text">before_filters</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

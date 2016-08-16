@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="react,webpack," />
+  <meta name="keywords" content="ruby,sinatra," />
 
 
 
@@ -37,16 +37,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~">
+<meta name="description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="react_webpack_starter_kit">
-<meta property="og:url" content="http://judes.me/2015/12/12/react-webpack-starter-kit/index.html">
+<meta property="og:title" content="sinatra 0.2.0 源码学习">
+<meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~">
-<meta property="og:updated_time" content="2016-06-12T12:25:14.000Z">
+<meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+<meta property="og:updated_time" content="2016-08-16T13:56:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="react_webpack_starter_kit">
-<meta name="twitter:description" content="这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~">
+<meta name="twitter:title" content="sinatra 0.2.0 源码学习">
+<meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -56,7 +56,7 @@
   };
 </script>
 
-  <title> react_webpack_starter_kit | jude's life </title>
+  <title> sinatra 0.2.0 源码学习 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -148,7 +148,7 @@
     
   
   
-  <article class="post post-type-normal " data-path="/2015/12/12/react-webpack-starter-kit/" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal " data-path="/2016/08/16/sinatra-learning-0-2-0/" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
       
@@ -157,7 +157,7 @@
           
           
             
-              react_webpack_starter_kit
+              sinatra 0.2.0 源码学习
             
           
         </h1>
@@ -166,8 +166,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2015-12-12T15:40:40+08:00" content="Dec 12 2015">
-            Dec 12 2015
+          <time itemprop="dateCreated" datetime="2016-08-16T21:21:48+08:00" content="Aug 16 2016">
+            Aug 16 2016
           </time>
         </span>
 
@@ -176,8 +176,8 @@
             &nbsp; | &nbsp; 分类于
             
               <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                <a href="/categories/frontend/" itemprop="url" rel="index">
-                  <span itemprop="name">frontend</span>
+                <a href="/categories/ruby/" itemprop="url" rel="index">
+                  <span itemprop="name">ruby</span>
                 </a>
               </span>
 
@@ -200,26 +200,20 @@
       
 
       
-        <span itemprop="articleBody"><h2 id="Talk_is_cheap,_show_you_the_code_here">Talk is cheap, show you the code <a href="https://github.com/yiyizym/react_starter_kit" target="_blank" rel="external">here</a></h2><h2 id="一些说明">一些说明</h2><ul>
-<li><p><strong> react 以及 react-bootstrap 都没有发布稳定版，将来 API 可能会大变，用于学习时以最新版为宜 </strong></p>
-</li>
-<li><p>npm 用起来有时会有点慢，建议使用<a href="http://npm.taobao.org/" target="_blank" rel="external">淘宝镜像</a></p>
-</li>
-<li><p>项目的文件组织风格及 webpack config <del>抄袭</del>借鉴 <a href="https://github.com/callemall/material-ui" target="_blank" rel="external">material-ui</a></p>
-</li>
-<li><p>对所有的CSS样式文件默认开启了 <a href="https://github.com/css-modules/css-modules" target="_blank" rel="external">CSS Modules</a></p>
-</li>
-<li><p>出于方便引入全局 bootstrap 样式，且方便覆盖样式的考虑，对所有SCSS样式文件默认不开启 CSS Modules ，我强烈建议所有人除非必要，在写 scss 样式文件时，一律将代码包在 :local 里面</p>
-</li>
-<li><p>因为不想在服务器端处理路由，没有开启 history 的 <a href="https://github.com/rackt/react-router/blob/master/docs/guides/basics/Histories.md" target="_blank" rel="external">createBrowserHistory</a> ，采用了 HashHistory</p>
-</li>
+        <span itemprop="articleBody"><h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>使用命令 <code>git log -1 --format=%ai 0.2.0</code> ，查看 0.2.0 版本 sinatra 的“出厂日期”，得到 <code>2008-04-11 16:29:36 -0700</code> ；而 1.8.7 版本的 ruby 是 2008 年 5 月发布的，两者兼容性应该比较好。</p>
+<p>列一下本人运行 sinatra 0.2.0 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
 </ul>
-<h2 id="Many_thanks_to">Many thanks to</h2><ul>
-<li><p>以上链接</p>
-</li>
-<li><p><a href="https://react-bootstrap.github.io/" target="_blank" rel="external">react-bootstrap</a></p>
-</li>
+<h2 id="change_log">change log</h2><ul>
+<li>大重构，把功能模块都压缩在一个文件中</li>
+<li>增加大量测试用例</li>
 </ul>
+<h2 id="通过所有测试用例">通过所有测试用例</h2><p>TODO</p>
 </span>
       
     </div>
@@ -228,9 +222,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/react/" rel="tag">#react</a>
+            <a href="/tags/ruby/" rel="tag">#ruby</a>
           
-            <a href="/tags/webpack/" rel="tag">#webpack</a>
+            <a href="/tags/sinatra/" rel="tag">#sinatra</a>
           
         </div>
       
@@ -239,13 +233,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/03/26/how-to-vim/" rel="prev">vim 使用指南</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/23/DDR201511/" rel="next">每日阅读小摘</a>
+              <a href="/2016/08/13/sinatra-learning-0-1-5/" rel="next">sinatra 0.1.5 源码学习</a>
             
           </div>
         </div>
@@ -350,7 +342,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Talk_is_cheap,_show_you_the_code_here"><span class="nav-number">1.</span> <span class="nav-text">Talk is cheap, show you the code here</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些说明"><span class="nav-number">2.</span> <span class="nav-text">一些说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Many_thanks_to"><span class="nav-number">3.</span> <span class="nav-text">Many thanks to</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">通过所有测试用例</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

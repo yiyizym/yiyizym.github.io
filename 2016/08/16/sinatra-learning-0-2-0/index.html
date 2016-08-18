@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-16T13:56:23.000Z">
+<meta property="og:updated_time" content="2016-08-18T14:19:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -213,8 +213,40 @@
 <li>大重构，把功能模块都压缩在一个文件中</li>
 <li>增加大量测试用例</li>
 </ul>
-<h2 id="通过所有测试用例">通过所有测试用例</h2><p>TODO</p>
-</span>
+<h2 id="跑通所有测试用例">跑通所有测试用例</h2><p>首先修改一处代码错误，在 sinatra.rb 文件的 1022 行，将 <code>Rack::File::MIME_TYPES[ext.to_s] = type</code> 改为 <code>Rack::Mime::MIME_TYPES[ext.to_s] = type</code></p>
+<p>然后安装一些缺少的 gem ：</p>
+<pre><code>gem <span class="operator"><span class="keyword">install</span> builder -v <span class="string">'2.1.2'</span>
+gem <span class="keyword">install</span> sass -v <span class="string">'3.1.0'</span>
+gem <span class="keyword">install</span> haml -v <span class="string">'1.8.0'</span></span>
+</code></pre><p>跑测试用例，发现只有 <code>sym_params_test.rb</code> 文件中的一处跑不通过。</p>
+<p>此处的测试是验证可以用 String 和 Symbol 访问参数。实现的关键方法是：</p>
+<pre><code># sinatra.rb 663 行
+<span class="keyword">h</span> = Hash.new { |<span class="keyword">h</span>, k| <span class="keyword">h</span>[k.to_s] <span class="keyword">if</span> Symbol === k }
+</code></pre><p>调用 <code>Hash.new</code> 时传进一个 block ，可以设置当访问某个不存在于 Hash 的 Key 时的一些默认行为，比如上面的代码就是说，当 key 不存在且是 Symbol 时，把 key 转换为字符串再找找（再抢救一下…）</p>
+<p><code>Hash.new</code> 还可以用来初始化值为数组的键值对，在记录事件回调时很方便：</p>
+<pre><code>@events = Hash.<span class="keyword">new</span> { |hash, key| hash[key] = [] }
+
+<span class="preprocessor"># 出自这个版本的 sinatra.rb 的 738 行</span>
+<span class="preprocessor"># 再也不用先判断 key 是否存在，也不用手动初始化一个空数组了</span>
+</code></pre><p>回过头来修改代码以跑通测试用例，作者这里粗心写错了请求的方法，应该用 <code>post_it</code> ，而不是 <code>get_it</code> ，还要相应地修改路由：</p>
+<pre><code>specify <span class="string">"should be accessable as Strings or Symbols"</span> <span class="keyword">do</span>
+  post <span class="string">'/'</span> <span class="keyword">do</span>
+    params[<span class="symbol">:foo</span>] + params[<span class="string">'foo'</span>]
+  <span class="keyword">end</span>
+
+  post_it <span class="string">'/'</span>, <span class="symbol">:foo</span> =&gt; <span class="string">"X"</span>
+  assert_equal(<span class="string">'XX'</span>, body)
+<span class="keyword">end</span>
+</code></pre><p>要在这个版本的 sinatra 的 get 方法中传递参数，需要把参数写在 uri 中，下面的写法也能通过测试：</p>
+<pre><code>specify <span class="string">"should be accessable as Strings or Symbols"</span> <span class="built_in">do</span>
+  <span class="built_in">get</span> <span class="string">'/'</span> <span class="built_in">do</span>
+    <span class="built_in">params</span>[:foo] + <span class="built_in">params</span>[<span class="string">'foo'</span>]
+  <span class="function"><span class="keyword">end</span>
+
+  <span class="title">get_it</span> '/?<span class="title">foo</span>=<span class="title">X</span>'</span>
+  assert_equal(<span class="string">'XX'</span>, body)
+<span class="keyword">end</span>
+</code></pre></span>
       
     </div>
 
@@ -342,7 +374,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通过所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">通过所有测试用例</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

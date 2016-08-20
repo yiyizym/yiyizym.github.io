@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2015/10/02/xss-study/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="整理了一下学习 xss 的头绪，只涉及 javascript/html/url ，没研究 flash">
-<meta property="og:updated_time" content="2015-10-02T07:22:29.000Z">
+<meta property="og:updated_time" content="2016-08-20T04:23:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="xss 一点总结">
 <meta name="twitter:description" content="整理了一下学习 xss 的头绪，只涉及 javascript/html/url ，没研究 flash">
@@ -227,7 +227,8 @@
 <li><p>解析 HTML 时，如果遇到标签属性中的事件句柄，如 onclick ，会先当作 HTML 代码解析，在事件被触发时，再调用脚本解析器解析。</p>
 <p>  比如下面这行代码：</p>
 <pre><code><span class="xml"><span class="tag">&lt;<span class="title">button</span> <span class="attribute">onclick</span>=<span class="value">"location.href = 'http://www.yoursite.com?userName=</span></span></span>&lt;%=<span class="ruby"> userName </span>%&gt;<span class="xml"><span class="tag"><span class="value">';"</span>&gt;</span>redirect<span class="tag">&lt;/<span class="title">button</span>&gt;</span></span>
-</code></pre><p>  用户输入的 userName 到达浏览器之后，首先会被当作 HTML 解析，当 click 事件触发之后，又会被当作 script 解析，因为是 url 的一部分，最后还会被当作 url 来解析。<br>  为了不出乱子，后台对 userName 的编码将是浏览器解码的逆过程，先是 url 编码，再是 script 编码，最后是 HTML 编码。</p>
+</code></pre><p>  用户输入的 userName 到达浏览器之后，首先会被当作 HTML 解析，当 click 事件触发之后，又会被当作 script 解析，因为是 url 的一部分，最后还会被当作 url 来解析。</p>
+<p>  <strong>为了不出乱子（即把用户的输入当作当前环境下的代码执行），后台对 userName 的编码将是浏览器解码的逆过程，先是 url 编码，再是 script 编码，最后是 HTML 编码。</strong></p>
 </li>
 <li><p>解析 script 时，也有可能调用 HTML 解析器解析代码。这时先进行 script 解析，再进行 HTML 解析。</p>
 <p>  比如下面的代码：</p>

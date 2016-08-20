@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-19T15:11:31.000Z">
+<meta property="og:updated_time" content="2016-08-20T04:30:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -318,6 +318,19 @@ p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John 
   <span class="keyword">end</span>
 <span class="keyword">end</span>
 </code></pre><p>以上只是我心血来潮写的， <code>OpenStruct</code> 的实现远远不是上面写的那么简单，有兴趣可以看看源码。</p>
+<p><code>Sinatra.options.raise_errors</code> 的值只能在代码里设置，当其值不为 nil 或 false 时，默认在非开发环境下直接抛出异常。要想在命令行启动时设置值，只需要在 <code>load_options!</code> 方法中添加一行：</p>
+<pre><code>op.<span class="literal">on</span>(<span class="string">'-r'</span>) { |env| default_options[:raise_errors] = <span class="literal">true</span> }
+</code></pre><p>在订制开发环境下的异常和 404 页面时，使用到 <code>%Q(...)</code> 。 ruby 会特殊处理以百分号 ‘%’ 开头的字符串，帮你省去不少转义引号的麻烦：</p>
+<blockquote>
+<p>The string expressions begin with % are the special form to avoid putting too many backslashes into quoted strings. <a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html" target="_blank" rel="external">出处</a></p>
+</blockquote>
+<p>更多相似的用法见<a href="https://ruby-china.org/topics/18512" target="_blank" rel="external">Ruby 里的 %Q, %q, %W, %w, %x, %r, %s, %i</a>。</p>
+<p>在显示异常信息时，用 <code>escap_html</code> 来转义 <code>&amp;</code>,<code>&lt;</code>,<code>&gt;</code>,<code>/</code>,<code>&#39;</code>,<code>&quot;</code> ，把这些 ascii 字符编码成实体编码，防止 XSS 攻击，不过源码有注释说有 bug ：</p>
+<blockquote>
+<p> On 1.8, there is a kcode = ‘u’ bug that allows for XSS otherwhise</p>
+</blockquote>
+<p>源码中用正则表达式替换转义字符的<a href="https://github.com/rack/rack/blob/1.4.1/lib/rack/utils.rb#L181" target="_blank" rel="external">实现</a>值得参考。</p>
+<p>更多关于 XSS 的知识，可以看看本人之前写的<a href="http://judes.me/2015/10/02/xss-study/">这篇</a>。</p>
 </span>
       
     </div>

@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-20T04:30:50.000Z">
+<meta property="og:updated_time" content="2016-08-23T00:35:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -331,7 +331,27 @@ p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John 
 </blockquote>
 <p>源码中用正则表达式替换转义字符的<a href="https://github.com/rack/rack/blob/1.4.1/lib/rack/utils.rb#L181" target="_blank" rel="external">实现</a>值得参考。</p>
 <p>更多关于 XSS 的知识，可以看看本人之前写的<a href="http://judes.me/2015/10/02/xss-study/">这篇</a>。</p>
-</span>
+<p>接下来看 Application 的 call 方法。</p>
+<p>首先由 <code>lookup</code> 方法实现根据请求找到正确的路由。</p>
+<pre><code>def lookup(request)
+  <span class="keyword">method</span> = request.request_method.downcase.to_sym
+  events[<span class="keyword">method</span>].eject(&amp;[:invoke, request]) ||
+    (events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="keyword">method</span> == :head) ||
+    errors[<span class="type">NotFound</span>].invoke(request)
+<span class="keyword">end</span>
+</code></pre><p>sinatra 在 <code>Enumerable</code> 上扩展了 <code>eject</code> 方法，因为 <code>Array</code> 加载了 <code>Enumberable</code> 模块，所以 <code>Array</code> 实例能用 <code>eject</code> 方法。</p>
+<pre><code>def eject(&amp;<span class="keyword">block</span>)
+  find { |e| <span class="literal">result</span> = <span class="keyword">block</span>[e] <span class="keyword">and</span> <span class="keyword">break</span> <span class="literal">result</span> }
+<span class="keyword">end</span>
+</code></pre><p>在 <code>eject</code> 方法内部，使用 <code>find</code> 方法找到第一个产生非空结果的 block ，并返回这个结果。<code>find</code> 方法本来会返回第一个符合条件的元素，这里使用 <code>break</code> 来订制自己的返回值。</p>
+<p>往后我们会看到， <code>find</code> 方法中的 <code>e</code> 是 Event 的实例，而 <code>block[e]</code> 做的事情是： 以 <code>request</code> 作为参数，调用 <code>e</code> 的 <code>invoke</code> 方法。</p>
+<p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
+<p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
+<pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)
+</code></pre><p>在生成 HEAD 请求的响应时，会设置 body 为空字符：</p>
+<pre><code><span class="preprocessor"># <span class="keyword">line</span> 839</span>
+body = <span class="string">''</span> <span class="keyword">if</span> request.request_method.upcase == <span class="string">'HEAD'</span>
+</code></pre></span>
       
     </div>
 

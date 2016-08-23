@@ -1018,17 +1018,17 @@ body {
 .feed-link a {
   display: inline-block;
   padding: 0 15px;
-  color: #fc6423;
-  border: 1px solid #fc6423;
+  color: #999;
+  border: 1px solid #999;
   border-radius: 4px;
 }
 .feed-link a i {
-  color: #fc6423;
+  color: #999;
   font-size: 14px;
 }
 .feed-link a:hover {
   color: #fff;
-  background: #fc6423;
+  background: #999;
 }
 .feed-link a:hover i {
   color: #fff;
@@ -1052,7 +1052,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #49e833;
+  background: #f5ffb9;
 }
 .sidebar-nav {
   margin: 0;

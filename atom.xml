@@ -1,0 +1,2696 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>jude&#39;s life</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://judes.me/"/>
+  <updated>2016-08-23T00:35:18.000Z</updated>
+  <id>http://judes.me/</id>
+  
+  <author>
+    <name>jude zhu</name>
+    <email>yiyizym@gmail.com</email>
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>sinatra 0.2.0 源码学习</title>
+    <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
+    <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
+    <published>2016-08-16T13:21:48.000Z</published>
+    <updated>2016-08-23T00:35:18.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>使用命令 <code>git log -1 --format=%ai 0.2.0</code> ，查看 0.2.0 版本 sinatra 的“出厂日期”，得到 <code>2008-04-11 16:29:36 -0700</code> ；而 1.8.7 版本的 ruby 是 2008 年 5 月发布的，两者兼容性应该比较好。</p>
+<p>列一下本人运行 sinatra 0.2.0 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="change_log">change log</h2><ul>
+<li>大重构，把功能模块都压缩在一个文件中</li>
+<li>增加大量测试用例</li>
+</ul>
+<h2 id="跑通所有测试用例">跑通所有测试用例</h2><p>首先修改一处代码错误，在 sinatra.rb 文件的 1022 行，将 <code>Rack::File::MIME_TYPES[ext.to_s] = type</code> 改为 <code>Rack::Mime::MIME_TYPES[ext.to_s] = type</code></p>
+<p>然后安装一些缺少的 gem ：</p>
+<pre><code>gem <span class="operator"><span class="keyword">install</span> builder -v <span class="string">'2.1.2'</span>
+gem <span class="keyword">install</span> sass -v <span class="string">'3.1.0'</span>
+gem <span class="keyword">install</span> haml -v <span class="string">'1.8.0'</span></span>
+</code></pre><p>跑测试用例，发现只有 <code>sym_params_test.rb</code> 文件中的一处跑不通过。</p>
+<p>此处的测试是验证可以用 String 和 Symbol 访问参数。实现的关键方法是：</p>
+<pre><code># sinatra.rb 663 行
+<span class="keyword">h</span> = Hash.new { |<span class="keyword">h</span>, k| <span class="keyword">h</span>[k.to_s] <span class="keyword">if</span> Symbol === k }
+</code></pre><p>调用 <code>Hash.new</code> 时传进一个 block ，可以设置当访问某个不存在于 Hash 的 Key 时的一些默认行为，比如上面的代码就是说，当 key 不存在且是 Symbol 时，把 key 转换为字符串再找找（再抢救一下…）</p>
+<p><code>Hash.new</code> 还可以用来初始化值为数组的键值对，在记录事件回调时很方便：</p>
+<pre><code>@events = Hash.<span class="keyword">new</span> { |hash, key| hash[key] = [] }
+
+<span class="preprocessor"># 出自这个版本的 sinatra.rb 的 738 行</span>
+<span class="preprocessor"># 再也不用先判断 key 是否存在，也不用手动初始化一个空数组了</span>
+</code></pre><p>回过头来修改代码以跑通测试用例，作者这里粗心写错了请求的方法，应该用 <code>post_it</code> ，而不是 <code>get_it</code> ，还要相应地修改路由：</p>
+<pre><code>specify <span class="string">"should be accessable as Strings or Symbols"</span> <span class="keyword">do</span>
+  post <span class="string">'/'</span> <span class="keyword">do</span>
+    params[<span class="symbol">:foo</span>] + params[<span class="string">'foo'</span>]
+  <span class="keyword">end</span>
+
+  post_it <span class="string">'/'</span>, <span class="symbol">:foo</span> =&gt; <span class="string">"X"</span>
+  assert_equal(<span class="string">'XX'</span>, body)
+<span class="keyword">end</span>
+</code></pre><p>要在这个版本的 sinatra 的 get 方法中传递参数，需要把参数写在 uri 中，下面的写法也能通过测试：</p>
+<pre><code>specify <span class="string">"should be accessable as Strings or Symbols"</span> <span class="built_in">do</span>
+  <span class="built_in">get</span> <span class="string">'/'</span> <span class="built_in">do</span>
+    <span class="built_in">params</span>[:foo] + <span class="built_in">params</span>[<span class="string">'foo'</span>]
+  <span class="function"><span class="keyword">end</span>
+
+  <span class="title">get_it</span> '/?<span class="title">foo</span>=<span class="title">X</span>'</span>
+  assert_equal(<span class="string">'XX'</span>, body)
+<span class="keyword">end</span>
+</code></pre><h2 id="从_at_exit_说起">从 at_exit 说起</h2><p>还是从 at_exit 开始读代码。</p>
+<p><code>$!</code> 记录异常信息，当调用 <code>raise</code> 的时候会设置这个变量，详见<a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/variable.html#dquote" target="_blank" rel="external">此处</a>。</p>
+<p>调用 <code>load_options!</code> 解释完启动参数后， sinatra 在所有环境设置遇到异常和 404 时的回调方法，在开发环境遇到异常和 404 的回调方法比其他环境暴露更多的信息。</p>
+<p>值得细看的是在非开发环境遇到异常时的回调方法：</p>
+<pre><code><span class="keyword">error</span> <span class="keyword">do</span>
+  raise request.env[<span class="comment">'sinatra.error'] if Sinatra.options.raise_errors</span>
+  <span class="comment">'<span class="xmlDocTag">&lt;h1&gt;</span>Internal Server Error<span class="xmlDocTag">&lt;/h1&gt;</span>'</span>
+<span class="keyword">end</span>
+</code></pre><p><code>Sinatra.options</code> 实际上是 <code>OpenStruct</code> 的实例。 <a href="http://ruby-doc.org/stdlib-1.9.3/libdoc/ostruct/rdoc/OpenStruct.html" target="_blank" rel="external"><code>OpenStruct</code></a> 与 <code>Hash</code> 相似，但它通过元编程提供了不少快捷访问、设置值的方法。 <code>OpenStruct</code> 用法举例：</p>
+<pre><code># 1
+<span class="keyword">person</span> = OpenStruct.new
+<span class="keyword">person</span>.name    = <span class="string">"John Smith"</span>
+p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John Smith"</span>
+
+# 2
+<span class="keyword">person</span> = OpenStruct.new(:name =&gt; <span class="string">"John Smith"</span>)
+p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John Smith"</span>
+</code></pre><p>一个简单版本的 <code>OpenStruct</code> 实现：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">OpenStruct</span></span>
+  <span class="keyword">attr_accessor</span> <span class="symbol">:h</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(hash = {})</span></span>
+    <span class="variable">@h</span> = hash
+
+    h.each <span class="keyword">do</span> |key, value|
+      <span class="keyword">self</span>.<span class="keyword">class</span>.send(<span class="symbol">:define_method</span>, key) <span class="keyword">do</span>
+        h[key]
+      <span class="keyword">end</span>
+      <span class="keyword">self</span>.<span class="keyword">class</span>.send(<span class="symbol">:define_method</span>, <span class="string">"<span class="subst">#{key}</span>="</span>) <span class="keyword">do</span> |value|
+        h[key] = value
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">method_missing</span><span class="params">(m, *args)</span></span>
+    <span class="keyword">if</span> args.size == <span class="number">1</span>
+      <span class="comment"># m is  :name=</span>
+      <span class="comment"># change m to :name</span>
+      h[m.to_s.chop.to_sym] = args[<span class="number">0</span>]
+    <span class="keyword">elsif</span> args.size == <span class="number">0</span>
+      h[m]
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">respond_to?</span><span class="params">(m)</span></span>
+    h.respond_to?(m) || <span class="keyword">super</span>
+  <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+<span class="keyword">require</span> <span class="string">'test/unit'</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">TestOS</span> <span class="inheritance">&lt; <span class="parent">Test::Unit</span></span>::<span class="title">TestCase</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">setup</span></span>
+    <span class="variable">@person_1</span> = <span class="constant">OpenStruct</span>.new
+    <span class="variable">@person_2</span> = <span class="constant">OpenStruct</span>.new(<span class="symbol">:name</span> =&gt; <span class="string">'zhu'</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">test_case_1</span></span>
+    assert_equal <span class="keyword">true</span>, <span class="variable">@person_1</span>.respond_to?(<span class="symbol">:name</span>)
+    assert_equal <span class="keyword">nil</span>, <span class="variable">@person_1</span>.name
+    <span class="variable">@person_1</span>.name = <span class="string">'zhu'</span>
+    assert_equal <span class="string">'zhu'</span>, <span class="variable">@person_1</span>.name
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">test_case_2</span></span>
+    assert_equal <span class="keyword">true</span>, <span class="variable">@person_2</span>.respond_to?(<span class="symbol">:name</span>)
+    assert_equal <span class="string">'zhu'</span>, <span class="variable">@person_2</span>.name
+    <span class="variable">@person_2</span>.name = <span class="string">'jude'</span>
+    assert_equal <span class="string">'jude'</span>, <span class="variable">@person_2</span>.name
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>以上只是我心血来潮写的， <code>OpenStruct</code> 的实现远远不是上面写的那么简单，有兴趣可以看看源码。</p>
+<p><code>Sinatra.options.raise_errors</code> 的值只能在代码里设置，当其值不为 nil 或 false 时，默认在非开发环境下直接抛出异常。要想在命令行启动时设置值，只需要在 <code>load_options!</code> 方法中添加一行：</p>
+<pre><code>op.<span class="literal">on</span>(<span class="string">'-r'</span>) { |env| default_options[:raise_errors] = <span class="literal">true</span> }
+</code></pre><p>在订制开发环境下的异常和 404 页面时，使用到 <code>%Q(...)</code> 。 ruby 会特殊处理以百分号 ‘%’ 开头的字符串，帮你省去不少转义引号的麻烦：</p>
+<blockquote>
+<p>The string expressions begin with % are the special form to avoid putting too many backslashes into quoted strings. <a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html" target="_blank" rel="external">出处</a></p>
+</blockquote>
+<p>更多相似的用法见<a href="https://ruby-china.org/topics/18512" target="_blank" rel="external">Ruby 里的 %Q, %q, %W, %w, %x, %r, %s, %i</a>。</p>
+<p>在显示异常信息时，用 <code>escap_html</code> 来转义 <code>&amp;</code>,<code>&lt;</code>,<code>&gt;</code>,<code>/</code>,<code>&#39;</code>,<code>&quot;</code> ，把这些 ascii 字符编码成实体编码，防止 XSS 攻击，不过源码有注释说有 bug ：</p>
+<blockquote>
+<p> On 1.8, there is a kcode = ‘u’ bug that allows for XSS otherwhise</p>
+</blockquote>
+<p>源码中用正则表达式替换转义字符的<a href="https://github.com/rack/rack/blob/1.4.1/lib/rack/utils.rb#L181" target="_blank" rel="external">实现</a>值得参考。</p>
+<p>更多关于 XSS 的知识，可以看看本人之前写的<a href="http://judes.me/2015/10/02/xss-study/">这篇</a>。</p>
+<p>接下来看 Application 的 call 方法。</p>
+<p>首先由 <code>lookup</code> 方法实现根据请求找到正确的路由。</p>
+<pre><code>def lookup(request)
+  <span class="keyword">method</span> = request.request_method.downcase.to_sym
+  events[<span class="keyword">method</span>].eject(&amp;[:invoke, request]) ||
+    (events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="keyword">method</span> == :head) ||
+    errors[<span class="type">NotFound</span>].invoke(request)
+<span class="keyword">end</span>
+</code></pre><p>sinatra 在 <code>Enumerable</code> 上扩展了 <code>eject</code> 方法，因为 <code>Array</code> 加载了 <code>Enumberable</code> 模块，所以 <code>Array</code> 实例能用 <code>eject</code> 方法。</p>
+<pre><code>def eject(&amp;<span class="keyword">block</span>)
+  find { |e| <span class="literal">result</span> = <span class="keyword">block</span>[e] <span class="keyword">and</span> <span class="keyword">break</span> <span class="literal">result</span> }
+<span class="keyword">end</span>
+</code></pre><p>在 <code>eject</code> 方法内部，使用 <code>find</code> 方法找到第一个产生非空结果的 block ，并返回这个结果。<code>find</code> 方法本来会返回第一个符合条件的元素，这里使用 <code>break</code> 来订制自己的返回值。</p>
+<p>往后我们会看到， <code>find</code> 方法中的 <code>e</code> 是 Event 的实例，而 <code>block[e]</code> 做的事情是： 以 <code>request</code> 作为参数，调用 <code>e</code> 的 <code>invoke</code> 方法。</p>
+<p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
+<p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
+<pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)
+</code></pre><p>在生成 HEAD 请求的响应时，会设置 body 为空字符：</p>
+<pre><code><span class="preprocessor"># <span class="keyword">line</span> 839</span>
+body = <span class="string">''</span> <span class="keyword">if</span> request.request_method.upcase == <span class="string">'HEAD'</span>
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      通过 sinatra 学习 ruby 编程技巧（系列）
+    
+    </summary>
+    
+      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
+    
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="sinatra" scheme="http://judes.me/tags/sinatra/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sinatra 0.1.5 源码学习</title>
+    <link href="http://judes.me/2016/08/13/sinatra-learning-0-1-5/"/>
+    <id>http://judes.me/2016/08/13/sinatra-learning-0-1-5/</id>
+    <published>2016-08-13T01:57:34.000Z</published>
+    <updated>2016-08-16T13:57:32.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 3 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>列一下本人运行 sinatra 0.1.5 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="change_log">change log</h2><ul>
+<li>增加 Mutex</li>
+<li>支持处理请求前的事件回调</li>
+</ul>
+<p>这一版改动主要集中在 event.erb 文件里。</p>
+<h2 id="event-erb">event.erb</h2><h3 id="Mutex_互斥锁">Mutex 互斥锁</h3><p>当多个线程读写公共资源时，要使用互斥锁保证每个线程在读或写时都是原子操作。</p>
+<p>使用互斥锁首先要区分哪些是公共资源，哪些代码会访问这些公共资源，然后用互斥锁隔离这些代码。</p>
+<p>sinatra 自身的代码不会既读又写公共资源（要么只读公共资源，要么每个线程使用自己的变量），因此可以在多线程中运行以同时处理多个请求，但是处理请求时执行的用户自定义的代码，有可能访问公共资源，这部分代码（处理请求的代码、处理请求之前和之后的事件回调）可能需要使用互斥锁。 sinatra 默认不使用互斥锁。</p>
+<p>sinatra 是否运行在多线程环境中取决于 Rack handler （这一版本的 sinatra 使用的是  Mongrel ）是否支持多线程，并且以多线程的方式运行。详见<a href="http://stackoverflow.com/questions/6278817/is-sinatra-multi-threaded" target="_blank" rel="external">此处</a></p>
+<p>接下来看 sinatra 互斥锁的实现。</p>
+<p>用 <code>Event</code> 类变量 <code>@@mutex</code> 保存 <a href="http://ruby-doc.org/core-1.9.3/Mutex.html" target="_blank" rel="external">Mutex</a> 实例，之后调用 <code>@@mutex.synchronize do ... end</code> 实现同一时间只有一个线程的代码——这些代码要么是 <code>Event</code> 的类方法，要么是 <code>Event</code> 的实例方法——能访问公共资源。一旦用上了互斥锁，同一时间 sinatra 只能响应一个请求。</p>
+<p><code>run_safely</code> 会先检查用户是否在运行程序时设置 <code>use_mutex</code> 为 <code>true</code> 。是则在 <code>synchronize</code> 中执行代码，否则直接执行代码。<code>use_mutex</code> 默认为 <code>false</code> 。</p>
+<p>另外几篇参考文章：</p>
+<ul>
+<li><a href="http://www.tutorialspoint.com/ruby/ruby_multithreading.htm" target="_blank" rel="external">Ruby - Multithreading</a></li>
+<li><a href="http://lucaguidi.com/2014/03/27/thread-safety-with-ruby.html" target="_blank" rel="external">Thread Safety With Ruby</a></li>
+<li><a href="http://www.tutorialspoint.com/ruby/ruby_multithreading.htm" target="_blank" rel="external">Signals, Traps and Rescues</a></li>
+</ul>
+<h3 id="before_filters">before_filters</h3><p>用户可以使用 before_filters 来做授权、验证、参数过滤等等事情。</p>
+<p>sinatra 把 before_filters 跟 after_filters 合二为一，分别写成 <code>setup_filter</code> 和 <code>call_filters</code> 。</p>
+<p>得益于前面使用 cattr_accessor 设置了相应的 setter/getter ，  <code>setup_filter</code> 可以通过 <code>send(filter_set_name)</code> 来动态获取 filters 数组。</p>
+<p>只要 before_filters 中没有抛出 <code>:halt</code> 异常的方法，请求就会按照正常的流程执行下去。如果抛出了 <code>:halt</code> 异常，处理请求的方法会被跳过，但 after_filters 仍然会被执行。</p>
+<p>抛出 <code>:halt</code> 异常时可以带上参数，如果是 String 或 Symbol 类型的，就会被当作 helper 方法调用，如果是 Fixnum 类型则会被当成状态码。</p>
+<p>这里用到 <a href="http://ruby-doc.org/docs/keywords/1.9/Object.html#method-i-case" target="_blank" rel="external">Object#case</a> 方法， <code>case</code> 判断一个值是否满足某个条件，用的是这个条件的 <code>===</code> 方法，传入这个值作为参数，举个例子：</p>
+<pre><code>x = <span class="number">10</span>
+
+<span class="keyword">case</span> x
+<span class="keyword">when</span> <span class="number">10</span>
+  p <span class="attribute">'x</span> <span class="keyword">is</span> <span class="number">10</span>'
+<span class="keyword">end</span>
+
+# 上面的代码与下面的代码是一样的
+
+<span class="keyword">if</span> <span class="number">10</span> === x
+  p <span class="attribute">'x</span> <span class="keyword">is</span> <span class="number">10</span>'
+<span class="keyword">end</span>
+
+# 因为 Fixnum 实现了自己的 === 方法，所以下面的用法也没有问题
+
+<span class="keyword">case</span> x
+<span class="keyword">when</span> Fixnum
+  p <span class="attribute">'x</span> <span class="keyword">is</span> <span class="number">10</span>'
+<span class="keyword">end</span>
+</code></pre><p>全文完。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      通过 sinatra 学习 ruby 编程技巧（系列）
+    
+    </summary>
+    
+      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
+    
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="sinatra" scheme="http://judes.me/tags/sinatra/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>试用 Action Cable</title>
+    <link href="http://judes.me/2016/08/02/try-actioncable/"/>
+    <id>http://judes.me/2016/08/02/try-actioncable/</id>
+    <published>2016-08-02T12:54:33.000Z</published>
+    <updated>2016-08-06T10:07:06.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Action_Cable_有什么用">Action Cable 有什么用</h2><p>Action Cable 是一项满足客户端与服务器端实时通讯需求的功能，它基于 WebSocket 协议。在此之前 web 端要满足类似的需求，有 轮询、长轮询、SSE（Server Sent Events ，sinatra 自带一个简单的实现，有兴趣可以看看） 等方法，综合考虑开销和兼容性，基于 WebSocket 的实现是最好的。</p>
+<h2 id="WebSocket_的基本知识">WebSocket 的基本知识</h2><p>websocket 是建立在 TCP 协议上面应用层的协议，整个协议由两部分组成： 握手建立连接，数据传输。要建立 websocket 连接，得先由客户端发送一个 http get 请求，带上相关的请求头，只有当服务器端带上正确的响应头回复时，连接才能建立。之后客户端和服务器端可以向对方发送数据。</p>
+<p>更详细的说明，可以看<a href="https://tools.ietf.org/html/rfc6455" target="_blank" rel="external">这里</a></p>
+<p>如果想简单地动手玩玩 websocket ，请参考<a href="https://www.rails365.net/articles/websocket-zhi-ke-hu-duan-yu-fu-wu-qi-duan-di-jiao-hu-er" target="_blank" rel="external">这篇文章</a></p>
+<h2 id="Action_Cable_基础概念">Action Cable 基础概念</h2><p>用户打开的每个浏览器标签页都会跟服务器建立一条新连接(connection)，Rails 会为这条连接实例化一个 connection 对象，这个对象负责管理此后发生的订阅事件，它不处理具体的业务逻辑。</p>
+<p>客户端可以通过一个连接订阅多个频道(channel)。每个频道都提供多个 websocket 的回调方法，方便写业务逻辑代码。</p>
+<p>一个频道可以包含一个或多个流(stream)，如果把频道比作网络游戏平台中的某个分区，那么流就是分区下面的某个房间。流是 Action Cable 中发送、接收消息的最小单位。</p>
+<p>服务器可以在建立连接时设置验证（用异步的方式），一旦验证失败，将关闭已建立的连接。</p>
+<p>整个 Action Cable 的架构粗略看起来就是下面的样子：</p>
+<pre><code><span class="title">connections</span>  &lt;==   channels  &lt;==   streams &lt;--&gt; subscriptions  ==&gt;   connections
+
+&lt;== 表示 一 对 多 的关系
+
+&lt;--&gt; 表示 一对一 的关系
+
+==&gt; 表示 多对一 的关系
+</code></pre><h2 id="Action_Cable_基本配置">Action Cable 基本配置</h2><p><strong>以下代码、说明仅在 Rails 5.0.0 版本（不是 beta 版本）测试过，不同版本间 Action Cable 的表现有稍许区别。</strong></p>
+<p>既然 websocket 需要由客户端发起(握手请求)，先从前端需要做的事情说起。</p>
+<p>运行 <code>rails new my_actioncable</code> 新建一个 Rails 项目。</p>
+<p>在 <code>app/assets/javascripts/cable.js</code> ，Rails 已经替你准备好前端的 connection 实例：</p>
+<pre><code>(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{
+  <span class="keyword">this</span>.App || (<span class="keyword">this</span>.App = {});
+
+  App.cable = ActionCable.createConsumer();
+
+}).call(<span class="keyword">this</span>);
+</code></pre><p>为方便调试，你可以添加一行启用调试的代码：</p>
+<pre><code>(<span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{
+  <span class="keyword">this</span>.App || (<span class="keyword">this</span>.App = {});
+
+  App.cable = ActionCable.createConsumer();
+  ActionCable.startDebugging(); <span class="comment">// 启用调试</span>
+
+}).call(<span class="keyword">this</span>);
+</code></pre><p>连接创建好之后，接着创建一个订阅。在 <code>assets/javascripts/channels</code> 目录下新建 <code>room.js</code> 文件，内容如下：</p>
+<pre><code>App.room = App.cable.subscriptions.create(<span class="string">"RoomChannel"</span>, {
+  connected: <span class="function"><span class="keyword">function</span><span class="params">()</span></span>{
+    <span class="comment">// Called when the subscription is ready for use on the server</span>
+    },
+  disconnected: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{
+    <span class="comment">// Called when the subscription has been terminated by the server</span>
+  },
+
+  received: <span class="function"><span class="keyword">function</span><span class="params">(data)</span> </span>{
+    <span class="comment">// Called when there's incoming data on the websocket for this channel</span>
+  }
+});
+</code></pre><p>create 方法第一个参数可以是字符串，也可以是对象；如果是字符串，它表示要订阅的频道，如果是对象，则一定要带有 key 为 channel 的字段，其他字段可以传给后台别作它用（比如创建流），如：</p>
+<pre><code>{
+  <span class="attribute">channel</span>: <span class="string">'RoomChannel'</span>,
+  <span class="attribute">label</span>: <span class="string">'1st'</span>
+}
+</code></pre><p>create 方法第二个参数包含一系列的回调方法，各自用途注释都写得很清楚。</p>
+<p>前端的事情就做完了，开始设置后台。</p>
+<p>Action Cable 可以独立于我们的应用运行，也可以作为<a href="http://guides.ruby-china.org/engines.html" target="_blank" rel="external">引擎</a>挂载到我们的应用中。这里我们选择挂载。</p>
+<p>在 <code>routes.rb</code> 添加一行：</p>
+<pre><code>mount ActionCable<span class="class">.server</span> =&gt; <span class="string">'/cable'</span>
+</code></pre><p>这样发向 ‘/cable’ 的请求将由 Action Cable 处理。</p>
+<p>在 <code>app/channels</code> 目录下新建 <code>room_channel.rb</code> ，内容如下：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">RoomChannel</span> <span class="inheritance">&lt; <span class="parent">ApplicationCable::Channel</span></span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">subscribed</span></span>
+    stream_from <span class="string">'room_channel'</span>
+  <span class="keyword">end</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">unsubscribed</span></span>
+    <span class="comment"># Any cleanup needed when channel is unsubscribed</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p><code>steam_from</code> 新建一个流，如果前端在调用 App.cable.subscriptions.create 时第一个参数是对象，可以通过 <code>params</code> 来获取对象的内容：</p>
+<pre><code><span class="comment"># 假设 第一个参数是对象</span>
+<span class="comment"># {</span>
+<span class="comment">#   channel: 'RoomChannel',</span>
+<span class="comment">#   label: '1st'</span>
+<span class="comment"># }</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">subscribed</span></span>
+  stream_from <span class="string">"room:<span class="subst">#{params[<span class="symbol">:label</span>]}</span>"</span>
+<span class="keyword">end</span>
+</code></pre><p>运行 <code>rails g controller room show</code> 生成控制器、路由和一个简单的 <code>show</code> 页面。</p>
+<p>现在前后台都搭好了，得到一个最简单，什么都不能做的 Action Cable 。运行 <code>rails s</code> 启动服务器端，打开浏览器访问 <code>localhost:3000/room/show</code></p>
+<p>在浏览器的控制台可以看到类似以下的信息：</p>
+<pre><code>[ActionCable] Opening WebSocket, current state <span class="keyword">is</span> null, subprotocols: actioncable-v1-json,actioncable-unsupported <span class="number">1470455374056</span> action_cable.<span class="keyword">self</span>-<span class="number">1641</span>ec3….js?body=<span class="number">1</span>:<span class="number">50</span> 
+[ActionCable] ConnectionMonitor started. pollInterval = <span class="number">3000</span> ms <span class="number">1470455374063</span> action_cable.<span class="keyword">self</span>-<span class="number">1641</span>ec3….js?body=<span class="number">1</span>:<span class="number">50</span> 
+[ActionCable] WebSocket onopen <span class="keyword">event</span>, <span class="keyword">using</span> <span class="string">'actioncable-v1-json'</span> subprotocol <span class="number">1470455374081</span> action_cable.<span class="keyword">self</span>-<span class="number">1641</span>ec3….js?body=<span class="number">1</span>:<span class="number">50</span> 
+[ActionCable] ConnectionMonitor recorded connect <span class="number">1470455374082</span>
+</code></pre><p>切换到控制台的 Network 标签，查看 WebSockets ，可以看到浏览器每隔 3 秒会收到服务器端发过来的 ping 包。</p>
+<h2 id="服务器主动向客户端推送消息">服务器主动向客户端推送消息</h2><p>服务器可以主动通过广播向客户端推送消息。</p>
+<p>为免阻塞正常的 http 响应，通常会采用 delayed job 来向客户端推送消息。</p>
+<p>运行命令 <code>rails g job send_msg</code> 新建一个 delayed job ，在新建的 <code>send_room_msg_job.rb</code> 中的 <code>perform</code> 方法中添加：</p>
+<pre><code># 每 3 秒向客户端发送一条信息
+1.upto(10) <span class="operator"><span class="keyword">do</span> |<span class="keyword">i</span>|
+  <span class="keyword">sleep</span> <span class="number">3</span>
+  ActionCable.<span class="keyword">server</span>.broadcast(
+      <span class="string">'room_channel'</span>, # 这是流的名字，要跟在 stream_from 定义的保持一致
+      title: <span class="string">'the title'</span>,
+      <span class="keyword">body</span>: <span class="string">"server send #{i}"</span>
+  )
+<span class="keyword">end</span></span>
+</code></pre><p>然后在 <code>RoomController#show</code> 方法中添加：</p>
+<pre><code><span class="tag">SendRoomMsgJob</span><span class="class">.perform_later</span>
+</code></pre><p>客户端接收部分，重写 <code>assets/javascripts/channels/room.js</code> 的 <code>received</code> 回调方法：</p>
+<pre><code><span class="comment">//...</span>
+
+received: <span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>{
+  <span class="keyword">var</span> msg = data[<span class="string">'title'</span>] + <span class="string">'\n'</span> + data[<span class="string">'body'</span>] + <span class="string">'\n'</span>;
+  <span class="comment">//简单地打印接收到的信息</span>
+  <span class="built_in">console</span>.log(msg);
+}
+</code></pre><p>重启服务器、重新访问 <code>localhost:3000/room/show</code> ，每隔 3 秒就能看到打印信息。</p>
+<h2 id="客户端主动向服务器发送消息">客户端主动向服务器发送消息</h2><p>客户端也可以主动调用服务器端在 channel 中定义的方法。</p>
+<p>重写 <code>assets/javascripts/channels/room.js</code> 的 <code>connected</code> 回调方法：</p>
+<pre><code><span class="comment">//...</span>
+
+<span class="tag">connected</span>: <span class="tag">function</span>(){
+  <span class="tag">this</span><span class="class">.perform</span>(<span class="string">'print_log'</span>, { <span class="attribute">msg</span>: <span class="string">'send from client'</span> });
+}
+</code></pre><p>在 <code>room_channel.rb</code> 中添加一个 <code>print_log</code> 方法：</p>
+<pre><code><span class="comment">#...</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">print_log</span></span>(data)
+  p <span class="string">"&gt;&gt;&gt;&gt; <span class="subst">#{data[<span class="string">'msg'</span>]}</span>"</span>
+<span class="keyword">end</span>
+</code></pre><p>只要连接一建立，就可以在服务器后台看到打印 <code>&gt;&gt;&gt;&gt; message from client</code></p>
+<p>以上就是简单的 Action Cable 试用记录，源码已经上传至 <a href="https://github.com/yiyizym/try_action_cable" target="_blank" rel="external">github</a> 。</p>
+<p>参考文章：</p>
+<ul>
+<li><a href="http://edgeguides.rubyonrails.org/action_cable_overview.html#broadcasting" target="_blank" rel="external">Action Cable Overview</a></li>
+<li><a href="https://www.rails365.net/articles/websocket-xu-lie-wen-zhang-mu-lu" target="_blank" rel="external">websocket序列文章</a></li>
+<li>Action Cable Source Code ，我翻了两天的源码。。。。</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      Rails 5 出来很久了，学习一下 Action Cable
+    
+    </summary>
+    
+      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
+    
+    
+      <category term="action cable" scheme="http://judes.me/tags/action-cable/"/>
+    
+      <category term="rails" scheme="http://judes.me/tags/rails/"/>
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="websocket" scheme="http://judes.me/tags/websocket/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>写写堆排序</title>
+    <link href="http://judes.me/2016/07/31/heap-sort/"/>
+    <id>http://judes.me/2016/07/31/heap-sort/</id>
+    <published>2016-07-31T06:16:09.000Z</published>
+    <updated>2016-07-31T09:33:03.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="原理">原理</h2><p>堆排序中的“堆”，它是：</p>
+<ul>
+<li>一棵完全二叉树</li>
+<li>树的每个节点都不比它的两个子节点小（有序）</li>
+</ul>
+<p>由此得到最有用的信息：根节点是二叉树里面最大的元素</p>
+<p>堆排序的过程是：</p>
+<ul>
+<li>构造有序的堆</li>
+<li>输出并删除最大的元素</li>
+<li>重复前面两个步骤</li>
+</ul>
+<h2 id="联想">联想</h2><ul>
+<li>用数组表示二叉树，数组从索引 1 开始记录元素。这样做可以很方便地找到完全二叉树中某个节点的及其两个子节点。</li>
+<li>从下往上地把二叉树变成堆</li>
+<li>交换最大的元素与二叉树的最后一个元素的位置，把二叉树的节点数减 1 ，再把二叉树变成堆</li>
+<li>重复上一步骤，直到二叉树只剩下 1 个节点</li>
+</ul>
+<p>把二叉树变成堆涉及一个重要的基本操作：下沉。就是通过不断比较父节点与子节点，如果父节点比子节点小，就交换两者的位置。如果从根节点开始下沉，会得到整棵树中最大的节点。</p>
+<pre><code>def sink(arr, <span class="keyword">index</span>, len)
+  <span class="keyword">while</span> <span class="keyword">index</span> * <span class="number">2</span> &lt;= len
+    child_index = <span class="keyword">index</span> * <span class="number">2</span> 
+    <span class="keyword">if</span> child_index &lt; len &amp;&amp; arr[child_index] &lt; arr[child_index + <span class="number">1</span>]
+      child_index += <span class="number">1</span>
+    <span class="keyword">end</span>
+    <span class="keyword">break</span> <span class="keyword">nil</span> <span class="keyword">if</span> arr[child_index] &lt;= arr[<span class="keyword">index</span>]
+    exchange(arr, <span class="keyword">index</span>, child_index)
+    <span class="keyword">index</span> = child_index * <span class="number">2</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+def exchange(arr, i, j)
+  arr[i], arr[j] = arr[j], arr[i]
+<span class="keyword">end</span>
+</code></pre><h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = HS.sort(array)
+</code></pre><h2 id="大体架构">大体架构</h2><pre><code><span class="class"><span class="keyword">module</span> <span class="title">HS</span></span>
+  extend <span class="keyword">self</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">sort</span><span class="params">(array)</span></span>
+    heap_sort(array)
+  <span class="keyword">end</span>
+  private
+  <span class="function"><span class="keyword">def</span> <span class="title">heap_sort</span><span class="params">(array)</span></span>
+    <span class="keyword">return</span> array <span class="keyword">if</span> array.length &lt; <span class="number">2</span>
+    <span class="comment"># 构建符合格式的数组</span>
+    <span class="comment"># 构建堆</span>
+    <span class="comment"># 排序</span>
+
+    array[<span class="number">1</span>..-<span class="number">1</span>]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="构建符合格式的数组">构建符合格式的数组</h2><p>这个很简单，把数组第 1 个元素插入到数组末尾，然后把第 1 个元素置为 nil</p>
+<pre><code><span class="built_in">array</span>[<span class="number">0</span>], <span class="built_in">array</span>[<span class="built_in">array</span>.length] = nil, <span class="built_in">array</span>[<span class="number">0</span>]
+</code></pre><h2 id="构建堆">构建堆</h2><p>把符合格式的数组看成是一棵完全二叉树，要构建堆的话，当然可以从数组的第 2 个元素开始下沉，一直到最后一个元素。</p>
+<p>但这样的效率很低，单说最大可能交换的次数，假设 N 是树的高度，最大可能的交换次数一共是：</p>
+<pre><code><span class="number">2</span>^<span class="number">0</span>*(N-<span class="number">1</span>)+<span class="number">2</span>^<span class="number">1</span>*(N-<span class="number">2</span>)+...+<span class="number">2</span>^(N-<span class="number">2</span>)*<span class="number">1</span>
+</code></pre><p>参考黑帮发展的形式可以得到比较好的思路：不用管一众小黑帮的喽啰，只要收拾了它们的头目，就可以掌管这些黑帮。一开始就要找到小黑帮的头目，把他们打沉了，再往上找他们的头目。这样最大可能交换的次数一共是：</p>
+<pre><code><span class="number">2</span>^<span class="number">0</span>+<span class="number">2</span>^<span class="number">1</span>+...+<span class="number">2</span>^(N-<span class="number">2</span>)
+</code></pre><p>实现这个技巧的代码也很简单：</p>
+<pre><code><span class="function">def <span class="title">make_heap</span><span class="params">(<span class="built_in">array</span>)</span>
+  index </span>= (<span class="built_in">array</span>.length - <span class="number">1</span>) / <span class="number">2</span>
+  <span class="keyword">while</span> index &gt;= <span class="number">1</span>
+    sink(<span class="built_in">array</span>, index, <span class="built_in">array</span>.length - <span class="number">1</span>)
+    index -= <span class="number">1</span>
+  end
+  <span class="built_in">array</span>
+end
+</code></pre><h2 id="排序">排序</h2><p>我们最终要得到一个从小到大的数组，得不断地把堆中最大的元素移到数组的末尾，缩小堆的大小之后，再使堆有序。</p>
+<pre><code>def _sort(<span class="built_in">array</span>)
+  <span class="built_in">len</span> = <span class="built_in">array</span>.length - <span class="number">1</span>
+  <span class="keyword">while</span> <span class="built_in">len</span> &gt; <span class="number">1</span>
+    exchange(<span class="built_in">array</span>, <span class="number">1</span>, <span class="built_in">len</span>)
+    <span class="built_in">len</span> -= <span class="number">1</span>
+    sink(<span class="built_in">array</span>, <span class="number">1</span>, <span class="built_in">len</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+
+module HS
+  extend self
+  def<span class="function"> sort(</span>array<span class="function">)</span>
+   <span class="function"> heap_sort(</span>array<span class="function">)</span>
+  end
+ <span class="keyword"> private</span>
+  def<span class="function"> heap_sort(</span>array<span class="function">)</span>
+   <span class="instruction"> return </span>array<span class="instruction"> if </span>array.length &lt; 2
+    <span class="comment"># 构建符合格式的数组</span>
+    array<span class="keyword">[</span>0], array<span class="keyword">[</span>array.length] = nil, array<span class="keyword">[</span>0]
+    <span class="comment"># 构建堆</span>
+   <span class="function"> make_heap(</span>array<span class="function">)</span>
+    <span class="comment"># 排序</span>
+   <span class="function"> _sort(</span>array<span class="function">)</span>
+
+    array<span class="keyword">[</span>1..-1]
+  end
+
+  def<span class="function"> make_heap(</span>array<span class="function">)</span>
+    index =<span class="function"> (</span>array.length - 1<span class="function">)</span> / 2
+    while index &gt;= 1
+     <span class="function"> sink(</span>array, index, array.length - 1<span class="function">)</span>
+      index -= 1
+    end
+   <span class="instruction"> array
+</span>  end
+
+  def<span class="function"> _sort(</span>array<span class="function">)</span>
+    len = array.length - 1
+    while len &gt; 1
+     <span class="function"> exchange(</span>array, 1, len<span class="function">)</span>
+      len -= 1
+     <span class="function"> sink(</span>array, 1, len<span class="function">)</span>
+    end
+  end
+
+  def<span class="function"> sink(</span>arr, index, len<span class="function">)</span>
+    while index * 2 &lt;= len
+      child_index = index * 2
+     <span class="instruction"> if </span>child_index &lt; len &amp;&amp; arr<span class="keyword">[</span>child_index] &lt; arr<span class="keyword">[</span>child_index + 1]
+        child_index += 1
+      end
+      break nil<span class="instruction"> if </span>arr<span class="keyword">[</span>child_index] &lt;= arr<span class="keyword">[</span>index]
+     <span class="function"> exchange(</span>arr, index, child_index<span class="function">)</span>
+      index = child_index
+    end
+  end
+
+  def<span class="function"> exchange(</span>arr, i, j<span class="function">)</span>
+    arr<span class="keyword">[</span>i], arr<span class="keyword">[</span>j] = arr<span class="keyword">[</span>j], arr<span class="keyword">[</span>i]
+  end
+
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+  require 'test/unit'
+  class TestHS &lt; Test::Unit::TestCase
+    def test_0
+      input = <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
+    end
+    def test_1_0
+      input = <span class="keyword">[</span>0]
+      expected = <span class="keyword">[</span>0]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'
+    end
+    def test_1_1
+      input = <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'
+    end
+    def test_2_0
+      input = <span class="keyword">[</span>0,1]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'two iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_2_1
+      input = <span class="keyword">[</span>1,0]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'two iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_2_2
+      input = <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'two iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_0
+      input = <span class="keyword">[</span>0,1,2]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_1
+      input = <span class="keyword">[</span>0,2,1]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_2
+      input = <span class="keyword">[</span>2,1,0]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_3
+      input = <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_4
+      input = <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_4_0
+      input = <span class="keyword">[</span>0,1,2,3]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'four iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_4_1
+      input = <span class="keyword">[</span>3,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'four iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_4_2
+      input = <span class="keyword">[</span>3,1,2,1]
+      expected = <span class="keyword">[</span>1,1,2,3]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'four iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_10_0
+      input = <span class="keyword">[</span>9,8,7,6,5,4,3,2,1,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'ten iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_10_1
+      input = <span class="keyword">[</span>9,5,7,3,8,4,6,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'ten iteHS<span class="instruction"> array </span>not equal'
+    end
+  end
+end
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      为什么知道原理还是写不出正确的程序呢？(系列)
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="algorithm" scheme="http://judes.me/tags/algorithm/"/>
+    
+      <category term="heap sort" scheme="http://judes.me/tags/heap-sort/"/>
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>写写归并排序</title>
+    <link href="http://judes.me/2016/07/29/try-merge-sort/"/>
+    <id>http://judes.me/2016/07/29/try-merge-sort/</id>
+    <published>2016-07-28T23:38:54.000Z</published>
+    <updated>2016-07-29T14:03:17.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="原理">原理</h2><ul>
+<li>将待排序元素分为前后两部分，分别调用归并排序使它们有序</li>
+<li>从头开始逐个比较前后两部分的元素，根据比较结果先后放进新数组，最终返回这个新数组</li>
+</ul>
+<h2 id="联想">联想</h2><ul>
+<li>归并排序用到了递归，递归终止的条件是待排序元素数量小于 2</li>
+<li>归并排序比较之后不会交换元素，而是生成新的数组</li>
+</ul>
+<h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = MS.sort(array)
+</code></pre><h2 id="大体结构">大体结构</h2><pre><code><span class="class"><span class="keyword">module</span> <span class="title">MS</span></span>
+  extend <span class="keyword">self</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">sort</span><span class="params">(arr)</span></span>
+    merge_sort(arr.dup)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">merge_sort</span><span class="params">(arr)</span></span>
+    <span class="keyword">return</span> arr <span class="keyword">if</span> arr.length &lt; <span class="number">2</span>
+    <span class="comment">#将 arr 一分为二，分别调用归并排序</span>
+    <span class="comment">#逐一比较这两部分的元素，根据比较结果生成新数组</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="将待排序元素一分为二，分别调用归并排序">将待排序元素一分为二，分别调用归并排序</h2><pre><code><span class="function">def <span class="title">merge_sort</span><span class="params">(arr)</span>
+  #...
+
+  m_index </span>= arr.length / <span class="number">2</span>
+  <span class="preprocessor">#这两部分的命名真是头痛，原谅我英语不好</span>
+  low_part = merge_sort(arr[<span class="number">0.</span>..m_index]) <span class="preprocessor"># low_part 不包含位于 m_index 的元素</span>
+  high_part = merge_sort(arr[m_index..-<span class="number">1</span>])
+
+  <span class="preprocessor">#...</span>
+end
+</code></pre><h2 id="逐一比较这两部分的元素，根据比较结果生成新数组">逐一比较这两部分的元素，根据比较结果生成新数组</h2><pre><code><span class="function"><span class="keyword">def</span> <span class="title">merge_sort</span><span class="params">(arr)</span></span>
+  <span class="comment">#...</span>
+
+  l_index = <span class="number">0</span>
+  h_index = <span class="number">0</span>
+  new_arr = []
+
+  <span class="keyword">while</span> low_part[l_index] &amp;&amp; high_part[h_index]
+    <span class="keyword">if</span> low_part[l_index] &lt; high_part[h_index]
+      new_arr &lt;&lt; low_part[l_index]
+      l_index += <span class="number">1</span>
+    <span class="keyword">else</span>
+      new_arr &lt;&lt; high_part[h_index]
+      h_index += <span class="number">1</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">#如果第一部分还有未比较的元素，就放进新数组</span>
+  <span class="keyword">while</span> low_part[l_index]
+    new_arr &lt;&lt; low_part[l_index]
+    l_index += <span class="number">1</span>
+  <span class="keyword">end</span>
+
+  <span class="comment">#同上</span>
+  <span class="keyword">while</span> high_part[h_index]
+    new_arr &lt;&lt; high_part[h_index]
+    h_index += <span class="number">1</span>
+  <span class="keyword">end</span>
+
+  new_arr
+
+<span class="keyword">end</span>
+</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!usr/bin/env ruby</span>
+
+module MS
+ extend self
+ def<span class="function"> sort(</span>arr<span class="function">)</span>
+  <span class="function"> merge_sort(</span>arr.dup<span class="function">)</span> 
+   end
+ def<span class="function"> merge_sort(</span>arr<span class="function">)</span>
+  <span class="instruction"> return </span>arr<span class="instruction"> if </span>arr.length &lt; 2
+   m_index = arr.length / 2
+   low_part =<span class="function"> merge_sort(</span>arr<span class="keyword">[</span>0...m_index]<span class="function">)</span>
+   high_part =<span class="function"> merge_sort(</span>arr<span class="keyword">[</span>m_index..-1]<span class="function">)</span>
+
+   l_index = 0
+   h_index = 0
+   new_arr = <span class="keyword">[</span>]
+
+   while low_part<span class="keyword">[</span>l_index] &amp;&amp; high_part<span class="keyword">[</span>h_index]
+    <span class="instruction"> if </span>low_part<span class="keyword">[</span>l_index] &lt; high_part<span class="keyword">[</span>h_index]
+       new_arr &lt;&lt; low_part<span class="keyword">[</span>l_index]
+       l_index += 1
+     else
+       new_arr &lt;&lt; high_part<span class="keyword">[</span>h_index]
+       h_index += 1
+     end
+   end
+
+   <span class="comment">#如果第一部分还有未比较的元素，就放进新数组</span>
+   while low_part<span class="keyword">[</span>l_index]
+     new_arr &lt;&lt; low_part<span class="keyword">[</span>l_index]
+     l_index += 1
+   end
+
+   <span class="comment">#同上</span>
+   while high_part<span class="keyword">[</span>h_index]
+     new_arr &lt;&lt; high_part<span class="keyword">[</span>h_index]
+     h_index += 1
+   end
+
+   new_arr
+
+  end
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+  require 'test/unit'
+  class TestMS &lt; Test::Unit::TestCase
+    def test_0
+      input = <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
+    end
+    def test_1_0
+      input = <span class="keyword">[</span>0]
+      expected = <span class="keyword">[</span>0]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_1_1
+      input = <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_0
+      input = <span class="keyword">[</span>0,1]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_1
+      input = <span class="keyword">[</span>1,0]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_2
+      input = <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_0
+      input = <span class="keyword">[</span>0,1,2]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_1
+      input = <span class="keyword">[</span>0,2,1]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_2
+      input = <span class="keyword">[</span>2,1,0]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_3
+      input = <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_4
+      input = <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_0
+      input = <span class="keyword">[</span>0,1,2,3]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_1
+      input = <span class="keyword">[</span>3,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_2
+      input = <span class="keyword">[</span>3,1,2,1]
+      expected = <span class="keyword">[</span>1,1,2,3]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_10_0
+      input = <span class="keyword">[</span>9,8,7,6,5,4,3,2,1,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'ten items<span class="instruction"> array </span>not equal'    
+    end
+    def test_10_1
+      input = <span class="keyword">[</span>9,5,7,3,8,4,6,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> MS.sort(</span>input<span class="function">)</span>, expected, 'ten items<span class="instruction"> array </span>not equal'    
+    end
+  end
+end
+</code></pre><p>PS. 想要跑某个特定的测试，可以这样写： <code>ruby test.rb -n test_method_name</code></p>
+]]></content>
+    
+    <summary type="html">
+    
+      为什么知道原理还是写不出正确的程序呢？(系列)
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="algorithm" scheme="http://judes.me/tags/algorithm/"/>
+    
+      <category term="merge sort" scheme="http://judes.me/tags/merge-sort/"/>
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一个因挪动 wechat_api 引发的问题，以及问题探究</title>
+    <link href="http://judes.me/2016/07/27/wechat-gem-wechat-api/"/>
+    <id>http://judes.me/2016/07/27/wechat-gem-wechat-api/</id>
+    <published>2016-07-26T23:36:56.000Z</published>
+    <updated>2016-07-28T12:39:50.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>公司的微信企业号用了 <a href="https://github.com/Eric-Guo/wechat" target="_blank" rel="external">wechat</a> 这个 gem 包。如果要在各个 controller 中调用 gem 包提供的 api ，就先得在 controller 里调用 <code>wechat_api</code> 。如果要使用微信的 JS-SDK ，也得在 controller 里面调用 <code>wechat_api</code> 。</p>
+<p>近日新增一个 controller ，没有用到 wechat 提供的 api ，所以就没调用 <code>wechat_api</code> ，也因为功能简单没有写测试（事后看来不写测试要打屁屁）；在另一次不相干的改动中，我们把微信 JS-SDK 的配置代码移动到 layout 文件中，跑过了所有测试、手动测试了关键功能没发现问题就上线了；几天后才发觉新增的那个 controller 有严重问题，原因是在 layout 中使用微信的 JS-SDK ，而在 controller 中没有调用 <code>wechat_api</code> 。</p>
+<p>反思得到的结论，最重要的一个是：新增 controller 没写测试用例，其二是： 新增 controller 没调用 <code>wechat_api</code> 。</p>
+<p>测试用例是一定要补上的。</p>
+<p>问题是要加上 <code>wechat_api</code> 的调用。今后每增加一个 controller 都要写一遍，这很人肉啊！于是我尝试把这个调用挪动到所有 controller 的共同超类： ApplicationController 中，结果又引发了新问题。</p>
+<p>日志显示错误出现在配置 JS-SDK 时， wechat_config_js 这个方法内 controller.wechat 返回 nil 。</p>
+<p>首先要看看 wechat_api 究竟做了什么，很快找到它在 wechat_responder.rb 中定义。</p>
+<p>它首先 <code>include Wechat::ControllerApi</code> ，这个模块里定义了 <code>wechat</code> 实例方法，而它又调用 <code>self.class.wechat</code> ，里面的注释标明这样做是为了在实例中调用类方法。 而这个类方法实际是个 <code>attr_accessor</code> 。</p>
+<p>然后是： <code>self.wechat = load_controller_wechat(opts)</code></p>
+<p>先不管 <code>load_controller_wechat</code> 到底做了什么，总之最终就是把它返回的结果赋值给 <code>self.wechat</code> ，就是把这个值保存在类单例变量(wechat)当中。</p>
+<p>至此，出错的原因算是找到了：如果在 ApplicationController 中调用 <code>wechat_api</code> ，当在具体的某个 view 里调用 <code>controller.wechat</code> 时，会返回 <code>nil</code> ，因为这个值是保存在 ApplicationController 的类单例里面。</p>
+<p>这样设计能做到对不同的 controller 应用不同的配置（<a href="https://github.com/Eric-Guo/wechat#configure-individual-responder-with-different-appid" target="_blank" rel="external">见此</a>）。</p>
+<p>要解决这个新问题，比较稳妥的办法就是在各个具体的 controller 中调用 <code>wechat_api</code> 。还有一种办法就是重写 <code>Wechat::ControllerApi</code> 中的 <code>wechat</code> 实例方法，如果类方法 <code>wechat</code> 返回 <code>nil</code> ，就调用它的超类的 <code>wechat</code> 方法：</p>
+<pre><code>def wechat
+  <span class="keyword">self</span>.<span class="keyword">class</span>.wechat || <span class="keyword">self</span>.<span class="keyword">class</span>.superclass.wechat
+  # Make sure user can <span class="keyword">continue</span> access wechat at instance level similar <span class="keyword">to</span> <span class="keyword">class</span> level
+<span class="keyword">end</span>
+</code></pre><p>测试用都跑过了，就是不知道会不会引发新的 bug 。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      本想着减少重复代码，把 wechat_api 从各个具体的 controller 挪动到 ApplicationController ，结果出错啦。为了找出原因，我又踏上了阅读源码的不归路。
+    
+    </summary>
+    
+      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
+    
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="wechat" scheme="http://judes.me/tags/wechat/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sinatra 0.1.0 源码学习</title>
+    <link href="http://judes.me/2016/07/10/sinatra-learning-0-1-0/"/>
+    <id>http://judes.me/2016/07/10/sinatra-learning-0-1-0/</id>
+    <published>2016-07-10T06:40:17.000Z</published>
+    <updated>2016-08-13T01:53:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 2 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>列一下本人运行 sinatra 0.1.0 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="change_log">change log</h2><ul>
+<li>支持设置运行环境</li>
+<li>支持 session</li>
+<li>支持在路由的资源路径中传入变量</li>
+<li>增加测试用例</li>
+<li>支持直接输出静态资源</li>
+<li>支持渲染 layout</li>
+<li>增加处理请求完成后的事件回调</li>
+<li>支持后台日志实时打印</li>
+</ul>
+<h2 id="loader-rb">loader.rb</h2><p>sinatra 用 Loader 模块来加载/重新加载文件。用到 Set ，无需担心重复加载相同的文件。把 <code>load_file</code> 重命名为 <code>load_files</code>，也拯救了有强迫症的程序员。</p>
+<p>sinatra 接下来将会这样使用 Loader ：</p>
+<pre><code>Sinatra::Loader<span class="class">.load_files</span> Dir.<span class="function"><span class="title">glob</span><span class="params">(SINATRA_ROOT + <span class="string">'/lib/sinatra/core_ext/*.rb'</span>)</span></span>
+</code></pre><p>要注意如果 core_ext 目录下有多个文件， Dir.glob 是不保证按一定顺序（比如字母顺序）加载文件的，讨论<a href="http://stackoverflow.com/questions/6220753/does-dir-glob-guarantee-the-order" target="_blank" rel="external">见此</a>， 1.8.7 版本的 ruby ，其 Set 也不保证 each 的顺序一致，来源<a href="http://stackoverflow.com/questions/6590152/is-the-each-iterator-in-ruby-guaranteed-to-give-the-same-order-on-the-same-elem" target="_blank" rel="external">见此</a>。</p>
+<h2 id="kernel-rb">kernel.rb</h2><p>这里扩展了一个很有意思的方法 silence_warnings ，如你所见，就是屏蔽警告用的，用法如下：</p>
+<pre><code>silence_warnings <span class="operator"><span class="keyword">do</span>
+  <span class="keyword">value</span> = noisy_call # <span class="keyword">no</span> <span class="keyword">warning</span> voiced
+<span class="keyword">end</span></span>
+</code></pre><p>sinatra 只想在调用 silence_warnings 时屏蔽警告，其他时候显示警告。有时候我们也有类似的需求：调用某个方法之前改变某个配置，调用完了再把配置改回去。这涉及到保存配置和处理异常，可以借鉴 sinatra 在此处的做法。</p>
+<h2 id="继承关系及至对象模型">继承关系及至对象模型</h2><p>sinatra 在 core_ext 目录下，先后扩展了 Class, Module, Kernel, Object, Hash 等多个类，它们之间是什么关系呢？这个问题又牵扯到另一个终极问题： ruby 的对象模型是什么？当你清楚 ruby 的对象模型后，众多类之间的关系就不在话下了。</p>
+<p>空说无益，先教大家几个探索对象模型的方法，打开 irb ，写两个简单的类：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">A</span>;</span> <span class="keyword">end</span>
+<span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="inheritance">&lt; <span class="parent">A</span></span>;</span> <span class="keyword">end</span>
+</code></pre><p>我们知道 B 继承自 A ，B 有一个方法可以显示自己的父类是谁：</p>
+<pre><code>B.superclass <span class="comment">#=&gt; A</span>
+<span class="comment"># 当 B 继承了 A ，我们就说 A 是 B 的超类（这是 ruby 的中文术语吧，一般都叫父类的）</span>
+</code></pre><p>我们从 B 实例化出一个对象 b ，b 也有方法可以打印自己是属于哪个类的实例：</p>
+<pre><code><span class="tag">b</span> = B<span class="class">.new</span>
+<span class="tag">b</span><span class="class">.class</span> #=&gt; B
+</code></pre><p>我们要知道 ruby 中，类也是实例，如果在类上面调用 class 方法会打印什么呢？</p>
+<pre><code>A.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+B.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+Hash.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+<span class="keyword">Class</span>.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+<span class="keyword">Module</span>.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+</code></pre><p>就连在 Class 上调用 class 方法也得到 Class 。这里得出一个结论，所有类都是 Class 类的实例。</p>
+<p>我们再回到继承这个话题，除了有办法看到一个类的超类，还有办法看到一个类的祖先链：</p>
+<pre><code>B.ancestors <span class="preprocessor">#=&gt; [B, A, Object, Kernel, BasicObject]</span>
+<span class="preprocessor">#=&gt; 上面的结果是在 ruby <span class="number">2.0</span><span class="number">.0</span> 版本中得到的，你的版本可能有少许不同</span>
+</code></pre><p>可以看到 B 继承自 A ，A 继承自 Object , Object 继承自 Kernel , Kernel 继承自 BasicObject 。嗯，这种说法是不对的，实际上 Object 继承自 BasicObject ， Kernel 模块是被 Object include 进来的：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Object</span> <span class="inheritance">&lt; <span class="parent">BasicObject</span></span></span>
+  <span class="keyword">include</span> <span class="constant">Kernel</span>
+<span class="keyword">end</span>
+</code></pre><p>被 include 进来的模块，都是刚好插入到类的祖先链的超类位置。</p>
+<p>你会发现，几乎所有的类的祖先链都包含 Object, Kernel, BasicObject 这三个类：</p>
+<pre><code>A.ancestors #=&gt; [A, <span class="built_in">Object</span>, Kernel, BasicObject]
+Array.ancestors #=&gt; [Array, Enumerable, <span class="built_in">Object</span>, Kernel, BasicObject]
+Fixnum.ancestors #=&gt; [Fixnum, Integer, Numeric, <span class="built_in">Comparable</span>, <span class="built_in">Object</span>, Kernel, BasicObject]
+<span class="built_in">String</span>.ancestors #=&gt; [<span class="built_in">String</span>, <span class="built_in">Comparable</span>, <span class="built_in">Object</span>, Kernel, BasicObject]
+</code></pre><p>这三个类可是继承链的发源地啊。</p>
+<p>你会发觉我们还没有讲到 Module ， Module 是 Class 的超类：</p>
+<pre><code><span class="keyword">Class</span>.ancestors #=&gt; [<span class="keyword">Class</span>, Module, <span class="keyword">Object</span>, Kernel, BasicObject]
+</code></pre><p>以上是基础版的 ruby 对象模型，其实也没说多少。</p>
+<h2 id="metaid-rb">metaid.rb</h2><p>sinatra 在这个里做了一个相当顶层的——Object——扩展，要理解这样做的目的，首先要明白 ruby 是怎样寻找一个方法的。打开 irb ，输入：</p>
+<pre><code>class A
+  def method_1
+    puts 'I am instance <span class="keyword">method</span>'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>首先要知道：方法都是存放在 类 ，而不是类的实例中的。如果类实例调用了某个方法，而在实例的类中找不到该方法，那么会沿着祖先链一直往上面找。如果最终还是找不到，就会转而调用该类的 method_missing 方法，如果该类没定义 method_missing 方法，也会沿祖先链一直往上找，直到 BasicObject(2.3.1 版 ruby ，1.8.7 版 ruby 是在 Kernel 上定义) 的 method_missing 方法。拿上面的例子来说：</p>
+<pre><code>a = <span class="type">A</span>.<span class="keyword">new</span>
+a.method_1 #=&gt; <span class="symbol">'I</span> am instance method'
+<span class="keyword">class</span> <span class="type">A</span>
+  def method_missing(method_name, *args, &amp;block)
+    puts <span class="string">"you have called method #{method_name}"</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a.method_2 #=&gt; <span class="symbol">'you</span> have called <span class="keyword">method</span> method_2'
+
+<span class="keyword">class</span> <span class="type">B</span> &lt; <span class="type">A</span>; <span class="keyword">end</span>
+
+b = <span class="type">B</span>.<span class="keyword">new</span>
+b.method_1 #=&gt; <span class="symbol">'I</span> am instance method'
+b.method_3 #=&gt; <span class="symbol">'you</span> have called <span class="keyword">method</span> method_3'
+</code></pre><p>有时候我们还会定义这样的方法：</p>
+<pre><code>class A
+  def self.method_4
+    puts 'I am singleton <span class="keyword">method</span> method_4'
+  <span class="keyword">end</span>
+
+  class &lt;&lt; self
+    def method_5
+      puts 'I am singleton <span class="keyword">method</span> method_5'
+    <span class="keyword">end</span>  
+  <span class="keyword">end</span>
+
+  def A.method_6
+    puts 'I am singleton <span class="keyword">method</span> method_6'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>以上三种方法不同之处只在于名字不同，它们都是类的单例方法（singleton method）。刚说过：“方法都是存放在 类 ，而不是类的实例中的”，单例方法也是如此，它存在于实例的 metaclass 中（或者叫做 eigenclass ，官方称作 singleton class）。metaclass 一直待在我们的视野范围之外，官方没有提供让它们现形的方法， sinatra 要做的就是扩展一套这样的方法。</p>
+<p>metaid.rb 第 6、7 行的写法很帅气，但也很难看懂，稍为整理一下：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">metaclass</span></span>
+  <span class="comment">#1</span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span> <span class="comment">#2</span></span>
+    <span class="comment">#3</span>
+    <span class="keyword">self</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">meta_eval</span> <span class="title">&amp;</span><span class="title">blk</span></span>
+  metaclass.instance_eval &amp;blk
+<span class="keyword">end</span>
+</code></pre><p>分析 metaclass 方法，在 #1 处，如果把 self 打印出来，这个 self 会是 Object 的实例（具体得看是谁调用 metaclass 方法）；在 #2 处，运用 ruby 提供的语法 <code>class &lt;&lt; self</code> ，把 <code>class &lt;&lt; self; self; end</code> 块中的 self 设置为 Object 实例的 metaclass ；所以在 #3 处，如果把 self 打印出来，这个 self 会是 Object 实例的 metaclass ，而这个 self 会作为块的结果返回， metaclass 方法又将块的结果返回，最终得到 Object 实例的 metaclass 。</p>
+<p>附上对 metaclass 的分析参考资料：</p>
+<ul>
+<li><a href="https://www.amazon.com/Metaprogramming-Ruby-Program-Like-Facets/dp/1941222129" target="_blank" rel="external">Metaprogramming Ruby 2: Program Like the Ruby Pros (Facets of Ruby)</a></li>
+<li><a href="http://viewsourcecode.org/why/hacking/seeingMetaclassesClearly.html" target="_blank" rel="external">seeingMetaclassesClearly</a></li>
+<li><a href="http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/" target="_blank" rel="external">Metaprogramming in Ruby: It’s All About the Self</a></li>
+</ul>
+<h2 id="symbol-rb">symbol.rb</h2><p>在系列第 1 篇文章说过，可以给 Symbol 定义一个 to_proc 方法，方便与 &amp; 操作符配合使用。 sinatra 定义了一个看上去不一样的 to_proc ：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
+  <span class="constant">Proc.</span>new { |*args| args.shift.<span class="constant">__send__(</span><span class="keyword">self</span>, *args) }
+<span class="keyword">end</span>
+</code></pre><p>但做的事情跟第 1 篇文章中的一样。</p>
+<p><code>*</code> （splat operator）出现了两次，意义刚好相反，第一次出现是把调用方法时传进来的参数变为一个数组，第二次出现是把一个数组拆散成一个个的参数传到方法中。在 1.8 版本的 ruby ，只要是能响应 to_ary 方法的对象都可以这样用：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Foo</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_ary</span></span>
+    [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a, *b = <span class="constant">Foo</span>.new <span class="comment">#=&gt; a = 1, b = [2,3]</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">some_method</span><span class="params">(p1,p2,p3)</span></span>
+  p <span class="string">"<span class="subst">#{p1}</span> <span class="subst">#{p2}</span> <span class="subst">#{p3}</span>"</span>
+<span class="keyword">end</span>
+
+some_method(*<span class="constant">Foo</span>.new) <span class="comment">#=&gt; 1 2 3</span>
+</code></pre><p>上面这个例子出自<a href="https://blog.pivotal.io/labs/labs/ruby-pearls-vol-1-the-splat" target="_blank" rel="external">此处</a>。</p>
+<p><code>args.shift</code> 会删除并返回 args 数组第一个元素。</p>
+<p><code>__send__</code> 方法跟 <code>send</code> 方法做的事情一样。因为 send 这个单词太普通、常用了，很容易被程序员覆写，所以 ruby 又另外提供一个 <code>__send__</code> ，如果不小心覆写这个方法， ruby 会提示警告：</p>
+<pre><code><span class="attribute">warning</span>: <span class="string">redefining `__send__' may cause serious problem</span>
+</code></pre><p>附上对这个方法讨论的<a href="http://stackoverflow.com/questions/4658269/ruby-send-vs-send" target="_blank" rel="external">链接</a></p>
+<h2 id="module-rb">module.rb</h2><p>module.rb 在 Module 扩展了一个 attr_with_default 方法，这个方法类似 Class 中的 cattr_accessor ，只不过多了个默认值。</p>
+<p>这里出现元编程中常见的 <code>define_method</code> 方法，它是定义在 Module 中的私有方法，用来动态地生成方法。完整文档可以看<a href="http://ruby-doc.org/core-2.2.0/Module.html" target="_blank" rel="external">这里</a>。</p>
+<p>一般情况下 <code>define_method</code> 只能在定义类时直接调用（此时 self 指向类本身），如：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>
+  define_method(<span class="symbol">:m_a</span>) { p <span class="string">'m_a'</span> }
+<span class="keyword">end</span>
+
+<span class="constant">A</span>.new.m_a <span class="comment">#=&gt; m_a</span>
+</code></pre><p>如果要在实例方法里调用 <code>define_method</code> ，这样写会出报找不到方法错误：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    define_method(sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>} <span class="comment">#=&gt; NoMethodError: undefined method `define_method'</span>
+</code></pre><p>回顾 ruby 寻找方法的步骤：先到实例的类中找，找不到就沿着类的祖先链找，打印 B 的祖先链，里面并没有 Module ，这就是出错的原因：</p>
+<pre><code><span class="keyword">B.ancestors </span>#=&gt; [<span class="keyword">B, </span>Object, Kernel]
+</code></pre><p>而在定义类时直接调用 <code>define_method</code> 不报错，是因为此时 self 指向 A ，而 A 作为实例的话，它的类是 Class ，打印 Class 的祖先链，里面就有 Module：</p>
+<pre><code><span class="keyword">Class</span>.ancestors #=&gt; [<span class="keyword">Class</span>, Module, <span class="keyword">Object</span>, Kernel]
+</code></pre><p>在调用 <code>define_method</code> 时把 self 指向 B ，还是会报错：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    <span class="keyword">self</span>.<span class="keyword">class</span>.define_method(sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>} <span class="comment">#=&gt; NoMethodError: private method `define_method' called for B:Class</span>
+</code></pre><p>因为 <code>define_method</code> 是私有方法，不能显式调用，官方文档给出了解决办法：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    <span class="keyword">self</span>.<span class="keyword">class</span>.send(<span class="symbol">:define_method</span>, sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+b = <span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>}
+b.m_b <span class="comment">#=&gt; m_b</span>
+</code></pre><h2 id="request-rb">request.rb</h2><p>这里重新打开了 Rack::Request ，扩展了 request_method 方法。这样做的缘由是：html 的 form 元素只支持 GET 和 POST 方法， RESTful 定义的方法至少有 GET/POST/PUT/DELETE 四种，为了让 form 也用上 PUT 和 DELETE 方法， sinatra 检测 POST 请求中的 _method 参数，如果是 PUT 或者 DELETE ，就直接替换 POST 。相关讨论<a href="http://stackoverflow.com/questions/16805956/why-dont-browsers-support-put-and-delete-requests-and-when-will-they" target="_blank" rel="external">见此</a></p>
+<h2 id="environment-rb">environment.rb</h2><p>在加载完 core_ext 和 rack_ext 目录下的文件后，会加载 sinatra 目录下的文件，一时不知从何下手分析，看到后面有行代码：</p>
+<pre><code><span class="label">Sinatra::</span>Environment.prepare
+</code></pre><p>就从 environment.rb 说起吧。</p>
+<p><strong> ARGV </strong></p>
+<p>Environment 的 prepare 方法用来解释参数。 <code>ARGV</code> 是定义在 Object 中的常量，并且是 Array 的实例，表示在命令行运行脚本文件时传入的参数列表。</p>
+<h2 id="options-rb">options.rb</h2><p>parse! 实际上没有用到传进来的参数，它用的还是 ARGV 。</p>
+<p>这个版本的 sinatra 开始区分运行脚本的环境（test/development/production），如果当前处在 test 环境， parse! 方法立即返回。</p>
+<p>接下来解释参数的任务就交给 <a href="http://ruby-doc.org/stdlib-1.8.7/libdoc/optparse/rdoc/OptionParser.html" target="_blank" rel="external">OptionParser</a> 了。</p>
+<p>这里有一句 <code>env.intern</code> 。 env 是一个 String 实例， intern 方法获取字符串在 ruby 的内部实现（internal representation）。 ruby 最终会把字符串转换为符号，所以这个方法跟 to_sym 方法做一样的事情。 参见<a href="https://www.codecademy.com/en/forum_questions/512a675cf116c52d0d00674b" target="_blank" rel="external">相关讨论</a> (PS. 讨论中提及为什么 ruby 给同一个方法取不同的名字，很有启发意义)</p>
+<h2 id="logger-rb">logger.rb</h2><p>与前一个版本相比，这个文件多了一行代码：</p>
+<pre><code>define_method n <span class="keyword">do</span> |message|
+  <span class="variable">@stream</span>.puts message
+  <span class="variable">@stream</span>.flush <span class="comment">#多了这一行</span>
+<span class="keyword">end</span>
+</code></pre><p>@stream 是一个 IO 实例， flush 方法将 IO 实例中缓存的数据写到操作系统中去（<a href="http://ruby-doc.org/core-2.2.3/IO.html#method-i-flush" target="_blank" rel="external">官方文档</a>中解释操作系统仍然有可能缓存起来，所以并没有保证写到设备/文件中）。举个例子，在早期的 ruby 中，下面这段代码会等待 10 秒，然后在同一行打印 5 个点：</p>
+<pre><code><span class="number">5</span>.<span class="keyword">times</span> <span class="keyword">do</span>
+  <span class="keyword">print</span> <span class="string">'.'</span>
+  <span class="keyword">sleep</span> <span class="number">2</span>
+end
+</code></pre><p>要想每 2 秒打印一个点，可以在 <code>print &#39;.&#39;</code> 下面加上一句 <code>$stdout.flush</code>。</p>
+<p>缓存输出，直到打印换行符或者缓存满了，这个特性来源于 c 言语标准库，初衷应该是减少系统调用。后来不知道是 c 言语标准库还是 ruby 作了改动，修复了上面那个问题。</p>
+<p>推荐几篇有关 Ruby IO 的文章：</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/io-in-ruby" target="_blank" rel="external">IO in Ruby</a></li>
+<li><a href="https://www.ruby-forum.com/topic/208856" target="_blank" rel="external">Use of STDOUT.flush after puts</a></li>
+<li><a href="https://matt.berther.io/2009/02/11/puts-vs-print-in-ruby/" target="_blank" rel="external">puts vs print in ruby</a></li>
+</ul>
+<h2 id="irb-rb">irb.rb</h2><p>在运行 sinatra 时加上 -c 参数，就会用 console 模式启动 sinatra 。</p>
+<p>这个文件只定义了 start! 方法。在 ruby 中定义末尾带感叹号(!)的方法，意味着这个方法比不带感叹号的危险，要小心使用。</p>
+<p>start! 方法首先让 Object 加载 TestMethods 模块， <code>include</code> 方法是 Object 的私有方法，所以要使用 Object.send 加载（还记得这个技巧在 module.rb 那一节说过吗）。</p>
+<p>接着给 Object 类扩展了 reload! 和 show! 两个方法（建议现在就运行 sinatra 的 console 模式，动手玩玩这两个方法）。</p>
+<p>show! 调用了 IO.popen 方法。如果你想开一个子进程来调用外部命令，而且还想把外部命令的标准输入和标准输出跟 ruby 连接起来，那这个方法能满足你的需求。 popen 里的 p 指代 pipeline （管道）。管道是进程间通信的一种方式。</p>
+<p>举个使用 popen 的例子：</p>
+<pre><code>IO.popen(<span class="string">'tail -3'</span>, <span class="string">'w+'</span>) <span class="keyword">do</span> |<span class="keyword">pipe</span>|
+
+  <span class="comment"># ruby 会开一个子进程来运行这个 block </span>
+  <span class="comment"># 管道中属于 ruby 的这一头会作为参数传进来</span>
+
+  <span class="number">1</span>.upto(<span class="number">100</span>) <span class="keyword">do</span> { |i| <span class="keyword">pipe</span>.puts <span class="string">"line #{i}"</span> } 
+  <span class="keyword">pipe</span>.close_write <span class="comment">#在读取流之前一定要先把写入关闭，否则读取会阻塞</span>
+  puts <span class="keyword">pipe</span>.<span class="keyword">read</span>
+end
+
+<span class="comment"># line 98</span>
+<span class="comment"># line 99</span>
+<span class="comment"># line 100</span>
+</code></pre><p>show! 方法的意图是打开文本编辑器，并写入 TestMethods 模块中的几个方法 status / headers / body 的返回结果。</p>
+<p>举个例子，假设你能在命令行使用 <code>subl</code> 命令打开 sublime text 。你可以先跳转到 examples/hello 目录下，输入：</p>
+<pre><code>EDITOR=subl ruby hello<span class="class">.rb</span> -c
+</code></pre><p>这时你会进入 irb ，然后输入：</p>
+<pre><code><span class="function_or_atom">show</span><span class="exclamation_mark">!</span>
+</code></pre><p>这时你的 sublime text 就会被打开，里面已经写入了一些内容：</p>
+<pre><code><span class="xml"><span class="comment">&lt;!--
+        # Status: 404
+        # Headers: </span></span><span class="expression">{<span class="string">"Content-Type"</span>=&gt;<span class="string">"text/html"</span>, <span class="string">"Content-Length"</span>=&gt;<span class="string">"0"</span>}</span><span class="xml"><span class="comment">
+--&gt;</span></span>
+</code></pre><p>推荐一本用 ruby 来描述的关于进程的入门书 <a href="http://www.ituring.com.cn/minibook/347" target="_blank" rel="external">理解Unix进程</a>，里面有提及进程间通信的方式。</p>
+<p>还有几个关于 popen 的文档/讨论</p>
+<ul>
+<li><a href="http://www.rubydoc.info/stdlib/core/IO.popen" target="_blank" rel="external">IO.popen</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/ruby-cookbook/0596523696/ch20s08.html" target="_blank" rel="external">Driving an External Process with popen</a></li>
+</ul>
+<p>接下来 sinatra 先清空 ARGV 。如果当前目录（启动 sinatra 时所在的目录，而不是当前文件所在的目录， 运行 <code>Dir.pwd</code> 可以看到）下有 ‘.irbrc’ 文件，就把它保存到环境变量中， irb 会在启动时加载这个文件。</p>
+<p>当用户退出 irb 时，立即运行 <code>exit!</code> ，这样就退出了 sinatra 。</p>
+<p><code>exit!</code> 和 <code>exit</code> 的区别是前者会跳过退出时的处理程序(比如 at_exit )，前者默认的退出状态是 false ，而后者默认的退出状态是 true ( ruby 不同版本有不同的退出返回值， 1.8.7 版本 <code>exit</code> 默认返回 0 ， <code>exit!</code> 默认返回 -1 。 unix 会把返回值 0 当成 true ，其它返回值当成 false )。</p>
+<h2 id="server-rb">server.rb</h2><p>Server#start 方法首先调用 Server#tail 方法打印 log file 里面的内容。 tail 方法另开一个线程打开 log file ，然后不断地检查（ 1 秒 1 次）它有没有被改动，如果有则打印自上一次文件流的位置到最新文件流的末尾之间的内容。这段代码可以再精简一点：</p>
+<pre><code>File.open(log_file, 'r') <span class="operator"><span class="keyword">do</span> |<span class="keyword">f</span>|
+  <span class="keyword">loop</span> <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="keyword">f</span>.mtime &gt; last_checked
+      last_checked = <span class="keyword">f</span>.mtime
+      puts <span class="keyword">f</span>.<span class="keyword">read</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span></span>
+</code></pre><p>IO#read 方法会把 cursor 的位置定位到流的末尾，所以不需要手动调用 IO#seek 重新定位 cursor 的位置，这一点可以在调用 IO#read 之后再 打印 IO#pos 的结果证明。</p>
+<p>Server#start 最后调用 Thread#kill 方法杀掉这个线程。这一步很有可能是多余的，因为如果当前线程（ main thread ）结束了，所有其他线程都将会被杀死。</p>
+<p>sinatra 用到多进程和多线程，两者的区别以及使用时机可参考<a href="http://jayant7k.blogspot.com/2010/01/for.html" target="_blank" rel="external">这篇文章</a>和<a href="http://stackoverflow.com/questions/18575235/what-do-multi-processes-vs-multi-threaded-servers-most-benefit-from" target="_blank" rel="external">这篇文章</a></p>
+<p>stackoverflow 的一些讨论：</p>
+<ul>
+<li><a href="http://stackoverflow.com/questions/3481866/thread-join-blocks-the-main-thread" target="_blank" rel="external">Thread.join blocks the main thread</a></li>
+</ul>
+<h2 id="dispatcher-rb">dispatcher.rb</h2><p>在开发环境(development)中，sinatra 响应每一个请求前都会重新加载依赖文件以及在命令行中被 ruby 直接执行的脚本文件:</p>
+<pre><code>Loader.reload! <span class="keyword">if</span> Options<span class="class">.environment</span> == :development
+</code></pre><p>这样在开发环境中改动文件不需要重启就生效。 <code>Loader.reload!</code> 方法会重新加载被执行的脚本文件，看上去会产生循环加载的问题，举个例子，跳转到 examples/hello/ 目录下，在命令行中输入：</p>
+<pre><code>ruby hello.rb -c
+<span class="preprocessor"># =&gt; 通过 require <span class="string">'sinatra'</span> ， 加载 /lib/sinatra 目录下的相关文件，也把这些文件加载到 loaded_files 中</span>
+</code></pre><p>此时在命令行中输入：</p>
+<pre><code>reload!
+<span class="preprocessor"># =&gt; 重新加载 loaded_files 中的文件，然后加载 hello.rb 文件</span>
+</code></pre><p>hello.rb 文件中有 <code>require &#39;sinatra&#39;</code> ，这会不会导致 ruby 重新加载 sinatra 呢？</p>
+<p>不会。</p>
+<p><code>Kernel#require</code> 方法会在 <code>$LOAD_PATH</code> 中查找要加载的文件，它也会帮你加上 .rb 或者 .so 文件后缀。比如此处的 <code>require &#39;sinatra&#39;</code> ，它会在 lib/ 目录下找到 sinatra.rb 文件。</p>
+<p>已经被 <code>Kernel#require</code> 加载过的文件会保存在 <code>$&quot;</code> 变量中，<code>Kernel#require</code> 不会再次加载已经加载过的文件。</p>
+<p><code>Kernel#load</code> 方法要求在使用时写上文件路径以及文件后缀，如果文件路径不是绝对路径，会在 <code>$LOAD_PATH</code> 中查找文件。</p>
+<p><code>Kernel#load</code> 会再次加载已经加载过的文件。</p>
+<p>想关讨论可参考<a href="http://stackoverflow.com/questions/3170638/how-does-load-differ-from-require-in-ruby" target="_blank" rel="external">How does load differ from require in Ruby?</a></p>
+<p>ruby 预先定义了不少变量、常量，<a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/variable.html#dquote" target="_blank" rel="external">这是列表</a></p>
+<h2 id="sessions-rb">sessions.rb</h2><p>Rack::Session::Cookie 实现了基于 cookie 的 session 管理功能，只要浏览器发过来的 cookie 中有 key 为 session_id 的键值对，Rack 就能借此保存、读取数据。</p>
+<p>Rack::Session::Cookie 最初并没有实现基于 session_id 读写数据，所有数据都保存在 env[‘rack.session’] 下面，源码<a href="https://github.com/rack/rack/commit/417ac6a3d6b394dc2a2d30d9e1235148170dec50" target="_blank" rel="external">见此</a>。 0.1.0 的 sinatra 应该就是使用这个最初的实现，通过控制台可以看到 cookie 中直接使用 rack.session 保存加密后的数据。</p>
+<p>cookie 功能默认开启，如果要关闭它，可以在加载之后调用 dsl.rb 中定义的 <code>sessions</code> 方法：</p>
+<pre><code><span class="title">sessions</span> :<span class="built_in">off</span>
+</code></pre><p>sinatra 还提供 <code>session</code> 方法返回已保存的 session ，方便使用 cookie 功能，下面是一个例子：</p>
+<pre><code><span class="comment">#!usr/bin/env ruby</span>
+<span class="comment">#file examples/you_say.rb</span>
+<span class="keyword">require</span> <span class="string">'sinatra'</span>
+
+get <span class="string">'/'</span> <span class="keyword">do</span>
+  session[<span class="symbol">:you_say</span>] = params[<span class="symbol">:you_say</span>] || <span class="string">'no'</span>
+  <span class="comment"># 注意 session 和 params 都要用 symbol 作 key</span>
+  <span class="string">'hello'</span>
+<span class="keyword">end</span>
+
+get <span class="string">'/session'</span> <span class="keyword">do</span>
+  session[<span class="symbol">:you_say</span>]
+<span class="keyword">end</span>
+</code></pre><p>先访问 <code>localhost:4567/?you_say=hi</code> ，再访问 <code>localhost:4567/session</code> ，能看到页面显示 ‘hi’ 。</p>
+<h2 id="event-rb">event.rb</h2><p><strong> EventManager </strong> 负责注册事件、匹配事件。</p>
+<p>它调用 <code>determine_event</code> 匹配路由、方法，如果匹配不到，就调用 <code>present_error</code> 去找用户自定义的 404 路由处理器，如果用户没有预先定义，就调用 <code>not_found</code> ，使用默认的 404 处理器。</p>
+<p><a href="http://ruby-doc.org/core-1.8.7/Object.html#method-i-method" target="_blank" rel="external">Object#method</a> 根据名字返回方法（或者抛出 NameError 异常），被返回方法的 receiver 就是调用 Object#method 的对象，而且被返回方法就像闭包一样，能访问此对象的实例变量以及方法。举例如下：</p>
+<pre><code>class <span class="constant">A</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>(v)
+    <span class="variable">@k</span> = v
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">get_put_k_method</span></span>
+    method(<span class="symbol">:put_k</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">put_k</span></span>
+    puts <span class="string">"k value is <span class="subst">#{<span class="variable">@k</span>}</span>"</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">get_another</span></span>
+    method(<span class="symbol">:set_put_k</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">set_put_k</span></span>(new_k=<span class="keyword">nil</span>)
+    <span class="variable">@k</span> = new_k
+    put_k
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a = <span class="constant">A.</span>new(<span class="string">'hi'</span>)
+m = a.get_put_k_method
+m.call <span class="comment">#=&gt; k value is hi</span>
+
+m2 = a.get_another
+m2.call(<span class="string">'hello'</span>) <span class="comment">#=&gt; k value is hello</span>
+</code></pre><p>Event 类把路由匹配交由 Route 处理，还增加了事件处理回调 after_filters 。</p>
+<p>StaticEvent 负责处理静态资源，用法跟其他路由一样：</p>
+<pre><code>get <span class="string">'/'</span>, <span class="string">'home'</span>
+<span class="keyword">static</span> <span class="string">'/p'</span>, <span class="string">'public'</span>
+<span class="preprocessor">#请求 <span class="string">'/p/css/bootstrap.css'</span> 会被映射到 <span class="string">'public/css/bootstrap.css'</span></span>
+</code></pre><p>StaticEvent 的 <code>attend</code> 方法中有这样一行： <code>context.body self</code> ，之后还定义了 <code>each</code> 方法。这样做全因为 Rack 要求 http body 对象响应 each 方法。</p>
+<p><code>each</code> 方法用二进制读取模式打开静态文件。 <a href="http://ruby-doc.org/core-2.2.0/IO.html#method-i-read" target="_blank" rel="external">IO#read</a> 接受字节长度作为参数，从流中读取指定长度的字节，如果一开始就读到 EOF ，会返回 nil 。</p>
+<p>8192 字节（8KB）是常用的 chunk size 。</p>
+<p>在设置响应头的 Content-Type 时，用到了<code>#[]</code>方法：</p>
+<pre><code>File.extname(<span class="constant">@filename</span>)[<span class="number">1.</span>.-<span class="number">1</span>]
+<span class="preprocessor"># <span class="string">'.rb'</span>[1..-1] =&gt; <span class="string">'rb'</span></span>
+</code></pre><p>此处传入的 Range 参数（(1..-1)），表示的范围是：从左边数起第 2 个元素到右边数起第 1 个元素。</p>
+<h2 id="renderer-rb">renderer.rb</h2><p>EventContext 加载了 Sinatra::Renderer 模块，此模块为其他渲染方法提供基础方法，比如 Sinatra::Erb 和 Sinatra::Haml ，你还可以定制自己的渲染方法。注释里写了一个定制的例子，如果还有不清楚的地方，可以查看对应的测试用例： renderer_test.rb 。 </p>
+<p><code>render</code> 方法会根据参数 renderer ，动态调用真正实现渲染的方法 result_method 。</p>
+<p><code>render</code> 方法把传进来的 block 当作 layout 的来源之一。如果请求有对应的 layout ，在第二次调用 result_method 方法时把 layout 当成是 template 参数传进去。</p>
+<h2 id="route-rb">route.rb</h2><p>在实例化每个 Event 时，会一并实例化一个 Route 。而每一次调用 <code>Event#attend</code> ，会先把 <code>@route.params</code> 合并到 <code>request.params</code> 中。这就把用户具体的请求路径与路由的 symbol 对应起来。如：</p>
+<pre><code>get '/:controller/:<span class="keyword">method</span>' <span class="keyword">do</span>
+  <span class="string">"you #{params[:controller]} #{params[:method]}"</span>
+<span class="keyword">end</span>
+<span class="comment"># 当用户请求 '/say/hi' 时</span>
+<span class="comment"># 会返回 "you say hi"</span>
+</code></pre><p><code>Route#extract_keys</code> 把路由中的 symbol 提取出来，如：</p>
+<pre><code>temp_arr = <span class="string">"/:some/:words"</span>.scan(/:\w+/)
+<span class="preprocessor">#=&gt; temp_arr = [<span class="string">":some"</span>,<span class="string">":words"</span>]</span>
+temp_arr.map { |raw| <span class="built_in">eval</span>(raw) } <span class="preprocessor">#=&gt; [:some, :words]</span>
+</code></pre><p><code>Route#genereate_route</code> 生成用于匹配用户请求的路由。路由又分两种，带格式(format)和不带格式的，默认格式是 html 。</p>
+<p><code>Route#to_regex_route</code> 把路由转换成正则表达式，在点(.)前面加上反斜杠，把 <code>symbol</code> 替换成 <code>&#39;([^\/.,;?]+)&#39;</code>。在匹配成功后可以用 <code>captures</code> 方法找到用户请求的路径。如：</p>
+<pre><code>class A
+  def to_regex_route(<span class="keyword">template</span>)
+    /^<span class="comment">#{template.gsub(/\./,'\.').gsub(/:\w+/,'([^\/.,;?]+)')}$/</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+a = A.new
+reg = a.to_regex_route('/:path/:to/:file.html')
+<span class="comment"># reg =&gt; (?-mix:^\/([^\/.+,;?])\/([^\/.+,;?])\/([^\/.+,;?])\.html$)</span>
+'/a/b/c.html'.match(reg).captures
+<span class="comment"># =&gt; ['a','b','c']</span>
+</code></pre><p><code>/([^\/.,;?]+)/</code> 匹配不是斜杠(/)，点(.)，逗号(,)，分号(;)，问号(?)的其他字符。</p>
+<p><code>Route#recognize</code> 会在 <code>Event#attend</code> 中调用，所以每次都得先清空 <code>@params</code> 。</p>
+<p>如果成功匹配用户请求的路径，接下来就把 symbol 和具体的路径组合起来：</p>
+<pre><code>@keys.<span class="function"><span class="title">zip</span><span class="params">(param_values)</span></span>.to_hash
+</code></pre><p><code>Array#zip</code> 方法用法举例：</p>
+<pre><code>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].zip([<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]) <span class="preprocessor">#=&gt; [[<span class="number">1</span>,<span class="number">4</span>],[<span class="number">2</span>,<span class="number">5</span>],[<span class="number">3</span>,<span class="number">6</span>]]</span>
+</code></pre><p><code>Array#to_hash</code> 方法是 sinatra 扩展的。</p>
+<p>一些方法参考： </p>
+<ul>
+<li><a href="http://ruby-doc.org/core-1.8.7/Object.html" target="_blank" rel="external">Object#freeze</a></li>
+<li><a href="http://ruby-doc.org/core-1.8.7/Array.html#method-i-compact" target="_blank" rel="external">Array#compact</a></li>
+<li><a href="http://ruby-doc.org/core-1.8.7/Object.html" target="_blank" rel="external">Object#dup</a></li>
+<li><a href="http://stackoverflow.com/questions/10183370/whats-the-difference-between-rubys-dup-and-clone-methods" target="_blank" rel="external">What’s the difference between Ruby’s dup and clone methods?</a></li>
+</ul>
+<h2 id="dsl-rb">dsl.rb</h2><p>dsl.rb 文件的最后调用 <code>include Sinatra::Dsl</code> 把 Sinatra::Dsl 模块放到 main 对象祖先链的父节点位置，这样就可以把 Sinatra::Dsl 定义的方法当作实例方法调用。</p>
+<p>也可以把 <code>include Sinatra::Dsl</code> 替换成 <code>extend Sinatra::Dsl</code> ，后者把 Sinatra::Dsl 定义的方法当作单例方法调用。</p>
+<p>看出问题了吗？</p>
+<p>main 对象同时作为 Object class 的实例以及 Object class 本身去调用方法，否则不能解释它既可以调用实例方法又可以调用单例方法。</p>
+<p>有一篇<a href="https://banisterfiend.wordpress.com/2010/11/23/what-is-the-ruby-top-level/" target="_blank" rel="external">文章</a>展示了神奇 main 对象。</p>
+<h2 id="test">test</h2><p>这一版本补充了单元测试。跑测试用例之前要先安装两个 gem ： mocha(0.5.6), test-spec(0.10.0) 。</p>
+<p>还要在 test/helper.rb 文件中，加载 mocha 和 test/sepc 时把 <code>stringio</code> 也加载进来，否则 request_test.rb 会跑不过。</p>
+<p>helper.rb 里把 <code>Sinatra::TestMethods</code> <code>include</code> 到 <code>Test::Unit::TestCase</code> 中，因而每个测试都可以使用 Sinatra::TestMethods 提供的方法。</p>
+<p><code>Rack::MockRequest</code> 让 <code>Sinatra::TestMethods</code> 模块里的几个方法不需要产生真实的 http 请求，就能调用到 sinatra 定义的请求处理器。详见<a href="http://www.rubydoc.info/github/rack/rack/Rack/MockRequest" target="_blank" rel="external"> MockRequest 的文档</a>。</p>
+<p>要跑所有测试用例，可以在根目录下运行：</p>
+<pre><code><span class="keyword">find</span> .<span class="regexp">/test/</span>sinatra -name <span class="string">'*.rb'</span> | xargs -n1 ruby
+</code></pre><p>全文完。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      通过 sinatra 学习 ruby 编程技巧（系列）
+    
+    </summary>
+    
+      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
+    
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="sinatra" scheme="http://judes.me/tags/sinatra/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>写写希尔排序</title>
+    <link href="http://judes.me/2016/07/07/shell-sort/"/>
+    <id>http://judes.me/2016/07/07/shell-sort/</id>
+    <published>2016-07-07T00:11:43.000Z</published>
+    <updated>2016-07-08T00:40:21.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>希尔排序不应该放在这个系列的，因为并不十分清楚它的原理，想要完整了解的朋友请看<a href="https://zh.wikipedia.org/wiki/%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8F" target="_blank" rel="external">维基百科</a></p>
+<p>下面是原理的简单解释：</p>
+<h2 id="原理">原理</h2><p>希尔排序是”插入排序的一种更高效的改进版本”，从这个角度理解，它继承了插入排序的优点：</p>
+<ul>
+<li>对大体已排好序的集合有相当高的效率</li>
+</ul>
+<p>解决了插入排序的一点不足：</p>
+<ul>
+<li>每次比较只能把待排序元素移动一位，如果待排序元素离最终位置比较远，需要多次操作</li>
+</ul>
+<p>希尔排序依靠变化的比较、交换步长解决这点不足：先用较大的步长把集合整理在大体有序，最后使用步长为 1 的插入排序整理成完全有序。</p>
+<h2 id="联想">联想</h2><p>希尔排序的内核是插入排序，在插入排序的外面再包裹一层循环——让步长从某个初始值逐渐变小到 1 。这个初始值定为待排序集合长度的 1/3 处。</p>
+<h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = SS.sort(array)
+</code></pre><h2 id="大体结构">大体结构</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+class SS
+  class &lt;&lt; self
+    def sort<span class="instruction"> array
+</span>     <span class="instruction"> return </span>array<span class="instruction"> if </span>array.size &lt;= 1
+      step =<span class="function"> (</span>array.size / 3.0<span class="function">)</span>.ceil
+      while step &gt;= 1
+        <span class="comment"># insertion sort  </span>
+        step -= 1
+      end
+     <span class="instruction"> array
+</span>    end
+  end
+end
+</code></pre><h2 id="插入排序部分">插入排序部分</h2><p>插入排序可以参考之前写过的<a href="/2016/07/05/insertion-sort/">文章</a>，要点是对插入排序的内、外两层循环都应用可变步长</p>
+<pre><code>#!/usr/bin/env ruby
+<span class="keyword">class</span> SS
+  <span class="keyword">class</span> &lt;&lt; self
+    def sort <span class="built_in">array</span>
+      <span class="built_in">len</span> = <span class="built_in">array</span>.size
+      return <span class="built_in">array</span> <span class="keyword">if</span> <span class="built_in">len</span> &lt;= <span class="number">1</span>
+      <span class="keyword">step</span> = (<span class="built_in">len</span> / <span class="number">3.0</span>).ceil
+      <span class="keyword">while</span> <span class="keyword">step</span> &gt;= <span class="number">1</span>
+        tag = <span class="keyword">step</span>
+        <span class="keyword">while</span> tag &lt; <span class="built_in">len</span>
+          inner_tag = tag
+          <span class="keyword">while</span> inner_tag &gt;= <span class="number">1</span> &amp;&amp; <span class="built_in">array</span>[inner_tag] &lt; <span class="built_in">array</span>[inner_tag - <span class="keyword">step</span>]
+            exchange(<span class="built_in">array</span>, inner_tag, inner_tag - <span class="keyword">step</span>)
+            inner_tag -= <span class="keyword">step</span>
+          <span class="keyword">end</span>
+          tag += <span class="keyword">step</span>
+        <span class="keyword">end</span>
+        <span class="keyword">step</span> -= <span class="number">1</span>
+      <span class="keyword">end</span>
+      <span class="built_in">array</span>
+    <span class="keyword">end</span>
+    def exchange <span class="built_in">array</span>, i, j
+      <span class="built_in">array</span>[i], <span class="built_in">array</span>[j] = <span class="built_in">array</span>[j], <span class="built_in">array</span>[i]
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+
+class SS
+  class &lt;&lt; self
+    def sort<span class="instruction"> array
+</span>      len = array.size
+     <span class="instruction"> return </span>array<span class="instruction"> if </span>len &lt;= 1
+      step =<span class="function"> (</span>len / 3.0<span class="function">)</span>.ceil
+      while step &gt;= 1
+        tag = step
+        while tag &lt; len
+          inner_tag = tag
+          while inner_tag &gt;= 1 &amp;&amp; array<span class="keyword">[</span>inner_tag] &lt; array<span class="keyword">[</span>inner_tag - step]
+           <span class="function"> exchange(</span>array, inner_tag, inner_tag - step<span class="function">)</span>
+            inner_tag -= step
+          end
+          tag += step
+        end
+        step -= 1
+      end
+     <span class="instruction"> array
+</span>    end
+    def exchange array, i, j
+      array<span class="keyword">[</span>i], array<span class="keyword">[</span>j] = array<span class="keyword">[</span>j], array<span class="keyword">[</span>i]
+    end
+  end
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+
+  require 'test/unit'
+
+  class TestSS &lt; Test::Unit::TestCase
+    def test_0
+      input = <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
+    end
+    def test_1_0
+      input = <span class="keyword">[</span>0]
+      expected = <span class="keyword">[</span>0]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_1_1
+      input = <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_0
+      input = <span class="keyword">[</span>0,1]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_1
+      input = <span class="keyword">[</span>1,0]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_2
+      input = <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_0
+      input = <span class="keyword">[</span>0,1,2]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_1
+      input = <span class="keyword">[</span>0,2,1]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_2
+      input = <span class="keyword">[</span>2,1,0]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_3
+      input = <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_4
+      input = <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_0
+      input = <span class="keyword">[</span>0,1,2,3]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_1
+      input = <span class="keyword">[</span>3,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_2
+      input = <span class="keyword">[</span>3,1,2,1]
+      expected = <span class="keyword">[</span>1,1,2,3]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_10_0
+      input = <span class="keyword">[</span>9,8,7,6,5,4,3,2,1,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_10_1
+      input = <span class="keyword">[</span>9,5,7,3,8,4,6,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> SS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+  end
+end
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      为什么知道原理还是写不出正确的程序呢？(系列)
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="algorithm" scheme="http://judes.me/tags/algorithm/"/>
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="shell sort" scheme="http://judes.me/tags/shell-sort/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>写写插入排序</title>
+    <link href="http://judes.me/2016/07/05/insertion-sort/"/>
+    <id>http://judes.me/2016/07/05/insertion-sort/</id>
+    <published>2016-07-05T00:06:17.000Z</published>
+    <updated>2016-07-08T00:34:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>这是一个基础算法系列，主题是：为什么知道原理还是写不出正确的程序呢？</p>
+<p>第一篇已经写好，叫做<a href="">我尝试去写快排，结果。。。</a>。文章结构都差不多：原理、联想、用法、框架、分步实现、完整代码及测试用例。</p>
+<h2 id="原理">原理</h2><p>插入排序的原理是：</p>
+<ul>
+<li>将集合分为两个部分：已排好的部分和待排序的部分</li>
+<li>每次从待排序部分抽一个元素跟已排好部分中的元素逐一比较，直到找到合适的位置，插入待排序元素</li>
+<li>合适的位置可以是第一个比待排序元素小（大）的，也可能是已排好部分的下界</li>
+</ul>
+<h2 id="联想">联想</h2><ul>
+<li>可以用一个数组下标将集合分成两部分，比下标小的是已排好部分，比下标大的是待排序部分</li>
+<li>整个排序过程可以用嵌套两层循环，外层遍历待排序部分，内层遍历已排好部分</li>
+<li>每次比较都有可能发生一次元素交换</li>
+</ul>
+<h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = IS.sort(array)
+</code></pre><h2 id="大致框架">大致框架</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+<span class="class"><span class="keyword">class</span> <span class="title">IS</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="function"><span class="keyword">def</span> <span class="title">sort</span> <span class="title">array</span></span>
+      <span class="keyword">while</span> condition1
+        <span class="keyword">while</span> condition2
+
+        <span class="keyword">end</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    <span class="function"><span class="keyword">def</span> <span class="title">exchange</span> <span class="title">array</span>, <span class="title">i</span>, <span class="title">j</span></span>
+      array[i], array[j] = array[j], array[i]
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="外层循环的上下界">外层循环的上下界</h2><p>容易想到外层循环的下界小于数组的大小，但上界是什么呢？选 0 是可以的，只是会浪费一次外层循环（因为它前面没有可比较元素），出于不浪费的考虑，选 1 。源码：</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+<span class="class"><span class="keyword">class</span> <span class="title">IS</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="function"><span class="keyword">def</span> <span class="title">sort</span> <span class="title">array</span></span>
+      <span class="comment"># 外层循环</span>
+      index = <span class="number">1</span>
+      len = array.size
+      <span class="keyword">while</span> index &lt; len
+        <span class="comment">#inner loop</span>
+      index += <span class="number">1</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="内层循环要做什么？">内层循环要做什么？</h2><p>内层循环要做的就是把待排序元素的第一个元素通过一次次比较，放到已排序集合中合适的位置。循环的上界是外层循环中的 index ，下界是什么呢？ 因为每次都是与索引值小 1 的元素比较，为免数组越界，当前索引值最小是 1 。源码：</p>
+<pre><code>#!/usr/bin/env ruby
+<span class="keyword">class</span> <span class="keyword">IS</span>
+  <span class="keyword">class</span> &lt;&lt; <span class="keyword">self</span>
+    def sort <span class="keyword">array</span>
+      <span class="keyword">index</span> = <span class="number">1</span>
+      len = <span class="keyword">array</span>.size
+      <span class="keyword">while</span> <span class="keyword">index</span> &lt; len
+        inner_index = <span class="keyword">index</span>
+        # 内层循环
+        <span class="keyword">while</span> inner_index &gt;= <span class="number">1</span> &amp;&amp; <span class="keyword">array</span>[inner_index] &lt; <span class="keyword">array</span>[inner_index - <span class="number">1</span>]
+          exchange(<span class="keyword">array</span>, inner_index, inner_index - <span class="number">1</span>)
+          inner_index -= <span class="number">1</span>
+        <span class="keyword">end</span>
+        <span class="keyword">index</span> += <span class="number">1</span>
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+class IS
+  class &lt;&lt; self
+    def sort<span class="instruction"> array
+</span>      index = 1
+      len = array.size
+      while index &lt; len
+        inner_index = index
+        while inner_index &gt;= 1 &amp;&amp; array<span class="keyword">[</span>inner_index] &lt; array<span class="keyword">[</span>inner_index-1]
+         <span class="function"> exchange(</span>array, inner_index, inner_index-1<span class="function">)</span>
+          inner_index -= 1
+        end
+        index += 1
+      end
+     <span class="instruction"> array
+</span>    end
+    def exchange array, i, j
+      array<span class="keyword">[</span>i], array<span class="keyword">[</span>j] = array<span class="keyword">[</span>j], array<span class="keyword">[</span>i]
+    end
+  end
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+
+  require 'test/unit'
+
+  class TestIS &lt; Test::Unit::TestCase
+    def test_0
+      input = <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
+    end
+    def test_1_0
+      input = <span class="keyword">[</span>0]
+      expected = <span class="keyword">[</span>0]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_1_1
+      input = <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_0
+      input = <span class="keyword">[</span>0,1]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_1
+      input = <span class="keyword">[</span>1,0]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_2_2
+      input = <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'two items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_0
+      input = <span class="keyword">[</span>0,1,2]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_1
+      input = <span class="keyword">[</span>0,2,1]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_2
+      input = <span class="keyword">[</span>2,1,0]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_3
+      input = <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_3_4
+      input = <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'three items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_0
+      input = <span class="keyword">[</span>0,1,2,3]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_1
+      input = <span class="keyword">[</span>3,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+    def test_4_2
+      input = <span class="keyword">[</span>3,1,2,1]
+      expected = <span class="keyword">[</span>1,1,2,3]
+      assert_equal<span class="function"> IS.sort(</span>input<span class="function">)</span>, expected, 'four items<span class="instruction"> array </span>not equal'    
+    end
+  end
+end
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      为什么知道原理还是写不出正确的程序呢？(系列)
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="algorithm" scheme="http://judes.me/tags/algorithm/"/>
+    
+      <category term="insertion sort" scheme="http://judes.me/tags/insertion-sort/"/>
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>微信浏览器 location reload 失效解决办法</title>
+    <link href="http://judes.me/2016/07/02/wechat-reload/"/>
+    <id>http://judes.me/2016/07/02/wechat-reload/</id>
+    <published>2016-07-02T14:45:16.000Z</published>
+    <updated>2016-07-02T19:26:21.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>公司在微信企业号上开发了一个功能，用户通过这个功能完成一个个任务后可以获取奖励：</p>
+<ul>
+<li>用户首先进入页面 A 查看任务列表，列表中每一个任务都有各自的状态，一共有 5 个： 从状态 1 到状态 5 ；</li>
+<li>用户点击页面 A 中的某个条目进入页面 B 查看任务详情，用户需要先后进行 5 个操作更新任务状态，每个操作都会刷新页面 B 。</li>
+</ul>
+<p>在微信开发者工具上测试一切正常。但测试 Android ——苹果上没有问题—— 真机就发现一个很严重的 BUG ：每个操作成功后页面 B 并不刷新。</p>
+<p>刷新用的方法是简单的 <code>location.reload()</code> ，据网友反馈，失败的原因是微信浏览器缓存了 reload 请求。</p>
+<p>一提到解决浏览器缓存问题，自然会想到给资源加上指纹。</p>
+<p>这能解决问题，不过不管怎么说都是特殊处理： html 也加指纹，不希望应用到别处。也就是说，只针对 Android 微信浏览器使用。</p>
+<p>首先判断请求是否来自 Android 微信浏览器：</p>
+<pre><code><span class="keyword">var</span> isAndroidWechat = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
+  <span class="keyword">return</span> (<span class="regexp">/android/i</span>).test(<span class="built_in">window</span>.navigator.userAgent) &amp;&amp; (<span class="regexp">/micromessenger/i</span>).test(<span class="built_in">window</span>.navigator.userAgent)
+};
+</code></pre><p>如果 isAndroidWechat 为 true ，则在 url 上加上指纹：</p>
+<pre><code><span class="keyword">var</span> reload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
+  <span class="keyword">var</span> hash = +(<span class="keyword">new</span> <span class="built_in">Date</span>());
+  <span class="keyword">var</span> new_search = (<span class="regexp">/wechat_hash/</span>).test(location.search) ? 
+    <span class="comment">// 如果之前有添加过指纹，就更新它</span>
+    location.search.replace(<span class="regexp">/wechat_hash=\d+(&amp;?)/</span>,<span class="string">'wechat_hash='</span> + hash + <span class="string">'$1'</span>) :
+    <span class="comment">// 如果 search 为空</span>
+    location.search == <span class="string">""</span> ?
+    <span class="string">'?wechat_hash='</span> + hash :
+    <span class="comment">// 如果 search 不为空</span>
+    location.search + <span class="string">'&amp;wechat_hash='</span> + hash;
+  <span class="comment">// 重新加载页面</span>
+  location.reload(<span class="literal">true</span>);
+}
+</code></pre><p>这样看着还不错，不过很快就遇到新问题：如果在页面 B 先后进行了 4 次操作，这时点击后退按钮 ，还是会停留在页面 B ，要点击 4 次才能回到页面 A 。浏览器历史忠实地记录了我们先后 4 次更改 location.search 的操作。要立即返回页面 A ，我们还得更改历史：</p>
+<pre><code><span class="keyword">var</span> reload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
+  <span class="keyword">var</span> hash = +(<span class="keyword">new</span> <span class="built_in">Date</span>());
+  <span class="keyword">var</span> new_search = (<span class="regexp">/wechat_hash/</span>).test(location.search) ? 
+    <span class="comment">// 如果之前有添加过指纹，就更新它</span>
+    location.search.replace(<span class="regexp">/wechat_hash=\d+(&amp;?)/</span>,<span class="string">'wechat_hash='</span> + hash + <span class="string">'$1'</span>) :
+    location.search == <span class="string">""</span> ?
+    <span class="comment">// 如果 search 为空</span>
+    <span class="string">'?wechat_hash='</span> + hash :
+    <span class="comment">// 如果 search 不为空</span>
+    location.search + <span class="string">'&amp;wechat_hash='</span> + hash;
+  <span class="comment">// 修改浏览器历史</span>
+  <span class="keyword">var</span> current_title = <span class="built_in">document</span>.title;
+  <span class="keyword">var</span> new_uri = location.origin + location.pathname + new_search;
+  history.replaceState(<span class="literal">null</span>, current_title, new_uri);
+  <span class="comment">// 重新加载页面</span>
+  location.reload(<span class="literal">true</span>);
+};
+</code></pre><p>最后，完成的代码及测试例子已上传到 <a href="https://github.com/yiyizym/wechat_reload" target="_blank" rel="external">github</a> 。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      微信自家浏览器总有莫名其妙的 bug
+    
+    </summary>
+    
+      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
+    
+    
+      <category term="reload" scheme="http://judes.me/tags/reload/"/>
+    
+      <category term="微信" scheme="http://judes.me/tags/%E5%BE%AE%E4%BF%A1/"/>
+    
+      <category term="浏览器" scheme="http://judes.me/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我尝试去写快排，结果。。。</title>
+    <link href="http://judes.me/2016/06/23/see-how-i-write-quick-sort/"/>
+    <id>http://judes.me/2016/06/23/see-how-i-write-quick-sort/</id>
+    <published>2016-06-23T12:56:50.000Z</published>
+    <updated>2016-07-05T00:07:48.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>《编程珠玑》第 32 页，提到：“尽管第一个二分查找程序于1946年就已经公布了，但是第一个没有 bug 的二分查找程序在 1962 年才出现。”还说参加课堂测试的专业程序员中， 90% 写的二分查找程序都有 bug 。</p>
+<p>真的有那么难吗？我心血来潮，动手写起了快排（不要问为什么不是二分查找）。隐约记得快排的原理如下：</p>
+<ul>
+<li>在要排序的元素集合中选定一个元素作比较标杆；其他元素分别与此标杆比较，比它小的放在标杆前面，比它大的放在它后面；</li>
+<li>这样集合就一分为二，对这两部分分别应用步骤一的方法，直到每部分只有一个元素。</li>
+</ul>
+<p>简单地写几个测试用例。结果第二个测试就跑不过。<strong>为什么知道原理还是写不出正确的程序呢？</strong></p>
+<p>聪明的人很快就能调试好出错的程序；记忆力好的，大概见过一次正确的写法后就不会忘。可惜普通人这两样都不占。</p>
+<p>那如果普通人的目标是以后能很快地写出快排，应该怎样做呢？我暂时能想到：</p>
+<ul>
+<li><p>在原理之上唤醒更多写快排的基本算法思想：一分为二用到分治法；算法会反复用到步骤一，所以有递归；算法不需要额外空间。</p>
+</li>
+<li><p>用少量的待排序元素辅助书写算法。</p>
+</li>
+<li><p>用测试用例保证算法正确性。</p>
+</li>
+</ul>
+<p>根据这个思路，首先要定义使用快排程序的方法：</p>
+<pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = QS.sort(array)
+</code></pre><p>然后定义程序的大致框架：</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+
+module QS
+  extend self
+  def sort<span class="instruction"> array
+</span>    inner_sort array, 0, array.size - 1
+   <span class="instruction"> array
+</span>  end
+  def inner_sort array, low_pos, hight_pos
+  end
+  def divide array, low_pos, hight_pos
+  end
+  def exchange array, i, j
+  end
+
+end
+</code></pre><p>inner_sort 跟 divide 为什么要接受两个位置参数？我们没有额外储存空间可用，所以要用上下边界划定排序的作用范围。inner_sort 没有返回值，而 divide 要返回一个位置，确立递归排序的界限。exchange 用来交换元素。</p>
+<p>开始写 inner_sort ：</p>
+<pre><code><span class="preprocessor">#!/usr/bin/env ruby</span>
+
+module QS
+  ...
+
+  def inner_sort <span class="built_in">array</span>, low_pos, hight_pos
+    <span class="keyword">return</span> <span class="keyword">if</span> low_pos &gt;= hight_pos
+    division = divide <span class="built_in">array</span>, low_pos, hight_pos
+    inner_sort <span class="built_in">array</span>, low_pos, division - <span class="number">1</span>
+    inner_sort <span class="built_in">array</span>, division + <span class="number">1</span>, hight_pos
+  end
+
+  ...
+
+end
+</code></pre><p>程序会递归调用 inner_sort 。写递归要注意两点：</p>
+<ul>
+<li>递归要有终止条件</li>
+<li>每次递归都要朝着终止条件迈一步</li>
+</ul>
+<p>接下来写 divide ：</p>
+<pre><code>#!/usr/bin/env ruby
+
+<span class="keyword">module</span> <span class="type">QS</span>
+  ...
+
+  def divide <span class="built_in">array</span>, low_pos, hight_pos
+    target = <span class="built_in">array</span>[low_pos]
+    lo = low_pos
+    hi = hight_pos
+    <span class="keyword">while</span> low_pos &lt; hight_pos
+      <span class="keyword">while</span> <span class="built_in">array</span>[low_pos] &lt;= target &amp;&amp; low_pos &lt; hi
+        low_pos += <span class="number">1</span>
+      <span class="keyword">end</span>
+      <span class="keyword">while</span> <span class="built_in">array</span>[hight_pos] &gt;= target &amp;&amp; hight_pos &gt; lo
+        hight_pos -= <span class="number">1</span>
+      <span class="keyword">end</span>
+      exchange(<span class="built_in">array</span> low_pos, hight_pos) <span class="keyword">if</span> low_pos &lt; hight_pos
+    <span class="keyword">end</span>
+    exchange(<span class="built_in">array</span>, lo, hight_pos)
+    hight_pos
+  <span class="keyword">end</span>
+
+  ...
+
+<span class="keyword">end</span>
+</code></pre><p>divide 方法是快排中最难写、最容易出错的，为免出错：</p>
+<ul>
+<li>要记住重排元素的技巧<br>  从待排序集合的头部开始找到一个比标杆元素大的，从尾部开始找到一个比标杆元素小的，然后交换两者位置</li>
+<li>要正确写出比较、查找的上下界限<br>  在遍历元素时要注意数组越界问题和交换元素位置的附加条件： low_pos 必须小于 hight_pos</li>
+<li>最后要把标杆元素与某个元素交换位置<br>  把标杆元素摆到中间，至于是通过跟 low_pos 还是跟 hight_pos 交换达到这个目的。可以用简单的例子（这个例子是尝试出来的，记不住也没关系）确定，假设待排序的元素集是 <code>[2,1,3]</code>，很容易就能得到要跟 hight_pos 交换。</li>
+</ul>
+<p>把 exchange 方法补充好，测试用例也写上，完整的程序是这样的：</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+<span class="comment"># usage QS.sort(array) =&gt; sorted array</span>
+
+module QS
+  extend self
+
+  def sort<span class="instruction"> array
+</span>    inner_sort array, 0, array.size - 1
+   <span class="instruction"> array
+</span>  end
+
+  def inner_sort array, low_pos, hight_pos
+   <span class="instruction"> return </span>if low_pos &gt;= hight_pos
+    division = divide array, low_pos, hight_pos
+    inner_sort array, low_pos, division - 1
+    inner_sort array, division + 1, hight_pos
+  end
+
+  def divide array, low_pos, hight_pos
+    target = array<span class="keyword">[</span>low_pos]
+    lo = low_pos
+    hi = hight_pos
+    while low_pos &lt; hight_pos
+      while array<span class="keyword">[</span>low_pos] &lt;= target &amp;&amp; low_pos &lt; hi
+        low_pos += 1
+      end
+      while array<span class="keyword">[</span>hight_pos] &gt;= target &amp;&amp; hight_pos &gt; lo
+        hight_pos -= 1
+      end
+     <span class="function"> exchange(</span>array low_pos, hight_pos<span class="function">)</span><span class="instruction"> if </span>low_pos &lt; hight_pos
+    end
+   <span class="function"> exchange(</span>array, lo, hight_pos<span class="function">)</span>
+    hight_pos
+  end
+
+  def exchange array, i, j
+    array<span class="keyword">[</span>i], array<span class="keyword">[</span>j] = array<span class="keyword">[</span>j], array<span class="keyword">[</span>i]
+  end
+
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+  require 'test/unit'
+  class TestQS &lt; Test::Unit::TestCase
+    def test_0
+     <span class="instruction"> array </span>= <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_1
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_2_0
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,2]
+      expected = <span class="keyword">[</span>1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_2_1
+     <span class="instruction"> array </span>= <span class="keyword">[</span>2,1]
+      expected = <span class="keyword">[</span>1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_2_2
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_0
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,2,3]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_1
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,3,2]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_2
+     <span class="instruction"> array </span>= <span class="keyword">[</span>3,2,1]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_3
+     <span class="instruction"> array </span>= <span class="keyword">[</span>2,1,3]
+      expected = <span class="keyword">[</span>1,2,3]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_4
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,1,2]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_5
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_6
+     <span class="instruction"> array </span>= <span class="keyword">[</span>1,2,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+    def test_3_7
+     <span class="instruction"> array </span>= <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal expected,<span class="function"> QS.sort(</span>array<span class="function">)</span>
+    end
+  end
+end
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      为什么知道原理还是写不出正确的程序呢？
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="algorithm" scheme="http://judes.me/tags/algorithm/"/>
+    
+      <category term="quick sort" scheme="http://judes.me/tags/quick-sort/"/>
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sinatra 0.0.1 源码学习</title>
+    <link href="http://judes.me/2016/06/12/sinatra-learning-0-0-1/"/>
+    <id>http://judes.me/2016/06/12/sinatra-learning-0-0-1/</id>
+    <published>2016-06-12T12:14:30.000Z</published>
+    <updated>2016-07-10T06:53:46.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 1 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>列一下本人运行 sinatra 0.0.1 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="前期准备">前期准备</h2><p>把 <a href="https://github.com/sinatra/sinatra" target="_blank" rel="external">sinatra</a>克隆下来，用 <code>git tag</code> 可以看到最开始的版本是 0.0.1 。</p>
+<p>checkout 到 0.0.1 分支可以看到目录十分简单</p>
+<pre><code>├── examples
+│   └── hello
+│       ├── test<span class="class">.rb</span>
+│       └── views
+│           └── index<span class="class">.erb</span>
+├── files
+│   ├── default_index<span class="class">.erb</span>
+│   └── not_found<span class="class">.erb</span>
+├── lib
+│   ├── sinatra
+│   │   ├── core_ext
+│   │   │   ├── class<span class="class">.rb</span>
+│   │   │   └── hash<span class="class">.rb</span>
+│   │   ├── dispatcher<span class="class">.rb</span>
+│   │   ├── dsl<span class="class">.rb</span>
+│   │   ├── event<span class="class">.rb</span>
+│   │   ├── logger<span class="class">.rb</span>
+│   │   └── server<span class="class">.rb</span>
+│   └── sinatra<span class="class">.rb</span>
+├── test
+│   ├── helper<span class="class">.rb</span>
+│   └── sinatra
+│       ├── dispatcher_test<span class="class">.rb</span>
+│       └── event_test<span class="class">.rb</span>
+└── vendor
+    └── erb
+        ├── init<span class="class">.rb</span>
+        └── lib
+            └── erb<span class="class">.rb</span>
+
+<span class="number">12</span> directories, <span class="number">17</span> files
+</code></pre><p>跳到 examples/hello 目录下运行 <code>ruby test.rb</code> ，用浏览器打开 localhost:4567 便看到一个提交表单的页面。把文件里的路由都玩一遍，就能感觉到 sinatra 麻雀虽小，但五脏俱全。</p>
+<p>test.rb 采用 <code>$LOAD_PATH.unshift &#39;../../lib/&#39;</code> 把 lib 目录放进加载路径中。</p>
+<p>这种写法会导致如果在别的目录下，比如根目录，执行 <code>ruby examples/hello/test.rb</code> 报错，可以改为：</p>
+<p><code>$LOAD_PATH.unshift File.expand_path(&#39;../../lib&#39;,File.dirname(__FILE__))</code></p>
+<h2 id="rubygems_和_rack">rubygems 和 rack</h2><p>根据 lib/sinatra/sinatra.rb 里加载文件的顺序，逐一看看这个版本的 sinatra 做了些什么。</p>
+<p>sinatra.rb 第1到7行加载 两个 gem</p>
+<pre><code><span class="string">%w(rubygems rack)</span>.each <span class="keyword">do</span> |library|
+  <span class="keyword">begin</span>
+    <span class="keyword">require</span> library
+  <span class="keyword">rescue</span> <span class="constant">LoadError</span>
+    raise <span class="string">"== Sinatra cannot run without <span class="subst">#{library}</span> installed"</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><ul>
+<li><p>rubygems 对 ruby 1.9+ 来说已经是多余的，见<a href="http://guides.rubygems.org/patterns/#requiring_rubygems" target="_blank" rel="external">链接</a></p>
+</li>
+<li><p>rack 是 sinatra 以及 rails 的基础，简介以及基本用法见<a href="http://rack.github.io/" target="_blank" rel="external">官网</a>，用一句话描述 rack ：为 web 服务器向 ruby 应用提供简洁的接口。再详细点描述怎样应用 rack ：</p>
+<ul>
+<li>运行 rack 时需要提供一个能响应 call 方法的对象</li>
+<li>这个对象的 call 方法必须返回一个包含三个元素的数组</li>
+<li>这个返回数组第一个元素是 http 状态码，第二个是 http 响应头，第三个是 http body 对象</li>
+<li>body 对象要求能响应 each 方法</li>
+</ul>
+</li>
+</ul>
+<h2 id="核心扩展_core_ext">核心扩展 core_ext</h2><p>接下来 sinatra 加载两个核心扩展 core_ext/class.rb 以及 core_ext/hash.rb</p>
+<p><strong> class.rb </strong></p>
+<p>ruby 内置了 <code>attr_reader/attr_writer/attr_accessor</code> 方法，可以方便地在类实例中生成 getter/setter 方法，core_ext/class.rb 重新打开了 Class 类，对应地在类中生成 getter/setter 方法。</p>
+<p><code>class_eval</code> 在这当中起到重要作用。</p>
+<p>在 class.rb 中，因为没有显式调用 <code>class_eval</code> ，其 receiver 会指向 self ，而当前的 self 就是 Class 类的实例，即普通类，假设为 class 。 <code>class_eval</code> 把 self 指向 class ，也会重新打开 class ，当你需要动态地为类添加方法时很有用。如下例：</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+class <span class="type">TestClassEval</span>
+<span class="keyword">end</span>
+
+<span class="type">TestClassEval</span>.class_eval <span class="keyword">do</span> 
+  def instance_method
+    P 'instance <span class="keyword">method</span>'
+  <span class="keyword">end</span>
+  def self.class_method
+    p 'class <span class="keyword">method</span>'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="type">TestClassEval</span>.class_method <span class="comment"># 'class method'</span>
+<span class="type">TestClassEval</span>.new.instance_mehtod <span class="comment"># 'instance method'</span>
+<span class="type">TestClassEval</span>.instance_mehtod <span class="comment"># NoMethodError</span>
+</code></pre><p>顺便说说 <code>instance_eval</code> ，<code>instance_eval</code> 把 self 指向 实例 ，也会重新打开实例的 singleton class ，为其添加单例方法，继续用上面的 TestClassEval 作例，下面的写法在其上定义了另一个类方法。</p>
+<pre><code><span class="comment">#!/usr/bin/env ruby</span>
+<span class="type">TestClassEval</span>.instance_eval <span class="keyword">do</span>
+  def another_class_method
+    p 'another class <span class="keyword">method</span>'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="type">TestClassEval</span>.another_class_method <span class="comment"># 'another class method'  </span>
+</code></pre><p><strong> hash.rb </strong></p>
+<p>hash.rb 里使用了 inject 方法 symbolize  hash 的 key </p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">symbolize_keys</span></span>
+  <span class="keyword">self</span>.inject({}) { |h, (k, v)| h[k.to_sym] = v;h}
+<span class="keyword">end</span>
+</code></pre><h2 id="事件处理_event-rb">事件处理 event.rb</h2><p><strong> EventManager </strong></p>
+<p>EventManager 模块里有一个 extend self 方法调用，值得学习。</p>
+<p>extend 方法是把 module 的实例方法加入到 class 的类单例方法中，其常规用法如下：</p>
+<pre><code>module M
+  def p_method
+    p '<span class="keyword">method</span>'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+class C
+  extend M
+<span class="keyword">end</span>
+
+C.p_method <span class="comment"># 'method'</span>
+</code></pre><p>如果不使用 extend ，也有其他途径的实现，如下：</p>
+<pre><code><span class="class"><span class="keyword">module</span> <span class="title">M</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">p_method</span></span>
+    p <span class="string">'method'</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">D</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="keyword">include</span> <span class="constant">M</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">D</span>.p_method <span class="comment"># 'method'</span>
+</code></pre><p>在 EventManager 中，self 指向 module 自身， 因此 extend self 是用来高效地生成单例方法，可见<a href="http://ozmm.org/posts/singin_singletons.html" target="_blank" rel="external">链接</a> </p>
+<p><strong> EventContext </strong></p>
+<p>为 block 提供执行上下文， block 借此可以访问 request/params ，可以设置和访问 status/headers/body</p>
+<p>这里用到 alias, <code>alias :header :headers</code> ， ruby 中类似的用法还有 alias_method ，如果使用 alias_method ，要这样写 <code>alias_method :header, :headers</code> ，多一个逗号。</p>
+<p>alias 与 alias_method 还有其他区别，前者是关键字，后者是定义在 Module 的方法，这意味着 alias_method 可以被重写；调用 alias 时，其 self 是在定义时就已经决定下来，而 alias_method 的 self 是在运行时才决定的，见下面的例子<a href="http://blog.bigbinary.com/2012/01/08/alias-vs-alias-method.html" target="_blank" rel="external">(出自)</a>:</p>
+<pre><code><span class="comment"># alias_method</span>
+<span class="class"><span class="keyword">class</span> <span class="title">User</span></span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Johnnie Walker"</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">add_rename</span></span>
+    alias_method <span class="symbol">:name</span>, <span class="symbol">:full_name</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Developer</span> <span class="inheritance">&lt; <span class="parent">User</span></span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Geeky geek"</span>
+  <span class="keyword">end</span>
+  add_rename
+<span class="keyword">end</span>
+
+<span class="constant">Developer</span>.new.name <span class="comment">#=&gt; 'Gekky geek'</span>
+
+<span class="comment"># alias</span>
+<span class="class"><span class="keyword">class</span> <span class="title">User</span></span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Johnnie Walker"</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">add_rename</span></span>
+    <span class="keyword">alias</span> <span class="symbol">:name</span> <span class="symbol">:full_name</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Developer</span> <span class="inheritance">&lt; <span class="parent">User</span></span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
+    puts <span class="string">"Geeky geek"</span>
+  <span class="keyword">end</span>
+  add_rename
+<span class="keyword">end</span>
+
+<span class="constant">Developer</span>.new.name <span class="comment">#=&gt; 'Johnnie Walker'</span>
+</code></pre><p>基于上面的介绍，社区推荐使用 alias_method 。</p>
+<p><strong> Event </strong></p>
+<p>Event 在定义 initialize 方法时<strong>最后一个参数</strong>是 <code>&amp;block</code> ，这表明在调用 Event.new 时如果接收到一个 block ，用 &amp; 操作符把 block 转化为 proc 之后，在 initialize 方法内部可以调用 proc 的 call 方法。</p>
+<p>如果没有在方法内部调用 call 方法的需求，或者没有把 block 当成变量传给别的方法的需求，就没必要在定义方法时写上 &amp;block ，直接用 yield 关键字调用就行。</p>
+<p>可以用 &amp; 把 proc 转变为 block 。这个技巧用在 attend 方法里面，因为 instance_eval 只有<a href="http://ruby-doc.org/core-1.9.3/BasicObject.html#method-i-instance_eval" target="_blank" rel="external">两种调用方式</a>：要么接收一个字符串，要么接收一个 block ，所以要把 proc 转变为 block 当作参数传进去。</p>
+<p>如果跟在 &amp; 操作符后面的对象不是 proc ，&amp; 会调用跟在它后面的对象的 :to_proc 方法。 symbol 对象也有自己的 :to_proc 方法，你经常能看到类似下面的代码：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">tag_names</span></span>
+  <span class="variable">@tag_names</span> || tags.map(&amp;<span class="symbol">:name</span>).join(<span class="string">' '</span>)
+<span class="keyword">end</span>
+</code></pre><p>事实上这跟下面的代码是等效的：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">tag_names</span></span>
+  <span class="variable">@tag_names</span> || tags.map({ |tag| tag.name }).join(<span class="string">' '</span>)
+<span class="keyword">end</span>
+</code></pre><p>symbol 对象的 :to_proc 方法最早是 Rails 引进的，后面合并到 ruby 1.8.7 版本：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Symbol</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
+    <span class="constant">Proc</span>.new <span class="keyword">do</span> |obj, *args|
+      obj.send <span class="keyword">self</span>, *args
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>上面整个例子都出自 <a href="http://stackoverflow.com/questions/1217088/what-does-mapname-mean-in-ruby" target="_blank" rel="external">stackoverflow</a></p>
+<p>关于 &amp; ，更多资料可以看看<a href="http://weblog.raganwald.com/2008/06/what-does-do-when-used-as-unary.html" target="_blank" rel="external">这篇文章</a></p>
+<h2 id="路由请求，封装响应_dispatcher-rb">路由请求，封装响应 dispatcher.rb</h2><p>dispatcher 负责将请求转发到对应的 event ，经 event 处理后，返回符合 rack 要求的响应。</p>
+<p>rack 会直接调用 dispatcher 的 call 方法，传入 env ，利用 rack <a href="http://www.rubydoc.info/gems/rack/Rack/Request" target="_blank" rel="external">提供的方法</a>可以得到 request 对象。</p>
+<p>用 array 的 detect 方法实现转发功能， detect 接受一个 <a href="http://ruby-doc.org/core-2.3.1/Enumerable.html#method-i-detect" target="_blank" rel="external">ifnone 参数</a>，如果找不到合适的 event ，就调用 ifnone 的 call 方法，将 call 方法的返回值作为 detect 的返回值，借此实现大家都熟悉的 404 。</p>
+<p>这里的 ifnone 是一个 lambda</p>
+<pre><code><span class="title">lambda</span> { <span class="title">not_found</span> }
+</code></pre><p>调用 lambda 的 call 会执行 not_found 方法，而 not_found 返回一个 Event 实例。</p>
+<h2 id="server-rb">server.rb</h2><p><a href="https://github.com/rack/rack/tree/2.0.0.alpha" target="_blank" rel="external">rack 2.0</a> 开始不支持 Mongrel 的 handler 。</p>
+<p><code>trap(&quot;INT&quot;) do ... end</code> 这段代码会捕获用户输入的 <code>ctrl + c</code> ，从而调用 Mongrel::HttpServer 的 <a href="https://github.com/mongrel/mongrel/blob/master/lib/mongrel.rb#L344" target="_blank" rel="external">stop</a> 方法。</p>
+<h2 id="dsl-rb">dsl.rb</h2><p>重新打开 Kernel ，增加 4 个 http 方法。</p>
+<p>所有 ruby 类（除了 BasicObject）都继承模块 Kernel ，这意味着一旦 require 这个文件，就连字符串都带这4个方法。</p>
+<p>可以打开 irb 验证一下，查看类的祖先链的方法是 ancestors ，如 <code>String.ancestors</code></p>
+<h2 id="erb">erb</h2><p><strong> init.rb </strong> 里有这样一行：</p>
+<pre><code><span class="constant">Sinatra:</span><span class="symbol">:EventContext</span>.send(<span class="symbol">:include</span>, <span class="constant">Sinatra:</span><span class="symbol">:Erb</span><span class="symbol">:</span><span class="symbol">:InstanceMethods</span>)
+</code></pre><p>ruby 里的方法调用其实就是向被调用方发送（send）一个方法，所以被调用方又叫 receiver 。 EventContext include 了 Erb::InstanceMethods ，就是把 Erb::InstanceMethods 插入到 EventContext 继承链的父亲节点，这样 EventContext 的实例就都可以调用 Erb::InstanceMethods 里面的方法。你也可以直接打开 EventContext 达到同样的目的：</p>
+<pre><code>class <span class="constant">Sinatra:</span><span class="symbol">:EventContext</span>
+  <span class="keyword">include</span> <span class="constant">Sinatra:</span><span class="symbol">:Erb</span><span class="symbol">:</span><span class="symbol">:InstanceMethods</span>
+<span class="keyword">end</span>
+</code></pre><p><strong> erb.rb </strong></p>
+<p>erb.rb 实现找到正确的模板，然后把渲染后的值赋给 EventContext 的实例变量 @body。</p>
+<p>在找模板时使用到一个全局变量 <code>$0</code> ，官方文档的<a href="http://ruby-doc.org/core-2.0.0/doc/globals_rdoc.html" target="_blank" rel="external">描述</a>： </p>
+<blockquote>
+<p>Contains the name of the script being executed. May be assignable.</p>
+</blockquote>
+<p>可以用它来实现类似 Python 判断当前文件是否被直接运行的功能（用来写测试用例）：</p>
+<pre><code><span class="keyword">if</span> __FILE_<span class="number">_</span> == <span class="variable">$0</span>
+  <span class="comment"># code goes here</span>
+<span class="keyword">end</span>
+</code></pre><p>sinatra 用它来实现寻找模板的默认路径。</p>
+<p>ERB 的 result 方法接收一个 binding 参数，默认值是 TOPLEVEL_BINDING 。 binding 是 Kernel 的方法，它会返回 当前作用域(local scope)。因为 binding 是在 EventContext 的某个实例里面运行，它返回的是那个实例的作用域，所以可以访问实例变量及实例方法，如 params 。举例如下：</p>
+<pre><code>class <span class="constant">MyClass</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>(x)
+    <span class="variable">@x</span> = x
+  <span class="keyword">end</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">get_binding</span></span>
+    binding
+  <span class="keyword">end</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">print</span></span>
+    p <span class="string">'print out something'</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+my_instance = <span class="constant">MyClass.</span>new(<span class="number">1</span>)
+my_binding = my_instance.get_binding
+
+eval <span class="string">'@x'</span>, b <span class="comment"># 1</span>
+eval <span class="string">'print'</span>, b <span class="comment"># 'print out something'</span>
+</code></pre><h2 id="最后，_at_exit">最后， at_exit</h2><p>at_exit 也是 Kernel 里的方法，它接受一个 block ，并将其转换成 Proc ，当程序退出时会调用 Proc 。如果调用了多次 at_exit 。那么这些 Proc 按倒序执行，如：</p>
+<pre><code>at_<span class="built_in">exit</span> <span class="keyword">do</span>
+  puts <span class="string">'再见！'</span>
+end
+
+at_<span class="built_in">exit</span> <span class="keyword">do</span>
+  puts <span class="string">'已经写完，'</span>
+end
+
+at_<span class="built_in">exit</span> <span class="keyword">do</span>
+  <span class="built_in">print</span> <span class="string">'sinatra 0.0.1 版本源码学习'</span>
+end
+</code></pre>]]></content>
+    
+    <summary type="html">
+    
+      通过 sinatra 学习 ruby 编程技巧（系列）
+    
+    </summary>
+    
+      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
+    
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="sinatra" scheme="http://judes.me/tags/sinatra/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笑话分类</title>
+    <link href="http://judes.me/2016/06/03/joke-category/"/>
+    <id>http://judes.me/2016/06/03/joke-category/</id>
+    <published>2016-06-03T00:06:33.000Z</published>
+    <updated>2016-06-12T12:23:59.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>看过很多的笑话，好笑的笑笑就过，过后就忘，再次见到又笑一回。一再发生类似的事会令你产生这个世界的笑话无穷无尽的错觉。</p>
+<p>然而笑话都是有一定套路的，套路不止一种，但都殊途同归（之前有说过）。</p>
+<p>下面就给按照不同套路给笑话分个类。深入学习并在日常生活中加以运用，从被逗乐到逗别人就是指日可待的事。</p>
+<h2 id="No-1">No.1</h2><p>首先来说说最古老，最长寿，也一定是广为人知，却不是老少宜咸的那一类。</p>
+<p>相信你已经猜到了，它就是与性相关的笑话，荤笑话。较之于其他类型的笑话，它有无可比拟的优势：几乎每个成年人都能轻松理解笑点，因为荤笑话的笑点是基于人类共有生理和天性，不用刻意学习；荤笑话的笑点不会是不痛不痒的，无论讲得好还是差，荤笑话总能引发听众强烈的情绪。受限于道德风俗，荤笑话很少现身大庭广众，更多出现在三五同性好友之间，又或是伴侣调性，或是用来自娱自乐。</p>
+<h2 id="No-2">No.2</h2><p>接下来的一类笑话是出于人类的共同心理，比如：追求美好、摒弃丑恶，赞美强大、嘲笑弱小，向往富有、讨厌贫穷，等等。任时代变迁，这类笑话一直奏效。这类笑话把听众摆在优势的一方，树立另一个弱势形象，对比之下给读者以优越感。举几个例子：</p>
+<p><strong>穷</strong></p>
+<ul>
+<li><p>我已经不是那个花500块钱也要考虑很久的小子了！我现在五块钱都要深思熟虑。</p>
+</li>
+<li><p>“妈，感觉能和你一起洗碗，真好啊！” “孩子呀！是挺好的，可你下次请妈吃饭，要记得带钱啊！”</p>
+</li>
+</ul>
+<p><strong>胖</strong></p>
+<ul>
+<li>“老婆，说实话，我一直生活在你的阴影里 。” “是吗？亲爱的，我做了什么让你一直呆在了阴影里？你告诉我。” 　“你！太！胖！了！！”</li>
+</ul>
+<p><strong>蠢</strong></p>
+<ul>
+<li><p>两头奶牛在田野里聊天，其中一头牛问道，“你听说疯牛病了吗？现在这种病正四处蔓延。” 另一头牛回答道，“听说了，幸亏我是企鹅。”</p>
+</li>
+<li><p>有一人独自在森林中冒险，突然发现自己被食人族重重包围。于是对天空大喊：“我死定了，上帝救救我！” 　　只见天空出现一到光传来一个声音：“还不一定，你捡起地上一颗大石头，把带头的酋长砸死。”于是他捡起地上最大的一颗石头，狠狠的砸向酋长，正好把酋长砸死。族人全都呆了一呆，接着怒目相向，这时天上又传来一阵声音：”现在你才真的死定了。</p>
+</li>
+<li><p>我给兄弟说：“哥，刚才我被勾搭了”，兄弟一脸不解，而且很惆怅，想了许久一本正经的对我说：“怎么会被狗打了呢？”</p>
+</li>
+</ul>
+<h2 id="No-3">No.3</h2><p>基于生活常识、俗语、经典名著的笑话，如</p>
+<p><strong>生活常识</strong></p>
+<ul>
+<li><p>有一天在學校，老師問同學:你們知道位甚麼人死後全身會冰冰冷冷的。過了很久只聽到一個同學默默的說”心靜自然涼”</p>
+</li>
+<li><p>朋友姓巴，天天闹着要改成跟她妈姓，因为经常是：姑娘你贵姓？免贵姓巴。哦，八个的八呀？不是，是巴金的巴。这孩子，读书读傻了吧，八个的八和八斤的八是一个八嘛！</p>
+</li>
+</ul>
+<p><strong>俗语</strong></p>
+<ul>
+<li>唐僧初遇猪八戒那一天，唐僧说：八戒你跑两圈给为师看看。猪八戒跑完后问：师傅你是想测测我的体力吗？唐僧答：为师出家多年从没吃过猪肉，就想看看猪跑。。。</li>
+</ul>
+<p><strong>名著</strong></p>
+<ul>
+<li><p>话说鲁智深到了大相国寺，仍是戒不掉那酒瘾，常常醉后惹事，闹得寺里鸡犬不宁。众僧告到方丈处，方丈无奈，私下劝智深：喝酒我不管你，但求酒后莫要失态！鲁智深闻言大笑：哈哈哈哈，洒家有酒就行，还要什么师太！..</p>
+</li>
+<li><p>三国时期，周瑜嫉妒诸葛亮的才华，恰逢孙权刘备联合抗曹时期，周瑜想以兵器不足为由刁难诸葛亮，便与诸葛商讨道：“丞相，大战在即，吾军将用何武器啊？”诸葛亮大怒道：“有核武器还他妈找我干啥？”</p>
+</li>
+<li><p>悟空追赶妖精，吼到：“妖怪！哪里走！”妖怪转了个身，说道：“不告诉你！”</p>
+</li>
+</ul>
+<h2 id="No-4">No.4</h2><p>基于某个时代人的共同生活记忆的笑话，如 </p>
+<p><strong>苏联笑话</strong></p>
+<ul>
+<li><p>克里姆林宫外头有位男子大喊：“斯大林是白痴、是王八蛋！”结果男子立即遭到逮捕，并判刑23年。这23年，其中3年是侮辱共党总书记，其余20年是泄露国家机密。</p>
+</li>
+<li><p>一个苏联外交官跟同事讲，“这是一个腐败透顶的政府”， 被一克格勃当场逮捕。 外交官：“为什么逮捕我？” 克格勃：“因为你说这是一个腐败透顶的政府”。 外交官：“可是我从来没有说哪个政府是腐败透顶的政府”。 克格勃：“不要狡辩。只有一个腐败透顶的政府。</p>
+</li>
+</ul>
+<p><strong>文 革</strong></p>
+<ul>
+<li><p>某领导念毛主席语录：“人的正确思想是从天上掉下来的！”翻过一页，一愣，大声念道：“吗！”。</p>
+</li>
+<li><p>生产队晚上召开大会，老队长根据县委和公社的指示，要社员们狠狠批判“今不如昔”的反动谬论。可是开了大半夜，没有一个人发言，因为大家都觉得的确是今不如昔嘛，怎么批判？老队长没有办法，只好启发大家说：“怎么会今不如昔呢！金子多少钱一斤？锡多少钱一斤？”社员们一听，纷纷批判：“真是胡说八道，金子肯定比锡贵嘛。”</p>
+</li>
+</ul>
+<p><strong>当今</strong></p>
+<ul>
+<li>今天出去学雷锋做好事，忽然看到一个老奶奶从一个小伙子旁边走过时忽然晕倒了，那刻我没有迟疑，一个箭步走上前去拉住那个小伙子。</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      给笑话分个类
+    
+    </summary>
+    
+      <category term="joke" scheme="http://judes.me/categories/joke/"/>
+    
+    
+      <category term="笑话理论" scheme="http://judes.me/tags/%E7%AC%91%E8%AF%9D%E7%90%86%E8%AE%BA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>有限的笑话</title>
+    <link href="http://judes.me/2016/05/08/jokes-is-limited/"/>
+    <id>http://judes.me/2016/05/08/jokes-is-limited/</id>
+    <published>2016-05-08T12:27:06.000Z</published>
+    <updated>2016-06-12T12:24:11.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>请看官们回想自己最近一次在闲暇时认真读一大段文字是什么时候？</p>
+<p>有没有记不清楚的？</p>
+<p>古往今来，阅读都不是大众闲暇时的选择。男的有空就玩游戏，女的有空追星无事购物，早已成刻板印象了。</p>
+<p>刷微博的虽然有阅读习惯，恐怕也离不开140字的卡片式阅读。</p>
+<p>说这么多，只为佐证好的笑话，不能太长。以前的笑话长什么样不知道，现在的笑话为了适应潮流还是短一点好。</p>
+<p>简单地作一番假设，笑话平均长度为100字，常用汉字有2500个，那么枚举所有的情况也就2500的100次方种。这就是标题所写“有限的笑话”。数量也很多，至少不是无限。</p>
+<p>这些所有可能的“笑话”，绝大部分是无意义的。因为一段能被读懂的文章的每个字都不会随机出现。单是这点，就能剔除大部分情况，而最终成为一个笑话，又过滤了大部分。到底剩下多少没人能说得出来，但有个感性认识就行，即：一个人是有可能收集到所有笑话的。</p>
+<p>为什么要收集所有的笑话？</p>
+<p>为了在合适的时候，对某个感到无聊的人说：“我讲个笑话给你听吧！”</p>
+]]></content>
+    
+    <summary type="html">
+    
+      理论上，笑话的数量是有限的
+    
+    </summary>
+    
+      <category term="joke" scheme="http://judes.me/categories/joke/"/>
+    
+    
+      <category term="笑话理论" scheme="http://judes.me/tags/%E7%AC%91%E8%AF%9D%E7%90%86%E8%AE%BA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>浏览器阻止弹窗</title>
+    <link href="http://judes.me/2016/04/24/block-new-window/"/>
+    <id>http://judes.me/2016/04/24/block-new-window/</id>
+    <published>2016-04-24T03:04:50.000Z</published>
+    <updated>2016-06-12T12:23:10.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>产品的同事反映有时候浏览器会显示阻止了弹窗，问这是不是个bug 。</p>
+<p>有一个笑话，测试人员直接说某个功能出现了bug，开发人员往往怀疑问题出在测试人员身上；而如果测试人员委婉一点说某个功能出现了意外的效果，是不是自己搞错了什么地方，开发人员直觉上会认为出现了bug。</p>
+<p>当时我也是这样想的，我记得所有的弹窗用的代码都是 window.open(‘some_url’) ，如果有问题那就不会偶尔或者某个功能出现问题，应该所有地方出现问题才对，更何况我也有自测过，一次阻止弹窗的情况都没遇到过。</p>
+<p>问她用的是什么浏览器，说是360。难道是360的问题？我们内部只需兼容 Chrome ，如果是这样就万事大吉了。不幸的是，她后来补充在 Chrome 上也遇到过。</p>
+<p>问她 Chrome 的版本，比我的高，先升级到跟她一样的。</p>
+<p>定位到出问题的功能，再跟别的没出过问题的功能两相比较，发现出问题的功能，打开新窗口的代码写在异步回调里。隐约觉得这就是问题所在。</p>
+<p>先证实一下，把异步回调去掉，试了试，没问题；再把异步加回去，果然就显示阻止弹窗了。</p>
+<p>到 stackoverflow 上找找答案（面向 stackoverflow 编程 逃……）原来浏览器会阻止所有不是由用户直接触发的弹窗。当回调代码执行时，由用户直接触发的那些代码早就返回了。</p>
+<p>所以解决办法有两个：</p>
+<ul>
+<li><p>把异步变为同步，比如 ajax 请求加上 async: false ，只是这样会阻塞页面上其他代码执行</p>
+</li>
+<li><p>先打开一个空白标签，在执行异步代码时通过设置空白标签的 window.location 属性把 url 改回去</p>
+</li>
+</ul>
+<p>实测第二种方法没有让用户觉察到什么不妥，于是最终就这样定下。改改测试用例就上了。</p>
+<p><strong> 参考 </strong></p>
+<ul>
+<li><a href="http://stackoverflow.com/questions/2587677/avoid-browser-popup-blockers" target="_blank" rel="external">一点原理解释</a></li>
+<li><a href="http://theandystratton.com/2012/how-to-bypass-google-chromes-javascript-popup-blocker" target="_blank" rel="external">样例代码</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      浏览器会阻止不是由用户直接触发的弹窗
+    
+    </summary>
+    
+      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
+    
+    
+      <category term="浏览器" scheme="http://judes.me/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>最高的笑话</title>
+    <link href="http://judes.me/2016/04/23/joke-theory/"/>
+    <id>http://judes.me/2016/04/23/joke-theory/</id>
+    <published>2016-04-23T03:37:55.000Z</published>
+    <updated>2016-06-12T12:24:05.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>笑话令人发笑，让人的心情在短时间内从平常状态转变成轻松愉悦状态。</p>
+<p>一段从头到尾平铺直叙的文字无法改变人的心情，所以笑话要有曲折波澜。曲折波澜之处即为笑点。</p>
+<p>笑点可以有多个，还可以出现在开头、中段、结尾。根据<a href="http://wiki.mbalib.com/wiki/%E5%B3%B0%E7%BB%88%E5%AE%9A%E5%BE%8B" target="_blank" rel="external">峰-终定律</a>：一个笑话有多好笑，取决于它最好笑的笑点的好笑程度以及结尾处的好笑程度，明智的做法就是把两者合二为一：把最好笑的笑点安排在结尾处。</p>
+<p>而笑点有多好笑，取决于：读者能不能看懂笑点、花多大力气看懂笑点、笑点与其他内容有多大差异、笑点透露出多少优越感。</p>
+<p>逐一解释：</p>
+<ul>
+<li><p>读者看不懂笑点就会心生疑惑，多数人甚至会产生一种厌恶远离的心态</p>
+</li>
+<li><p>要花很大力气才能看懂的笑点，通常在读者心中有非常曲折的理解过程，给读者造成强大的心理负担；笑点在人之常情、人之常理范围内，读者才能轻松起来</p>
+</li>
+<li><p>笑话中笑点与非笑点的部分差异越大，读者心情变化时间越短和程度越大</p>
+</li>
+<li><p>笑点赋予读者优越感，优越感让人愉悦</p>
+</li>
+</ul>
+<p>以上啰哩啰嗦的分析汇成一句话：<strong> 最高的笑话，拥有意料之外但又在情理之中的结局。 </strong></p>
+<p>====================================<br>Talk is cheap, show you the joke !</p>
+<p>今天跟同事说，哪天要是到论坛发帖征友了，我一定会要求女孩子身高172。为什么要这么高的？因为 12厘米是最萌身高差嘛</p>
+]]></content>
+    
+    <summary type="html">
+    
+      最高的笑话，拥有意料之外但又在情理之中的结局
+    
+    </summary>
+    
+      <category term="joke" scheme="http://judes.me/categories/joke/"/>
+    
+    
+      <category term="笑话理论" scheme="http://judes.me/tags/%E7%AC%91%E8%AF%9D%E7%90%86%E8%AE%BA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>from nodejs request to promise</title>
+    <link href="http://judes.me/2016/04/16/request-to-promise/"/>
+    <id>http://judes.me/2016/04/16/request-to-promise/</id>
+    <published>2016-04-16T11:50:24.000Z</published>
+    <updated>2016-06-12T12:25:38.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>文中的 promisify 函数原型出自 月影 的<a href="http://blog.h5jun.com/post/decorator-functional.html" target="_blank" rel="external">这篇博客</a>。</p>
+<h2 id="了解Promise">了解<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="external">Promise</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// &#21021;&#22987;&#21270;&#26102;&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910;&#21478;&#22806;&#20004;&#20010;&#26041;&#27861;&#10;new Promise(function(resolve, reject)&#123;&#10;//&#22312;&#27492;&#26041;&#27861;&#20013;&#20570;&#19968;&#20123;&#24322;&#27493;&#25805;&#20316;&#10;//&#22312;&#24322;&#27493;&#25805;&#20316;&#30340;&#22238;&#35843;&#26041;&#27861;&#20013;&#26681;&#25454;&#24773;&#20917;&#65292;&#20998;&#21035;&#35843;&#29992; resolve &#25110;&#32773; reject&#10;&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="了解request">了解<a href="https://github.com/request/request" target="_blank" rel="external">request</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//request &#26368;&#31616;&#21333;&#30340;&#29992;&#27861;&#10;request(url, function(err, response, body)&#123;&#10;  if(err)&#123;&#10;    //&#22788;&#29702;&#38169;&#35823;&#10;  &#125; else if(response.statusCode == 200)&#123;&#10;    //&#22788;&#29702;&#25104;&#21151;&#21709;&#24212;&#10;  &#125;&#10;&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="把_request_转换为_promise_的用例">把 request 转换为 promise 的用例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function()&#123;&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="promisify_实现">promisify 实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="完整示例">完整示例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;var getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function(content)&#123;&#10;  console.log(content);&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;).catch(function(reason)&#123;&#10;  //&#24322;&#24120;&#22238;&#35843;&#10;  console.log(reason);&#10;&#125;);</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      把 nodejs 中的 request 模块 转换为 es2015 的 Promise
+    
+    </summary>
+    
+      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
+    
+    
+      <category term="es2015" scheme="http://judes.me/tags/es2015/"/>
+    
+      <category term="node" scheme="http://judes.me/tags/node/"/>
+    
+      <category term="promisify" scheme="http://judes.me/tags/promisify/"/>
+    
+      <category term="request" scheme="http://judes.me/tags/request/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>算法第四版 kmp 算法</title>
+    <link href="http://judes.me/2016/04/10/kmp/"/>
+    <id>http://judes.me/2016/04/10/kmp/</id>
+    <published>2016-04-10T09:35:28.000Z</published>
+    <updated>2016-06-12T12:24:55.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>网上有很多关于KMP算法的文章。用google搜“kmp算法”，第一页的文章我都看过，唯一能看懂并看完的就只有阮一峰的<a href="http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html" target="_blank" rel="external">这篇</a>。</p>
+<p>KMP算法很难懂，难在它的具体代码实现十分简洁，简洁得一点都看不出其背后的思想。今天就着算法第四版说几个理解KMP的关键点：</p>
+<ul>
+<li>暴力字符串匹配的复杂度最差的情况可以达到 N*M ，而 KMP 算法最差是 N+M ，高效的原因之一在于文本指针永远不会回溯。每一次比较，文本指针都递增 1 ，只有模式字符串的指针在回溯</li>
+<li>KMP 高效的原因之二是就算匹配失败，模式字符串的指针在回溯也不是一味回到最初的位置，它会根据<strong>部分已经成功匹配的字符串</strong>以及当前匹配失败的输入决定回溯到哪个位置，参考上文提到的文章，会对这有感性的认识</li>
+<li><p>上文提到的 <strong>部分已经成功匹配的字符串</strong> ，具体举例说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">...A B A B A D A... &#60;-------- &#25991;&#26412;&#20013;&#38388;&#30340;&#26576;&#19968;&#27573;&#10;   A B A B A C &#60;-------- &#27169;&#24335;&#23383;&#31526;&#20018;&#10;             &#8593;</span><br></pre></td></tr></table></figure>
+<p>箭头所指是匹配失败之处，当前输入是 D ，已经成功匹配的字符串是 A B A B A ，<strong>部分已经成功匹配的字符串</strong>是指 除去第一个字母 A 后的已经成功匹配的字符串： B A B A 。因为每一次比较，文本指针都递增 1 （本例中，文本指针将会指向 D 后面的 A ），再从模式字符串中选出一个字母与之比较。成功匹配的字符串中最左边的那个字母之后再也没有机会与模式字符串比较了。决定该从模式字符串中选出哪一个字母的是 <strong>部分已经成功匹配的字符串</strong>以及当前输入。</p>
+</li>
+<li><p>KMP 使用了有限状态自动机，要理解书中的图5.3.6以及图5.3.9，最好的办法是自己动手一步步实现dfa数组：</p>
+<p>1 首先说明数组行和列的意义，自动机最初处于 0 状态，结束于 6 状态，它将根据当前所在状态及输入决定下一个状态，数组中每个元素的值对应于自动机状态。输入只列出 A B C ，因为其它输入都会令自动机回退到状态 0 ，所以省去不写。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5 &#60;------ &#36825;&#26159;&#26377;&#38480;&#29366;&#24577;&#33258;&#21160;&#26426;&#30340;&#21508;&#20010;&#29366;&#24577;&#10;  A B A B A C &#60;------ &#36825;&#26159;&#27169;&#24335;&#23383;&#31526;&#20018;&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A &#10;B&#10;C&#10;&#8593;&#10;&#36825;&#10;&#26159;&#10;&#36755;&#10;&#20837;</span><br></pre></td></tr></table></figure>
+<p>2 当自动机处于 0 状态，且输入 A 时，就会进入 1 状态；输入 B 或 C 时，还是处于 0 状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1&#10;B 0&#10;C 0</span><br></pre></td></tr></table></figure>
+<p>3 可以先把能让自动机从 0 到 6 状态的输入写出来。当自动机处于 1 状态，且输入 B 时，就会进入 2 状态，依次类推：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1   3   5&#10;B 0 2   4&#10;C 0         6</span><br></pre></td></tr></table></figure>
+<p>4 那些空白的数组元素又该怎样处理呢？具体举一例来说，当自动机处于 1 状态，且输入 A 时，会进入哪个状态呢？首先自动机肯定不能进入下一个状态 2 ，只能是回退到状态 0 或者 状态 1 ；然后请回答一个问题：已知自动机当前状态是 1 ，当前输入是 A （当前输入是什么都无所谓），请问前一个输入是什么？ 答案是 A ，因为只有输入 A 才能使自动机由前一个状态 0 进入到当前状态 1 。这个 A 就是上文所说的已经成功匹配的字符串，那么<strong>部分已经成功匹配的字符串</strong>是已经成功匹配的字符串除去最左边的字母(A)，即：空字符串。 最后假设因为当前的输入与模式字符串失配，导致自动机直接回退到状态 0 ，自动机要先跟<strong>部分已经成功匹配的字符串</strong>逐个匹配，再与当前输入匹配，才能得出下一个状态。<strong>部分已经成功匹配的字符串</strong>是空字符串，当前输入是 A ，所以自动机由状态 0 进入到状态 1 。同理，当自动机处于 1 状态，且输入 C 时，会回退到 0 状态。我们填好了第二列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3   5&#10;B 0 2   4&#10;C 0 0       6</span><br></pre></td></tr></table></figure>
+<p>5 接下来填写第三列，当自动机处于 2 状态，且输入 B 时，会进入哪个状态呢？首先自动机肯定不能进入下一个状态 3 ，只能是回退到状态 0 或者 状态 1 或者 状态 2；然后请回答一个问题：已知自动机当前状态是 2 ，请问前两个输入是什么？ 答案是 AB ，因为只有输入 AB 才能使自动机由初始状态 0 进入到当前状态 2 。 AB 就是上文所说的已经成功匹配的字符串，<strong>部分已经成功匹配的字符串</strong>是 B 。最后假设因为当前的输入与模式字符串失配，导致自动机直接回退到状态 0 ，<strong>部分已经成功匹配的字符串</strong>是 B ，当前输入是 B ，自动机处于状态 0 时先与<strong>部分已经成功匹配的字符串</strong>逐个匹配，再与当前输入匹配。显然在输入了两个 B 之后，自动机还是处于状态 0。同理，当自动机处于 2 状态，且输入 C 时，会回退到 0 状态。我们填好了第三列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3   5&#10;B 0 2 0 4&#10;C 0 0 0     6</span><br></pre></td></tr></table></figure>
+<p>6 当自动机处于 3 状态，且输入 A 时，会进入哪个状态呢？长话短说，已知自动机当前状态是 3 ，已经成功匹配的字符串是 A B A ，<strong>部分已经成功匹配的字符串</strong>是 B A ，当前输入是 A ，假设自动机因失配直接回退到状态 0 ，自动机处于状态 0 时先与<strong>部分已经成功匹配的字符串</strong>逐个匹配，再与当前输入匹配（合起来就是 B A A），最后会停留在状态 1 。输入 C 时，同理。我们填好了第四列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3 1 5&#10;B 0 2 0 4 0&#10;C 0 0 0 0 0 6</span><br></pre></td></tr></table></figure>
+<p>7 同理，我们填好了第五列，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  0 1 2 3 4 5&#10;  A B A B A C&#10;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#175;&#10;A 1 1 3 1 5 1&#10;B 0 2 0 4 0 4&#10;C 0 0 0 0 0 6</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来说说书中构造dfa代码中的X。书中说X是重启位置。我更倾向于认为 X 是自动机的状态。拿更新X时用到的代码<code>X = dfa[pat.charAt(j)][X]</code>来说，等号左边的 X 代表了自动机的下一个状态，<code>pat.charAt(j)</code>表示当前的输入，等号右边的 X 表示自动机当前的状态。举例来说，dfa第二列，X 等于 0，j 等于 1，c 从 0 到 R ，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dfa[0][1] = dfa[0][0]&#10;dfa[1][1] = dfa[1][0]&#10;dfa[2][1] = dfa[2][0]&#10;.&#10;.&#10;.&#10;dfa[R][1] = dfa[R][0]</span><br></pre></td></tr></table></figure>
+<p>上面等式的意义就在于，它能根据当前状态 0 ，以及当前输入 0 ~ R ，得出自动机——除成功匹配的下一状态之外——的下一状态。你也可以认为它只是简单地把在当前状态匹配输入后的状态，直接赋值给下一状态匹配输入后的状态。<br>在给dfa第二列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(1)][0] = dfa[&#39;B&#39;][0] = 0</code>，<br>在给dfa第三列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(2)][0] = dfa[&#39;A&#39;][0] = 1</code>，<br>在给dfa第四列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(3)][1] = dfa[&#39;B&#39;][1] = 2</code>，<br>在给dfa第五列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(4)][2] = dfa[&#39;A&#39;][2] = 3</code>，<br>在给dfa第六列赋值后，X 的值更新为 <code>X = dfa[pat.charAt(5)][3] = dfa[&#39;C&#39;][3] = 0</code></p>
+</li>
+</ul>
+<p>##参考</p>
+<ul>
+<li><a href="https://book.douban.com/subject/19952400/discussion/59623403/" target="_blank" rel="external">对我启发最大的一篇文章</a></li>
+<li><a href="https://luodichen.com/blog/2015/04/10/kmp-algorithm/" target="_blank" rel="external">用状态函数严谨地推导出状态机状态，关键还清晰易懂</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      理解算法第四版中 KMP 算法的关键点
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="algorithm" scheme="http://judes.me/tags/algorithm/"/>
+    
+      <category term="kmp" scheme="http://judes.me/tags/kmp/"/>
+    
+      <category term="算法第四版" scheme="http://judes.me/tags/%E7%AE%97%E6%B3%95%E7%AC%AC%E5%9B%9B%E7%89%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>vim 使用指南</title>
+    <link href="http://judes.me/2016/03/26/how-to-vim/"/>
+    <id>http://judes.me/2016/03/26/how-to-vim/</id>
+    <published>2016-03-26T04:07:28.000Z</published>
+    <updated>2016-06-12T12:23:50.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>想起一个笑话：</p>
+<ul>
+<li>问：要怎样才能生成一个随机字符串呢？</li>
+<li>答：让一个新手退出 vim</li>
+</ul>
+<p>为什么要学习使用 vim ？首先是有意思。它是基于模式的编辑器，与别不同。其次是显得特别专业。狂敲键盘，光标不停地在字里行间辗转腾挪，不需要鼠标就能做所有的事情。</p>
+<p>至于怎样学。有人建议打开vim之后输入<code>:help</code>查看教程，认认真真看个把小时。但有更好的办法：直接在terminal输入<code>vimtutor</code>打开教程（有中文版）一边动手一边学，只需要20-30分钟，你就上手了。</p>
+<p>用上几天之后，你可能觉得vim没有别人所说的那么强大，于是上网看看别人是怎么用的，多半你会跟随别人装上一堆插件，定制了好多命令，折腾一番后vim变得很慢有明显的卡顿感。一次偶然的机会你看到了一个号称“是21世纪的编辑器”的编辑器，它更酷。如果此时你离vim而去，那vim带给你的就只有挫败感和浪费时间。</p>
+<p>所以为避免这种情况发生，请你先不要太早装插件，定制命令倒是可以有一些，比如显示行号、语法高亮、自动缩进、快速回到normal模式等等。</p>
+<p>可以学习一些简单却十分强大的命令。之所以说简单，是因为你不需要学习新的命令，这些强大的命令全都由你已经知道的命令组成。</p>
+<p>不知道你有没有发觉，入门教程以及网上其他一些教程只会教你删除一个单词或者删除一行，并没有教你删除从光标所在位置到同一行指定位置之间的单词，例如要删除下面这行文字中从 happens 到 till 之间的所有文字：</p>
+<p>Magic happens when you combine the motions find and till with operators</p>
+<p>你大概会图省事一直按<code>x</code>，或者先按<code>dw</code>，再一直按<code>.</code>，直到删光till前面的单词；这里介绍另外一种方法：<code>dtt</code>命令。</p>
+<p><code>dtt</code>命令由三个字母组成，每个字母都有其意义：</p>
+<ul>
+<li><code>d</code> 代表一种操作，这里是删除，还可以是<code>yfcv</code>中的任意一个</li>
+<li><code>t</code> 代表一种匹配范围，这里是‘直到’，还可以是<code>fia</code>中的任意一个。举例解释比较好：<br>有这样一个字符串：<code>(How are you ?)</code>，假设光标在<code>a</code>的前面，如果你想删除直到问号前面的所有字符，就输入<code>dt?</code>；如果要删除直到右括号前面所有字符，就输入<code>df?</code>，可见<code>f</code>与<code>t</code>的区别就是一个包含第三个字母，另一个是不包含；如果你要删除括号内的所有内容，（注意当前你的光标是在<code>a</code>前面）你可以输入<code>di)</code>或者<code>di(</code>，都是删除括号之内的内容，如果想把括号也删除了，就输入<code>da)</code>或者<code>da(</code>，<code>a</code>与<code>i</code>的关系也是包含与不包含的关系。</li>
+<li><code>t</code> 代表一种对象，这里只是一个字母，还可以是一个位置，比如<code>^$</code>开头和结尾。</li>
+</ul>
+<p>如果你掌握了上面提到的常用命令，可以去装插件了。想装什么插件才去装，不要搞个 spf13 ，装一箩筐插件其实没什么好。<br>首先装个管理插件的插件：vundle，很多插件都支持用vundle安装，所以先装个vundle会方便很多。按<a href="https://github.com/VundleVim/Vundle.vim" target="_blank" rel="external">官方指南</a>一步步走也不难。<br>然后装个 <a href="https://github.com/jiangmiao/auto-pairs" target="_blank" rel="external">autopairs</a>，这样输入括号、引号会方便很多。<br>再装个<a href="https://github.com/Valloric/YouCompleteMe" target="_blank" rel="external">YouCompleteMe</a>，用来自动补全，官方说明比较详细，所有特性都装会比较麻烦一点，用vundle安装，等一会儿就好，如果它提示你要重新编译一下，你就按文档运行 install.py 脚本，如果运行脚本时出错，就按错误提示来做。<br>除此之外，推荐一个插件<a href="https://github.com/easymotion/vim-easymotion" target="_blank" rel="external">vim-easymotion</a>，用来快速跳转到页面的某个位置的。</p>
+<p>最后附上我的<a href="https://github.com/yiyizym/.vimrc/issues/1" target="_blank" rel="external">vimrc</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      vim 折腾之旅
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="vim" scheme="http://judes.me/tags/vim/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>react_webpack_starter_kit</title>
+    <link href="http://judes.me/2015/12/12/react-webpack-starter-kit/"/>
+    <id>http://judes.me/2015/12/12/react-webpack-starter-kit/</id>
+    <published>2015-12-12T07:40:40.000Z</published>
+    <updated>2016-06-12T12:25:14.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Talk_is_cheap,_show_you_the_code_here">Talk is cheap, show you the code <a href="https://github.com/yiyizym/react_starter_kit" target="_blank" rel="external">here</a></h2><h2 id="一些说明">一些说明</h2><ul>
+<li><p><strong> react 以及 react-bootstrap 都没有发布稳定版，将来 API 可能会大变，用于学习时以最新版为宜 </strong></p>
+</li>
+<li><p>npm 用起来有时会有点慢，建议使用<a href="http://npm.taobao.org/" target="_blank" rel="external">淘宝镜像</a></p>
+</li>
+<li><p>项目的文件组织风格及 webpack config <del>抄袭</del>借鉴 <a href="https://github.com/callemall/material-ui" target="_blank" rel="external">material-ui</a></p>
+</li>
+<li><p>对所有的CSS样式文件默认开启了 <a href="https://github.com/css-modules/css-modules" target="_blank" rel="external">CSS Modules</a></p>
+</li>
+<li><p>出于方便引入全局 bootstrap 样式，且方便覆盖样式的考虑，对所有SCSS样式文件默认不开启 CSS Modules ，我强烈建议所有人除非必要，在写 scss 样式文件时，一律将代码包在 :local 里面</p>
+</li>
+<li><p>因为不想在服务器端处理路由，没有开启 history 的 <a href="https://github.com/rackt/react-router/blob/master/docs/guides/basics/Histories.md" target="_blank" rel="external">createBrowserHistory</a> ，采用了 HashHistory</p>
+</li>
+</ul>
+<h2 id="Many_thanks_to">Many thanks to</h2><ul>
+<li><p>以上链接</p>
+</li>
+<li><p><a href="https://react-bootstrap.github.io/" target="_blank" rel="external">react-bootstrap</a></p>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~
+    
+    </summary>
+    
+      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
+    
+    
+      <category term="react" scheme="http://judes.me/tags/react/"/>
+    
+      <category term="webpack" scheme="http://judes.me/tags/webpack/"/>
+    
+  </entry>
+  
+</feed>

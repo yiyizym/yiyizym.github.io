@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-08-23T00:35:18.000Z</updated>
+  <updated>2016-08-24T00:06:39.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
     <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
     <published>2016-08-16T13:21:48.000Z</published>
-    <updated>2016-08-23T00:35:18.000Z</updated>
+    <updated>2016-08-24T00:06:39.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -165,9 +165,35 @@ p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John 
 <pre><code>def eject(&amp;<span class="keyword">block</span>)
   find { |e| <span class="literal">result</span> = <span class="keyword">block</span>[e] <span class="keyword">and</span> <span class="keyword">break</span> <span class="literal">result</span> }
 <span class="keyword">end</span>
-</code></pre><p>在 <code>eject</code> 方法内部，使用 <code>find</code> 方法找到第一个产生非空结果的 block ，并返回这个结果。<code>find</code> 方法本来会返回第一个符合条件的元素，这里使用 <code>break</code> 来订制自己的返回值。</p>
-<p>往后我们会看到， <code>find</code> 方法中的 <code>e</code> 是 Event 的实例，而 <code>block[e]</code> 做的事情是： 以 <code>request</code> 作为参数，调用 <code>e</code> 的 <code>invoke</code> 方法。</p>
-<p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
+</code></pre><p>在 <code>eject</code> 方法内部，使用 <code>find</code> 方法找到第一个产生非 false 结果的 block ，并返回这个结果。<code>find</code> 方法本来会返回第一个符合条件的元素，通过 <code>break</code> 可以订制自己的返回值。</p>
+<p>这里 <code>e</code> 是 Event 的实例。 <code>block</code> 是由 Array 实例转化而来的 Proc 。</p>
+<p>系列<a href="http://judes.me/2016/06/12/sinatra-learning-0-0-1/">第一篇文章</a>提到过， 如果跟在 <code>&amp;</code> 后面对象的不是 Proc ，首先会调用这个对象的 <code>to_proc</code> 方法得到一个 Proc 实例，最后会调用这个 Proc 的 <code>call</code> 方法。</p>
+<p>sinatra 扩展了 Array 的 <code>to_proc</code> 方法：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
+  <span class="constant">Proc.</span>new { |*args| args.shift.<span class="constant">__send__(</span><span class="keyword">self</span>[<span class="number">0</span>], *(args + <span class="keyword">self</span>[<span class="number">1</span>..-<span class="number">1</span>])) }
+<span class="keyword">end</span>
+</code></pre><p>经过 <code>to_proc</code> 转换， <code>Proc#call</code> 把参数转换为一个数组，把这个数组第一个元素作为 <code>receiver</code> ，把调用 <code>to_proc</code> 方法的数组的第一个元素作为方法，把两个数组余下的元素作为方法的参数，拿前面的代码作例子：</p>
+<pre><code><span class="comment"># 在 lookup 方法里下面的这行代码</span>
+
+&amp;[:invoke, request]
+
+<span class="comment"># 会得到这样一个 Proc</span>
+
+<span class="comment">#=&gt; Proc.new { |*args| args.shift.__send__(:invoke, *(args + [request])) }</span>
+
+<span class="comment"># 在 eject 方法定义中</span>
+
+find { |e| <span class="literal">result</span> = <span class="keyword">block</span>[e] <span class="keyword">and</span> <span class="keyword">break</span> <span class="literal">result</span> }
+
+<span class="comment"># block[e] 就是把 e 当作参数调用  Proc#call ，做的事情是： 以 `request` 作为参数，调用 `e` 的 `invoke` 方法。</span>
+</code></pre><p><code>block[e]</code> 不能写成 <code>block(e)</code> ，否则 ruby 会把 <code>block</code> 当作是 main 的一个方法来调用。有三种方法可以调用 <a href="https://ruby-doc.org/core-2.2.0/Proc.html#method-i-5B-5D" target="_blank" rel="external"><code>Proc#call</code></a> ：</p>
+<pre><code><span class="preprocessor"># <span class="number">1</span></span>
+ a_proc.call()
+<span class="preprocessor"># <span class="number">2</span></span>
+ a_proc.()
+<span class="preprocessor"># <span class="number">3</span></span>
+ a_proc[]
+</code></pre><p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
 <p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
 <pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)
 </code></pre><p>在生成 HEAD 请求的响应时，会设置 body 为空字符：</p>

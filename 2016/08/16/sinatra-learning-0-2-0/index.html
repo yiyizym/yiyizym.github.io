@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-24T00:06:39.000Z">
+<meta property="og:updated_time" content="2016-08-25T00:22:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -373,7 +373,61 @@ find { |e| <span class="literal">result</span> = <span class="keyword">block</sp
  a_proc.()
 <span class="preprocessor"># <span class="number">3</span></span>
  a_proc[]
-</code></pre><p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
+</code></pre><p><code>Event#invoke</code> 方法实现路由匹配和参数匹配。除了可以匹配路径，这个版本的 sinatra 还可以匹配 user_agent 和 host :</p>
+<pre><code><span class="keyword">if</span> agent = options[<span class="symbol">:agent</span>] 
+  <span class="keyword">return</span> <span class="keyword">unless</span> request.user_agent =~ agent
+  params[<span class="symbol">:agent</span>] = <span class="variable">$~</span>[<span class="number">1</span>..-<span class="number">1</span>]
+<span class="keyword">end</span>
+<span class="keyword">if</span> host = options[<span class="symbol">:host</span>] 
+  <span class="keyword">return</span> <span class="keyword">unless</span> host === request.host
+<span class="keyword">end</span>
+</code></pre><p>用法和测试举例如下：</p>
+<pre><code>require <span class="string">'sinatra'</span>
+
+<span class="keyword">get</span> <span class="string">'/path'</span>, :agent =&gt; /Windows/
+  request.env[<span class="string">'HTTP_USER_AGENT'</span>]
+end
+<span class="preprocessor"># get_it '/', :env =&gt; { :agent =&gt; 'Windows' }</span>
+<span class="preprocessor"># should.be.ok</span>
+<span class="preprocessor"># body.should.equal 'Windows'</span>
+
+<span class="preprocessor"># get_it '/', :agent =&gt; 'Mac'</span>
+<span class="preprocessor"># should.not.be.ok</span>
+
+
+
+<span class="keyword">get</span> <span class="string">'/path'</span>, {},<span class="constant"> HTTP_HOST </span>=&gt; <span class="string">'foo.test.com'</span>
+  <span class="string">'in foo'</span>
+end
+
+<span class="keyword">get</span> <span class="string">'/path'</span>, {},<span class="constant"> HTTP_HOST </span>=&gt; <span class="string">'bar.test.com'</span>
+  <span class="string">'in bar'</span>
+end
+
+<span class="preprocessor"># get_it '/foo', {}, 'HTTP_HOST' =&gt; 'foo.test.com'</span>
+<span class="preprocessor"># assert ok?</span>
+<span class="preprocessor"># assert_equal 'in foo', body</span>
+
+<span class="preprocessor"># get_it '/foo', {}, 'HTTP_HOST' =&gt; 'bar.test.com'</span>
+<span class="preprocessor"># assert ok?</span>
+<span class="preprocessor"># assert_equal 'in bar', body</span>
+
+<span class="preprocessor"># get_it '/foo'</span>
+<span class="preprocessor"># assert not_found?</span>
+</code></pre><p><code>request.user_agent</code> 最终调用 <code>env[&#39;HTTP_USER_AGENT&#39;]</code> ，在 /lib/sinatra/test/methods.rb 中， sinatra 重写了 <code>Rack::MockRequest#env_for</code> 方法：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Rack::MockRequest</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="keyword">alias</span> <span class="symbol">:env_for_without_env</span> <span class="symbol">:env_for</span>
+    <span class="function"><span class="keyword">def</span> <span class="title">env_for</span><span class="params">(uri = <span class="string">""</span>, opts = {})</span></span>
+      env = { <span class="string">'HTTP_USER_AGENT'</span> =&gt; opts.delete(<span class="symbol">:agent</span>) }
+      env_for_without_env(uri, opts).merge(env)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>这样在测试时就可以传递 <code>:agent =&gt; &#39;Windows&#39;</code> 作为 user_agent 的参数，否则要这样写： <code>&#39;HTTP_USER_AGENT&#39; =&gt; &#39;Windows&#39;</code> 。</p>
+<p>在 ruby 中重写一个方法，新方法中还要调用未被重写前的旧方法，有几个技巧。</p>
+<p>TODO</p>
+<p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
 <p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
 <pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)
 </code></pre><p>在生成 HEAD 请求的响应时，会设置 body 为空字符：</p>

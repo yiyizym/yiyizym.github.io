@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-25T00:22:22.000Z">
+<meta property="og:updated_time" content="2016-08-26T00:20:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -426,7 +426,76 @@ end
 <span class="keyword">end</span>
 </code></pre><p>这样在测试时就可以传递 <code>:agent =&gt; &#39;Windows&#39;</code> 作为 user_agent 的参数，否则要这样写： <code>&#39;HTTP_USER_AGENT&#39; =&gt; &#39;Windows&#39;</code> 。</p>
 <p>在 ruby 中重写一个方法，新方法中还要调用未被重写前的旧方法，有几个技巧。</p>
-<p>TODO</p>
+<p>一，继承。需要修改每一处用到新方法的 reciever 。</p>
+<pre><code>class Foo
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+class Bar &lt; Foo
+  def <span class="keyword">say</span>
+    super + ' World!'
+  end
+end
+
+Foo.new.<span class="keyword">say</span> #=&gt; 'Hello'
+Bar.new.<span class="keyword">say</span> #=&gt; 'Hello World!'
+# 把 reciever 从 Foo 改为 Bar
+</code></pre><p>二，修改祖先链。这与继承类似，但修改的方向不一样。</p>
+<pre><code>moudle Bar
+  def <span class="keyword">say</span>
+    super + ' World!'
+  end
+end
+
+class Foo
+  prepend Bar
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+Foo.new.<span class="keyword">say</span> #=&gt; 'Hello World!'
+
+# 使用了 prepend 把 Bar 放在 Foo 祖先链的下游，当寻找 <span class="keyword">say</span> 方法时，首先找到 Bar 定义的 <span class="keyword">say</span> 方法
+</code></pre><p>三，使用 <a href="http://ruby-doc.org/core-1.9.3/UnboundMethod.html#method-i-bind" target="_blank" rel="external">UnboundMethod</a>  和 <code>define_method</code> 。</p>
+<pre><code>class Foo
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+# 在某处重新打开 Foo
+
+class Foo
+  old_say = instance_method(:<span class="keyword">say</span>)
+  define_method(:<span class="keyword">say</span>) do
+    old_say.bind(self)<span class="comment">[]</span> + ' World!'
+    # 调用 instance_method 得到一个 UnboundMethod ，你需要在调用它之前 bind 一个 Foo 的实例
+    # 前面说过调用 Proc#call 的三种方法，调用 Method#call 也是一样。这里采用了 <span class="comment">[]</span> ，你也可以用 .()
+  end
+end
+</code></pre><p>四， alias 。就是 sinatra 采用的方法。</p>
+<pre><code>class Foo
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+# 在某处重新打开 Foo
+
+class Foo
+  alias :old_say :<span class="keyword">say</span>
+  def <span class="keyword">say</span>
+    old_say + ' World!'
+  end
+end
+
+Foo.new.<span class="keyword">say</span> #=&gt; 'Hello World!'
+Foo.new.old_say #=&gt; 'Hello'
+# 使用这种技巧，仍然可以访问旧的方法
+</code></pre><p>更多的技巧，可参考<a href="http://stackoverflow.com/questions/4470108/when-monkey-patching-a-method-can-you-call-the-overridden-method-from-the-new-i" target="_blank" rel="external">这里</a>。</p>
 <p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
 <p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
 <pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)

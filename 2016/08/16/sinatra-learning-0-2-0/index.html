@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-26T00:20:14.000Z">
+<meta property="og:updated_time" content="2016-08-27T04:46:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -496,6 +496,43 @@ Foo.new.<span class="keyword">say</span> #=&gt; 'Hello World!'
 Foo.new.old_say #=&gt; 'Hello'
 # 使用这种技巧，仍然可以访问旧的方法
 </code></pre><p>更多的技巧，可参考<a href="http://stackoverflow.com/questions/4470108/when-monkey-patching-a-method-can-you-call-the-overridden-method-from-the-new-i" target="_blank" rel="external">这里</a>。</p>
+<p>继续看 <code>Event#invoke</code> 的实现，下面代码这行实现匹配路径：</p>
+<pre><code>return unless pattern =~ request<span class="class">.path_info</span><span class="class">.squeeze</span>(<span class="string">'/'</span>)
+</code></pre><p><code>String#squeeze</code> 方法用单个字符替换连续出现的字符，用法很灵活，参见<a href="https://ruby-doc.org/core-2.2.0/String.html#method-i-squeeze" target="_blank" rel="external">文档</a>。</p>
+<p>sinatra 实现路径匹配的参数匹配的思路是：</p>
+<ul>
+<li>将用户预先定义的路径转换为正则表达式</li>
+<li>用这些正则表达式去匹配实际请求的路径</li>
+<li>如果匹配成功，则把捕获的参数与定义的参数组成键值对保存起来</li>
+</ul>
+<p><code>Event#initialize</code> 实现了路径转换正则表达式：</p>
+<pre><code><span class="constant">URI_CHAR</span> = <span class="string">'[^/?:,&amp;#\.]'</span>.freeze <span class="keyword">unless</span> <span class="keyword">defined</span>?(<span class="constant">URI_CHAR</span>)
+<span class="constant">PARAM</span> = <span class="regexp">/:(<span class="subst">#{<span class="constant">URI_CHAR</span>}</span>+)/</span>.freeze <span class="keyword">unless</span> <span class="keyword">defined</span>?(<span class="constant">PARAM</span>)
+<span class="constant">SPLAT</span> = <span class="regexp">/(.*?)/</span>
+<span class="keyword">attr_reader</span> <span class="symbol">:pattern</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(path, options = {}, &amp;b)</span></span>
+  <span class="variable">@path</span> = <span class="constant">URI</span>.encode(path)
+  <span class="variable">@param_keys</span> = []
+  regex = <span class="variable">@path</span>.to_s.gsub(<span class="constant">PARAM</span>) <span class="keyword">do</span>
+    <span class="variable">@param_keys</span> &lt;&lt; <span class="variable">$1</span>
+    <span class="string">"(<span class="subst">#{<span class="constant">URI_CHAR</span>}</span>+)"</span>
+  <span class="keyword">end</span>
+
+  regex.gsub!(<span class="string">'*'</span>, <span class="constant">SPLAT</span>.to_s)
+
+  <span class="variable">@pattern</span> = <span class="regexp">/^<span class="subst">#{regex}</span>$/</span>
+<span class="keyword">end</span>
+</code></pre><p>首先把用户定义的路径编码成 URI ，因为 <a href="http://www.ietf.org/rfc/rfc1738.txt" target="_blank" rel="external">rfc1738</a> 文档规定在 URL 中出现的字符只能是 字母和数字[0-9a-zA-Z]、一些特殊符号”$-_.+!*’() 以及一些保留字符：</p>
+<blockquote>
+<p>only alphanumerics, the special characters “$-_.+!*’(),”, and reserved characters sed for their reserved purposes may be used unencoded within a URL.</p>
+</blockquote>
+<p>如果在路径或查询参数中出现其他字符，比如中文，需要先转义。</p>
+<p>然后把用户在定义路径中的参数找出来，替换为去掉冒号（:）后的正则表达式字符串。</p>
+<p><code>PARAM</code> 正则表达式———— <code>/:([^/?:,&amp;#\.]+)/</code>———— 匹配以冒号开头的，接下来的字符不是 <code>/ ? : , &amp; # .</code> 当中任意一个字符的字符串。</p>
+<p><code>$1</code> 保存了最近一次正则表达式捕获的第一个匹配结果。</p>
+<p>用户还可以定义不具名参数： ‘*’ ，这个功能还不完善，现阶段只能作占位符用，没法获取捕获的参数。</p>
+<p>接下来的事情就是把捕获的参数与定义的参数组成键值对保存在 <code>params</code> 中，之前的系列文章有说过。</p>
 <p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
 <p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
 <pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)

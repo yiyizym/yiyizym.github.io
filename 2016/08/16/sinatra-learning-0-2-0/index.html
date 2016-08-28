@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-27T04:46:35.000Z">
+<meta property="og:updated_time" content="2016-08-28T03:23:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -251,7 +251,7 @@ gem <span class="keyword">install</span> haml -v <span class="string">'1.8.0'</s
 </code></pre><h2 id="从_at_exit_说起">从 at_exit 说起</h2><p>还是从 at_exit 开始读代码。</p>
 <p><code>$!</code> 记录异常信息，当调用 <code>raise</code> 的时候会设置这个变量，详见<a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/variable.html#dquote" target="_blank" rel="external">此处</a>。</p>
 <p>调用 <code>load_options!</code> 解释完启动参数后， sinatra 在所有环境设置遇到异常和 404 时的回调方法，在开发环境遇到异常和 404 的回调方法比其他环境暴露更多的信息。</p>
-<p>值得细看的是在非开发环境遇到异常时的回调方法：</p>
+<h3 id="OpenStruct">OpenStruct</h3><p>值得细看的是在非开发环境遇到异常时的回调方法：</p>
 <pre><code><span class="keyword">error</span> <span class="keyword">do</span>
   raise request.env[<span class="comment">'sinatra.error'] if Sinatra.options.raise_errors</span>
   <span class="comment">'<span class="xmlDocTag">&lt;h1&gt;</span>Internal Server Error<span class="xmlDocTag">&lt;/h1&gt;</span>'</span>
@@ -333,7 +333,7 @@ p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John 
 </blockquote>
 <p>源码中用正则表达式替换转义字符的<a href="https://github.com/rack/rack/blob/1.4.1/lib/rack/utils.rb#L181" target="_blank" rel="external">实现</a>值得参考。</p>
 <p>更多关于 XSS 的知识，可以看看本人之前写的<a href="http://judes.me/2015/10/02/xss-study/">这篇</a>。</p>
-<p>接下来看 Application 的 call 方法。</p>
+<h3 id="lookup">lookup</h3><p>接下来看 Application 的 call 方法。</p>
 <p>首先由 <code>lookup</code> 方法实现根据请求找到正确的路由。</p>
 <pre><code>def lookup(request)
   <span class="keyword">method</span> = request.request_method.downcase.to_sym
@@ -373,7 +373,7 @@ find { |e| <span class="literal">result</span> = <span class="keyword">block</sp
  a_proc.()
 <span class="preprocessor"># <span class="number">3</span></span>
  a_proc[]
-</code></pre><p><code>Event#invoke</code> 方法实现路由匹配和参数匹配。除了可以匹配路径，这个版本的 sinatra 还可以匹配 user_agent 和 host :</p>
+</code></pre><h3 id="invoke">invoke</h3><p><code>Event#invoke</code> 方法实现路由匹配和参数匹配。除了可以匹配路径，这个版本的 sinatra 还可以匹配 user_agent 和 host :</p>
 <pre><code><span class="keyword">if</span> agent = options[<span class="symbol">:agent</span>] 
   <span class="keyword">return</span> <span class="keyword">unless</span> request.user_agent =~ agent
   params[<span class="symbol">:agent</span>] = <span class="variable">$~</span>[<span class="number">1</span>..-<span class="number">1</span>]
@@ -425,7 +425,7 @@ end
   <span class="keyword">end</span>
 <span class="keyword">end</span>
 </code></pre><p>这样在测试时就可以传递 <code>:agent =&gt; &#39;Windows&#39;</code> 作为 user_agent 的参数，否则要这样写： <code>&#39;HTTP_USER_AGENT&#39; =&gt; &#39;Windows&#39;</code> 。</p>
-<p>在 ruby 中重写一个方法，新方法中还要调用未被重写前的旧方法，有几个技巧。</p>
+<h4 id="call_the_overridden_method_from_the_new">call the overridden method from the new</h4><p>在 ruby 中重写一个方法，新方法中还要调用未被重写前的旧方法，有几个技巧。</p>
 <p>一，继承。需要修改每一处用到新方法的 reciever 。</p>
 <pre><code>class Foo
   def <span class="keyword">say</span>
@@ -533,13 +533,70 @@ Foo.new.old_say #=&gt; 'Hello'
 <p><code>$1</code> 保存了最近一次正则表达式捕获的第一个匹配结果。</p>
 <p>用户还可以定义不具名参数： ‘*’ ，这个功能还不完善，现阶段只能作占位符用，没法获取捕获的参数。</p>
 <p>接下来的事情就是把捕获的参数与定义的参数组成键值对保存在 <code>params</code> 中，之前的系列文章有说过。</p>
-<p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
+<p>保存好参数后，调用 <code>Result.new(block, params, 200)</code> 生成 <code>Result</code> ，它是 <code>Struct</code> 的实例。跟 <code>OpenStruct</code> 不同， <code>Struct</code> 只能读、写在初始化时设定的 key ，不能新增 key ：</p>
+<pre><code>Bar = Struct.<span class="function"><span class="title">new</span><span class="params">(a,b)</span></span>
+bar = Bar.<span class="function"><span class="title">new</span><span class="params">(<span class="number">1</span>,<span class="number">2</span>)</span></span>
+bar<span class="class">.a</span> #=&gt; <span class="number">1</span>
+bar<span class="class">.c</span> #=&gt; undefined method `c<span class="string">' for #&lt;struct Bar a=1, b=2&gt;</span>
+</code></pre><p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
 <p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
 <pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)
 </code></pre><p>在生成 HEAD 请求的响应时，会设置 body 为空字符：</p>
 <pre><code><span class="preprocessor"># <span class="keyword">line</span> 839</span>
 body = <span class="string">''</span> <span class="keyword">if</span> request.request_method.upcase == <span class="string">'HEAD'</span>
-</code></pre></span>
+</code></pre><h3 id="to_result">to_result</h3><p>在获取响应的 body 时，不论是正常流程，还是异常流程，都调用了 <code>to_result</code> 方法。 sinatra 在很多类中都扩展了这个实例方法。</p>
+<p>正常流程的代码如下：</p>
+<pre><code>returned = run_safely <span class="operator"><span class="keyword">do</span>
+  catch(:halt) <span class="keyword">do</span>
+    filters[:<span class="keyword">before</span>].<span class="keyword">each</span> { |<span class="keyword">f</span>| <span class="keyword">context</span>.instance_eval(&amp;<span class="keyword">f</span>) }
+    [:<span class="keyword">complete</span>, <span class="keyword">context</span>.instance_eval(&amp;<span class="keyword">result</span>.<span class="keyword">block</span>)]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">body</span> = returned.to_result(<span class="keyword">context</span>)
+# 一切正常时， returned 是 [:<span class="keyword">complete</span>, <span class="keyword">context</span>.instance_eval(&amp;<span class="keyword">result</span>.<span class="keyword">block</span>)]</span>
+</code></pre><p>与此相关的两个 <code>to_result</code> 方法是：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Array</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    <span class="keyword">self</span>.shift.to_result(cx, *<span class="keyword">self</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Symbol</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    cx.send(<span class="keyword">self</span>, *args)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p><code>returned.to_result(context)</code> 最终是在 <code>context</code> 上调用 <code>complete</code> 方法，传入的参数是 <code>context.instance_eval(&amp;result.block)</code> 的返回值。</p>
+<p>异常流程，如在 before filters 中抛出 <code>:halt</code> ，在 README.doc 文档中详细说明了多种情况：</p>
+<blockquote>
+<p>Set the body to the result of a helper method</p>
+<p>throw :halt, :helper_method</p>
+<p>Set the body to the result of a helper method after sending it parameters from the local scope</p>
+<p>throw :halt, [:helper_method, foo, bar]</p>
+<p>Set the body to a simple string</p>
+<p>throw :halt, ‘this will be the body’</p>
+<p>Set status then the body</p>
+<p>throw :halt, [401, ‘go away!’]</p>
+<p>Set the status then call a helper method with params from local scope</p>
+<p>throw :halt, [401, [:helper_method, foo, bar]]</p>
+<p>Run a proc inside the Sinatra::EventContext instance and set the body to the result</p>
+<p>throw :halt, lambda { puts ‘In a proc!’; ‘I just wrote to $stdout!’ }</p>
+</blockquote>
+<p>在众多应对以上情况的 <code>to_proc</code> 中，值得一提的是以下这两个：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">String</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    args.shift.to_result(cx, *args)
+    <span class="keyword">self</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">NilClass</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    <span class="string">''</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p><code>throw :halt, &#39;this will be the body&#39;</code> 之后，最终会用到 <code>String#to_result</code> 方法，传入的参数只有一个 <code>context</code> ，因此 <code>args</code> 是个空数组， <code>args.shift</code> 得到 <code>nil</code> ，所以得扩展 <code>NilClass#to_result</code> ，但它什么也没做，径直返回空字符串。</p>
+</span>
       
     </div>
 
@@ -674,7 +731,7 @@ body = <span class="string">''</span> <span class="keyword">if</span> request.re
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

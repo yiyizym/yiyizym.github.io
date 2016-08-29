@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-28T03:23:26.000Z">
+<meta property="og:updated_time" content="2016-08-29T14:10:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -596,6 +596,58 @@ body = <span class="string">''</span> <span class="keyword">if</span> request.re
   <span class="keyword">end</span>
 <span class="keyword">end</span>
 </code></pre><p><code>throw :halt, &#39;this will be the body&#39;</code> 之后，最终会用到 <code>String#to_result</code> 方法，传入的参数只有一个 <code>context</code> ，因此 <code>args</code> 是个空数组， <code>args.shift</code> 得到 <code>nil</code> ，所以得扩展 <code>NilClass#to_result</code> ，但它什么也没做，径直返回空字符串。</p>
+<h3 id="context-body">context.body</h3><p>在处理返回报文的正文时，有如下代码：</p>
+<pre><code><span class="keyword">context</span>.<span class="keyword">body</span> = <span class="keyword">body</span>.kind_of?(<span class="typename">String</span>) ? [*<span class="keyword">body</span>] : <span class="keyword">body</span>
+</code></pre><p><code>kind_of?</code> 方法跟 <code>is_a?</code> 一样，回溯祖先链，找到祖先返回 true ，否则返回 false 。</p>
+<p><code>[*body]</code> 中的 <code>*</code> （splat operator）有很多用途，之前也说过它可以把函数的多个参数变为一个数组。此处是另外两种用法。</p>
+<p>其一是强制类型转换，把当前类型转换为 Array 类型：</p>
+<pre><code><span class="preprocessor"># Range 转换为 Array</span>
+a = *(<span class="number">1.</span><span class="number">.3</span>) <span class="preprocessor">#=&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span>
+
+<span class="preprocessor"># String 转换为 Array</span>
+b = *<span class="string">"one string"</span> <span class="preprocessor">#=&gt; [<span class="string">"one string"</span>]</span>
+
+<span class="preprocessor"># Array 仍然是 Array</span>
+c = *[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>] <span class="preprocessor">#=&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span>
+
+<span class="preprocessor"># nil 转换为 Array</span>
+d = *nil <span class="preprocessor">#=&gt; []</span>
+</code></pre><p>其二是展平数组：</p>
+<pre><code>e = [*[<span class="number">1</span>,<span class="number">2</span>],*[<span class="number">3</span>,<span class="number">4</span>]] <span class="preprocessor">#=&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span>
+
+<span class="preprocessor"># 这跟下面是一样的</span>
+
+f = [[<span class="number">1</span>,<span class="number">2</span>],[<span class="number">3</span>,<span class="number">4</span>]].flatten
+</code></pre><p>回头看 <code>[*body]</code> ，如果只是把字符串强制转换为数组的话， <code>*body</code> 就够了。但是这里必须用中括号（<code>[]</code>）包着，否则会报语法错误。用中括号包住，解决了语法问题，得到的还是原来的那个数组。</p>
+<p><code>*</code> 实际上并不是 operator ，而是 token ，而且很容易就会用错。大致有以下几种用法：</p>
+<pre><code><span class="preprocessor"># 用于赋值</span>
+
+first, *rest = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]
+<span class="preprocessor">#=&gt; first = <span class="number">1</span></span>
+<span class="preprocessor">#=&gt; rest = [<span class="number">2</span>,<span class="number">3</span>]</span>
+
+*rest, last = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]
+<span class="preprocessor">#=&gt; last = <span class="number">3</span></span>
+<span class="preprocessor">#=&gt; rest = [<span class="number">1</span>,<span class="number">2</span>]</span>
+
+first, *m, last = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]
+
+<span class="preprocessor"># 收集参数，分解参数</span>
+
+<span class="function">def <span class="title">foo</span><span class="params">(first, *args)</span></span>; end <span class="preprocessor">#=&gt; *args 只能放在最后</span>
+foo(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>) <span class="preprocessor">#=&gt; args = [<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span>
+
+<span class="function">def <span class="title">bar</span><span class="params">(a, b)</span></span>; <span class="function">end
+<span class="title">bar</span><span class="params">(*[<span class="number">1</span>,<span class="number">2</span>])</span> #</span>=&gt; a = <span class="number">1</span>, b = <span class="number">2</span>
+
+<span class="preprocessor"># 强制类型转换，很容易出语法错误，所以最好用中括号包住</span>
+</code></pre><p>本小节参考文章：</p>
+<ul>
+<li><a href="http://blog.honeybadger.io/ruby-splat-array-manipulation-destructuring/" target="_blank" rel="external">Using splats to build up and tear apart arrays in Ruby</a></li>
+<li><a href="http://jacopretorius.net/2012/01/splat-operator-in-ruby.html" target="_blank" rel="external">Splat Operator in Ruby</a></li>
+<li><a href="https://endofline.wordpress.com/2011/01/21/the-strange-ruby-splat/" target="_blank" rel="external">The Strange Ruby Splat</a></li>
+<li><a href="http://stackoverflow.com/questions/776462/where-is-it-legal-to-use-ruby-splat-operator" target="_blank" rel="external">Where is it legal to use ruby splat operator?</a></li>
+</ul>
 </span>
       
     </div>
@@ -731,7 +783,7 @@ body = <span class="string">''</span> <span class="keyword">if</span> request.re
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

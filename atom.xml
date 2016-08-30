@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-08-29T14:10:20.000Z</updated>
+  <updated>2016-08-30T12:54:16.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
     <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
     <published>2016-08-16T13:21:48.000Z</published>
-    <updated>2016-08-29T14:10:20.000Z</updated>
+    <updated>2016-08-30T12:54:16.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -461,7 +461,30 @@ foo(<span class="number">1</span>,<span class="number">2</span>,<span class="num
 <span class="title">bar</span><span class="params">(*[<span class="number">1</span>,<span class="number">2</span>])</span> #</span>=&gt; a = <span class="number">1</span>, b = <span class="number">2</span>
 
 <span class="preprocessor"># 强制类型转换，很容易出语法错误，所以最好用中括号包住</span>
-</code></pre><p>本小节参考文章：</p>
+</code></pre><p><code>context#body</code> 由在 Class 类中的 <code>dslify_writer</code> 方法实现：写入 body 的值，并返回这个值。</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Class</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">dslify_writer</span><span class="params">(*syms)</span></span>
+    syms.each <span class="keyword">do</span> |sym|
+      class_eval &lt;&lt;-end_eval
+        <span class="function"><span class="keyword">def</span> <span class="comment">#{sym}(v=nil)</span></span>
+          <span class="keyword">self</span>.send <span class="string">"<span class="subst">#{sym}</span>="</span>, v <span class="keyword">if</span> v
+          v
+        <span class="keyword">end</span>
+      end_eval
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Foo</span></span>
+  dslify_writer <span class="symbol">:bar</span>
+  <span class="comment"># 相当于这样写：</span>
+  <span class="comment"># def bar(v=nil)</span>
+  <span class="comment">#   self.send('bar=', v) if v</span>
+  <span class="comment">#   v</span>
+  <span class="comment"># end</span>
+<span class="keyword">end</span>
+</code></pre><p><code>context</code> 并没有实现 <code>body=</code> 方法，但它有实现 <code>method_missing</code> 方法，把找不到的 method 转发给 <code>@response</code> ，而 <code>@response</code> 是 <code>Rack::Response</code> 的实例，可以读写 <code>body</code> 。</p>
+<p>本小节参考文章：</p>
 <ul>
 <li><a href="http://blog.honeybadger.io/ruby-splat-array-manipulation-destructuring/" target="_blank" rel="external">Using splats to build up and tear apart arrays in Ruby</a></li>
 <li><a href="http://jacopretorius.net/2012/01/splat-operator-in-ruby.html" target="_blank" rel="external">Splat Operator in Ruby</a></li>

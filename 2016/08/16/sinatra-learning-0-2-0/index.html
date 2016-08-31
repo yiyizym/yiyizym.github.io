@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-31T00:04:30.000Z">
+<meta property="og:updated_time" content="2016-08-31T23:53:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -691,7 +691,47 @@ foo(<span class="number">1</span>,<span class="number">2</span>,<span class="num
 </ul>
 <p>并且返回数组中的第三个元素是个空数组，表明响应正文为空。</p>
 <p>其他状态码返回数组中的第三个元素是 <code>self</code> ，能这样做的前提是 response 实现了 <code>each</code> 方法。</p>
-</span>
+<h3 id="设置_body">设置 body</h3><p>application_test.rb 里有一个测试用例如下：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">TesterWithEach</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">each</span></span>
+    <span class="keyword">yield</span> <span class="string">'foo'</span>
+    <span class="keyword">yield</span> <span class="string">'bar'</span>
+    <span class="keyword">yield</span> <span class="string">'baz'</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+specify <span class="string">"an objects result from each if it has it"</span> <span class="keyword">do</span>
+
+  get <span class="string">'/'</span> <span class="keyword">do</span>
+    <span class="constant">TesterWithEach</span>.new
+  <span class="keyword">end</span>
+
+  get_it <span class="string">'/'</span>
+  should.be.ok
+  body.should.equal <span class="string">'foobarbaz'</span>
+
+<span class="keyword">end</span>
+</code></pre><p>如果没有在 get block 中设置 body 值， sinatra 就会用 block 的返回值作为 body ，如果这个返回值不响应 <code>each</code> 方法， body 就会被设置为空字符。可以模仿这里的 <code>TesterWithEach#each</code> 实现一个简单的 <code>each</code> ：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Foo</span></span>
+  <span class="keyword">attr_reader</span> <span class="symbol">:bar</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(*bar)</span></span>
+    <span class="variable">@bar</span> = bar
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">each</span></span>
+    <span class="keyword">return</span> <span class="keyword">nil</span> <span class="keyword">unless</span> block_given?
+    i = <span class="number">0</span>
+    <span class="keyword">while</span> i &lt; bar.length
+      <span class="keyword">yield</span> bar[i]
+      i += <span class="number">1</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment"># foo = Foo.new(1,2,3,4)</span>
+<span class="comment"># foo.each { |i| p i  }</span>
+</code></pre></span>
       
     </div>
 
@@ -826,7 +866,7 @@ foo(<span class="number">1</span>,<span class="number">2</span>,<span class="num
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

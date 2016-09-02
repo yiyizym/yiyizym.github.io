@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-08-31T23:53:30.000Z</updated>
+  <updated>2016-09-02T00:14:44.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
     <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
     <published>2016-08-16T13:21:48.000Z</published>
-    <updated>2016-08-31T23:53:30.000Z</updated>
+    <updated>2016-09-02T00:14:44.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -551,7 +551,43 @@ specify <span class="string">"an objects result from each if it has it"</span> <
 
 <span class="comment"># foo = Foo.new(1,2,3,4)</span>
 <span class="comment"># foo.each { |i| p i  }</span>
-</code></pre>]]></content>
+</code></pre><p>目前为止， sinatra 的基本功能都已经实现，剩下的扩展功能——如重定向、渲染xml/erb/sass/haml、传输文件等等——都是通过加载模块来实现。</p>
+<h2 id="Streaming">Streaming</h2><p>这一模块取自 ActionPack ，目的是用更少的内存消耗传输更大的文件，大体的做法是用流传输取代一次性输出整个文件。</p>
+<p>实现 Streaming 的关键代码如下：</p>
+<pre><code>class FileStreamer
+
+  #...
+
+  def to_result(cx, *args)
+    self
+  <span class="operator"><span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="keyword">each</span>
+    <span class="keyword">File</span>.<span class="keyword">open</span>(<span class="keyword">path</span>, <span class="string">'rb'</span>) <span class="keyword">do</span> |<span class="keyword">file</span>|
+      <span class="keyword">while</span> buf = <span class="keyword">file</span>.<span class="keyword">read</span>(options[:buffer_size])
+        yield buf
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  #...
+
+<span class="keyword">end</span>
+
+#...
+
+<span class="keyword">def</span> send_file(<span class="keyword">path</span>, options = {})
+
+  #...
+
+  <span class="keyword">if</span> options[:stream]
+    throw :halt, [options[:<span class="keyword">status</span>] || <span class="number">200</span>, FileStreamer.<span class="keyword">new</span>(<span class="keyword">path</span>, options)]
+  <span class="keyword">else</span>
+    <span class="keyword">File</span>.<span class="keyword">open</span>(<span class="keyword">path</span>, <span class="string">'rb'</span>) { |<span class="keyword">file</span>| throw :halt, [options[:<span class="keyword">status</span>] || <span class="number">200</span>, <span class="keyword">file</span>.<span class="keyword">read</span>] }
+  <span class="keyword">end</span>
+
+<span class="keyword">end</span></span>
+</code></pre><p>如果 <code>options[:stream]</code> 为 true 则通过自身的 <code>each</code> 方法每读入 4096 个字节就对外输出，否则一次性读入内存再输出。</p>
+]]></content>
     
     <summary type="html">
     

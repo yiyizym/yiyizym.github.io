@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-08-31T23:53:30.000Z">
+<meta property="og:updated_time" content="2016-09-02T00:14:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -731,7 +731,43 @@ specify <span class="string">"an objects result from each if it has it"</span> <
 
 <span class="comment"># foo = Foo.new(1,2,3,4)</span>
 <span class="comment"># foo.each { |i| p i  }</span>
-</code></pre></span>
+</code></pre><p>目前为止， sinatra 的基本功能都已经实现，剩下的扩展功能——如重定向、渲染xml/erb/sass/haml、传输文件等等——都是通过加载模块来实现。</p>
+<h2 id="Streaming">Streaming</h2><p>这一模块取自 ActionPack ，目的是用更少的内存消耗传输更大的文件，大体的做法是用流传输取代一次性输出整个文件。</p>
+<p>实现 Streaming 的关键代码如下：</p>
+<pre><code>class FileStreamer
+
+  #...
+
+  def to_result(cx, *args)
+    self
+  <span class="operator"><span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="keyword">each</span>
+    <span class="keyword">File</span>.<span class="keyword">open</span>(<span class="keyword">path</span>, <span class="string">'rb'</span>) <span class="keyword">do</span> |<span class="keyword">file</span>|
+      <span class="keyword">while</span> buf = <span class="keyword">file</span>.<span class="keyword">read</span>(options[:buffer_size])
+        yield buf
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  #...
+
+<span class="keyword">end</span>
+
+#...
+
+<span class="keyword">def</span> send_file(<span class="keyword">path</span>, options = {})
+
+  #...
+
+  <span class="keyword">if</span> options[:stream]
+    throw :halt, [options[:<span class="keyword">status</span>] || <span class="number">200</span>, FileStreamer.<span class="keyword">new</span>(<span class="keyword">path</span>, options)]
+  <span class="keyword">else</span>
+    <span class="keyword">File</span>.<span class="keyword">open</span>(<span class="keyword">path</span>, <span class="string">'rb'</span>) { |<span class="keyword">file</span>| throw :halt, [options[:<span class="keyword">status</span>] || <span class="number">200</span>, <span class="keyword">file</span>.<span class="keyword">read</span>] }
+  <span class="keyword">end</span>
+
+<span class="keyword">end</span></span>
+</code></pre><p>如果 <code>options[:stream]</code> 为 true 则通过自身的 <code>each</code> 方法每读入 4096 个字节就对外输出，否则一次性读入内存再输出。</p>
+</span>
       
     </div>
 
@@ -866,7 +902,7 @@ specify <span class="string">"an objects result from each if it has it"</span> <
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streaming"><span class="nav-number">6.</span> <span class="nav-text">Streaming</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

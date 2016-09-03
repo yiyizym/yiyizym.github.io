@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-09-02T00:14:44.000Z">
+<meta property="og:updated_time" content="2016-09-03T14:32:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -767,6 +767,56 @@ specify <span class="string">"an objects result from each if it has it"</span> <
 
 <span class="keyword">end</span></span>
 </code></pre><p>如果 <code>options[:stream]</code> 为 true 则通过自身的 <code>each</code> 方法每读入 4096 个字节就对外输出，否则一次性读入内存再输出。</p>
+<h3 id="protected">protected</h3><p>Streaming 模块中有两个 protected 方法。 ruby 的 protected 跟 java 的很像，一般情况下被设置为 protected 的实例方法只能从类（或子类）实例方法中访问。（借助 <code>send</code> 方法可以突破这层限制）</p>
+<pre><code>class <span class="keyword">Person</span>
+
+  def initialize(age)
+    @age = age
+  end
+
+  def older_than?(other_person)
+    if self.class == other_person.class
+      age &gt; other_person.age
+    end
+  end
+
+  protected
+
+  attr_reader :age
+
+end
+
+class Monkey
+
+  def initialize(age)
+    @age = age
+  end
+
+  def older_than?(<span class="keyword">person</span>)
+    age &gt; <span class="keyword">person</span>.age
+  end
+
+  protected
+
+  attr_reader :age
+end
+
+p1 = <span class="keyword">Person</span>.new(10)
+p2 = <span class="keyword">Person</span>.new(11)
+p1.older_than?(p2) #=&gt; false
+
+# p1.age #=&gt; protected method `age' called for #&lt;<span class="keyword">Person</span>:0x007f80cc0263c8 @age=10&gt; (NoMethodError)
+
+m1 = Monkey.new(13)
+
+# m1.older_than?(p1) #=&gt; protected method `age' called for #&lt;<span class="keyword">Person</span>:0x007fd3e4963880 @age=10&gt; (NoMethodError)
+</code></pre><p>ruby 的 protected 方法很少用到，如果要用的话，通常用于同类之间的比较（参见上面的 Person 类）。</p>
+<p>本小节参考文章：</p>
+<ul>
+<li><a href="http://nithinbekal.com/posts/ruby-protected-methods/" target="_blank" rel="external">When to Use Protected Methods in Ruby</a></li>
+<li><a href="https://tenderlovemaking.com/2012/09/07/protected-methods-and-ruby-2-0.html" target="_blank" rel="external">Protected Methods and Ruby 2.0</a></li>
+<li><a href="http://devblog.orgsync.com/2013/05/20/private-and-protected-they-might-not-mean-what-you-think-they-mean/" target="_blank" rel="external">Private and Protected: They might not mean what you think they mean</a></li>
+</ul>
 </span>
       
     </div>
@@ -902,7 +952,7 @@ specify <span class="string">"an objects result from each if it has it"</span> <
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streaming"><span class="nav-number">6.</span> <span class="nav-text">Streaming</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streaming"><span class="nav-number">6.</span> <span class="nav-text">Streaming</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#protected"><span class="nav-number">6.1.</span> <span class="nav-text">protected</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

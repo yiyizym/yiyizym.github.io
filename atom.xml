@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-09-02T00:14:44.000Z</updated>
+  <updated>2016-09-03T14:32:09.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
     <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
     <published>2016-08-16T13:21:48.000Z</published>
-    <updated>2016-09-02T00:14:44.000Z</updated>
+    <updated>2016-09-03T14:32:09.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -587,6 +587,56 @@ specify <span class="string">"an objects result from each if it has it"</span> <
 
 <span class="keyword">end</span></span>
 </code></pre><p>如果 <code>options[:stream]</code> 为 true 则通过自身的 <code>each</code> 方法每读入 4096 个字节就对外输出，否则一次性读入内存再输出。</p>
+<h3 id="protected">protected</h3><p>Streaming 模块中有两个 protected 方法。 ruby 的 protected 跟 java 的很像，一般情况下被设置为 protected 的实例方法只能从类（或子类）实例方法中访问。（借助 <code>send</code> 方法可以突破这层限制）</p>
+<pre><code>class <span class="keyword">Person</span>
+
+  def initialize(age)
+    @age = age
+  end
+
+  def older_than?(other_person)
+    if self.class == other_person.class
+      age &gt; other_person.age
+    end
+  end
+
+  protected
+
+  attr_reader :age
+
+end
+
+class Monkey
+
+  def initialize(age)
+    @age = age
+  end
+
+  def older_than?(<span class="keyword">person</span>)
+    age &gt; <span class="keyword">person</span>.age
+  end
+
+  protected
+
+  attr_reader :age
+end
+
+p1 = <span class="keyword">Person</span>.new(10)
+p2 = <span class="keyword">Person</span>.new(11)
+p1.older_than?(p2) #=&gt; false
+
+# p1.age #=&gt; protected method `age' called for #&lt;<span class="keyword">Person</span>:0x007f80cc0263c8 @age=10&gt; (NoMethodError)
+
+m1 = Monkey.new(13)
+
+# m1.older_than?(p1) #=&gt; protected method `age' called for #&lt;<span class="keyword">Person</span>:0x007fd3e4963880 @age=10&gt; (NoMethodError)
+</code></pre><p>ruby 的 protected 方法很少用到，如果要用的话，通常用于同类之间的比较（参见上面的 Person 类）。</p>
+<p>本小节参考文章：</p>
+<ul>
+<li><a href="http://nithinbekal.com/posts/ruby-protected-methods/" target="_blank" rel="external">When to Use Protected Methods in Ruby</a></li>
+<li><a href="https://tenderlovemaking.com/2012/09/07/protected-methods-and-ruby-2-0.html" target="_blank" rel="external">Protected Methods and Ruby 2.0</a></li>
+<li><a href="http://devblog.orgsync.com/2013/05/20/private-and-protected-they-might-not-mean-what-you-think-they-mean/" target="_blank" rel="external">Private and Protected: They might not mean what you think they mean</a></li>
+</ul>
 ]]></content>
     
     <summary type="html">

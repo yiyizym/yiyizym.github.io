@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-09-03T14:32:09.000Z</updated>
+  <updated>2016-09-04T03:06:42.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
     <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
     <published>2016-08-16T13:21:48.000Z</published>
-    <updated>2016-09-03T14:32:09.000Z</updated>
+    <updated>2016-09-04T03:06:42.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -637,6 +637,16 @@ m1 = Monkey.new(13)
 <li><a href="https://tenderlovemaking.com/2012/09/07/protected-methods-and-ruby-2-0.html" target="_blank" rel="external">Protected Methods and Ruby 2.0</a></li>
 <li><a href="http://devblog.orgsync.com/2013/05/20/private-and-protected-they-might-not-mean-what-you-think-they-mean/" target="_blank" rel="external">Private and Protected: They might not mean what you think they mean</a></li>
 </ul>
+<h2 id="RenderingHelpers">RenderingHelpers</h2><p>sinatra 渲染的过程大致可以分为两个步骤：</p>
+<ul>
+<li>根据传进来的参数 (String/Symbol/Proc) ，找到对应的模板</li>
+<li>调用具体的渲染引擎渲染模板</li>
+</ul>
+<p>第一个步骤是共用的，抽出来形成 RenderingHelpers 。</p>
+<p>RenderingHelpers 的实现体现了两个软件设计原则： 1. 依赖反转； 2. 开闭原则（对扩展开放，对修改闭合）。</p>
+<p>举例说明一下本人所理解的依赖反转：把高层次的模块比作电器，把低层次的模块比作插座。要使两者配合起来为人所用，高层次的模块必须实现低层次模块指定的接口，这个接口就是特定的插头（或两脚或三脚）。</p>
+<p>RenderingHelpers 对外提供 <code>render</code> 方法，但要使用 <code>render</code> 方法，必须实现 <code>render_renderer</code> 方法，这个 <code>render_renderer</code> 就是特定的插头。</p>
+<p>这个版本的 sinatra 增加了多个渲染引擎的支持，这些引擎的实现细节各有不同（如 sass 不支持 layout），但增加这些引擎支持都不用修改 RenderingHelpers 里面的代码。你甚至可以加入自己的引擎，无需改动 RenderingHelpers ，只要它提供的 <code>render</code> 方法，并实现自己的 <code>render_renderer</code> 方法。这体现了开闭原则。</p>
 ]]></content>
     
     <summary type="html">

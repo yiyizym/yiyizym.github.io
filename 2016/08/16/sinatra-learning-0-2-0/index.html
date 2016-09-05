@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-09-04T03:06:42.000Z">
+<meta property="og:updated_time" content="2016-09-05T00:16:30.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -827,6 +827,7 @@ m1 = Monkey.new(13)
 <p>举例说明一下本人所理解的依赖反转：把高层次的模块比作电器，把低层次的模块比作插座。要使两者配合起来为人所用，高层次的模块必须实现低层次模块指定的接口，这个接口就是特定的插头（或两脚或三脚）。</p>
 <p>RenderingHelpers 对外提供 <code>render</code> 方法，但要使用 <code>render</code> 方法，必须实现 <code>render_renderer</code> 方法，这个 <code>render_renderer</code> 就是特定的插头。</p>
 <p>这个版本的 sinatra 增加了多个渲染引擎的支持，这些引擎的实现细节各有不同（如 sass 不支持 layout），但增加这些引擎支持都不用修改 RenderingHelpers 里面的代码。你甚至可以加入自己的引擎，无需改动 RenderingHelpers ，只要它提供的 <code>render</code> 方法，并实现自己的 <code>render_renderer</code> 方法。这体现了开闭原则。</p>
+<p>全文完。</p>
 </span>
       
     </div>

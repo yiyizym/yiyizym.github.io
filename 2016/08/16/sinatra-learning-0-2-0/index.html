@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
-<meta property="og:updated_time" content="2016-09-05T00:16:30.000Z">
+<meta property="og:updated_time" content="2016-09-07T00:25:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sinatra 0.2.0 源码学习">
 <meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
@@ -827,6 +827,52 @@ m1 = Monkey.new(13)
 <p>举例说明一下本人所理解的依赖反转：把高层次的模块比作电器，把低层次的模块比作插座。要使两者配合起来为人所用，高层次的模块必须实现低层次模块指定的接口，这个接口就是特定的插头（或两脚或三脚）。</p>
 <p>RenderingHelpers 对外提供 <code>render</code> 方法，但要使用 <code>render</code> 方法，必须实现 <code>render_renderer</code> 方法，这个 <code>render_renderer</code> 就是特定的插头。</p>
 <p>这个版本的 sinatra 增加了多个渲染引擎的支持，这些引擎的实现细节各有不同（如 sass 不支持 layout），但增加这些引擎支持都不用修改 RenderingHelpers 里面的代码。你甚至可以加入自己的引擎，无需改动 RenderingHelpers ，只要它提供的 <code>render</code> 方法，并实现自己的 <code>render_renderer</code> 方法。这体现了开闭原则。</p>
+<h3 id="use_in_file_templates!">use_in_file_templates!</h3><p>渲染时需要的模板，除了可以放在别的文件中，还可以放在当前文件中：</p>
+<pre><code>get <span class="string">'/stylesheet.css'</span> <span class="keyword">do</span>
+  header <span class="string">'Content-Type'</span> =&gt; <span class="string">'text/css; charset=utf-8'</span>
+  sass <span class="symbol">:stylesheet</span>
+<span class="keyword">end</span>
+
+<span class="comment"># 这里需要的模板可以放在 "views/stylesheet.sass" 文件中，假设包含以下内容</span>
+
+  <span class="comment">#  body</span>
+  <span class="comment">#    #admin</span>
+  <span class="comment">#      :background-color #CCC</span>
+
+<span class="comment"># 也可以放在当前文件中，需要事先调用 use_in_file_templates! ，如下：</span>
+
+use_in_file_templates！
+
+<span class="constant">__END__</span>
+<span class="comment">## stylesheet</span>
+body
+  <span class="comment">#admin</span>
+    <span class="symbol">:background-color</span> <span class="comment">#CCC</span>
+</code></pre><p><code>use_in_file_templates！</code>实现的细节是首先找到调用 <code>use_in_file_templates！</code> 方法的文件。 <code>caller</code> 方法会以数组形式返回当前方法的调用栈，形式如下：</p>
+<pre><code>def a(skip)
+  caller(skip)
+<span class="operator"><span class="keyword">end</span>
+<span class="keyword">def</span> b(<span class="keyword">skip</span>)
+  a(<span class="keyword">skip</span>)
+<span class="keyword">end</span>
+<span class="keyword">def</span> <span class="keyword">c</span>(<span class="keyword">skip</span>)
+  b(<span class="keyword">skip</span>)
+<span class="keyword">end</span>
+<span class="keyword">c</span>(<span class="number">0</span>)   #=&gt; [<span class="string">"prog:2:in `a'"</span>, <span class="string">"prog:5:in `b'"</span>, <span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:10"</span>]
+<span class="keyword">c</span>(<span class="number">1</span>)   #=&gt; [<span class="string">"prog:5:in `b'"</span>, <span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:11"</span>]
+<span class="keyword">c</span>(<span class="number">2</span>)   #=&gt; [<span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:12"</span>]
+<span class="keyword">c</span>(<span class="number">3</span>)   #=&gt; [<span class="string">"prog:13"</span>]</span>
+</code></pre><p>然后把这个文件转换为字符串，定位到字符串的一个特殊标记。这里作者写错了这个特殊标记，应该是 <code>__END__</code> ，而不是 <code>__FILE__</code> 。虽然写成 <code>__FILE__</code> 也能跑过测试用例，但这个标记与 <code>__END__</code> 是完全不同的。</p>
+<p>ruby 有一个特殊的常量 <a href="https://ruby-doc.org/core-2.3.1/Object.html" target="_blank" rel="external"><code>DATA</code></a> ，它是一个 <code>File</code> 对象，包含了文件中的数据。你可以把数据和代码放在同一个文件当中， ruby 通过 <code>__END__</code> 这个标记分开代码和数据：</p>
+<pre><code><span class="preprocessor"># t.rb</span>
+puts DATA.gets
+__END__
+hello world!
+
+<span class="preprocessor"># ruby t.rb </span>
+<span class="preprocessor"># =&gt; hello world!</span>
+</code></pre><p>定位到数据部分后，把这部分字符串转换为 <a href="http://stackoverflow.com/questions/12592234/what-are-the-advantages-to-using-stringio-in-ruby-as-opposed-to-string" target="_blank" rel="external">StringIO</a> 对象，以便把字符串当作文件逐行解释。</p>
+<p>只要匹配到以 <code>##</code> 开头的行，就把捕获的字符串当作新的模板名字，没匹配行的就当作是模板的内容。</p>
 <p>全文完。</p>
 </span>
       
@@ -846,6 +892,8 @@ m1 = Monkey.new(13)
       
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/06/sinatra-learning-0-3-0/" rel="prev">sinatra 0.3.0 源码学习</a>
             
           </div>
 
@@ -914,7 +962,7 @@ m1 = Monkey.new(13)
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">54</span>
+              <span class="site-state-item-count">55</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -963,7 +1011,7 @@ m1 = Monkey.new(13)
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streaming"><span class="nav-number">6.</span> <span class="nav-text">Streaming</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#protected"><span class="nav-number">6.1.</span> <span class="nav-text">protected</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RenderingHelpers"><span class="nav-number">7.</span> <span class="nav-text">RenderingHelpers</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streaming"><span class="nav-number">6.</span> <span class="nav-text">Streaming</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#protected"><span class="nav-number">6.1.</span> <span class="nav-text">protected</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RenderingHelpers"><span class="nav-number">7.</span> <span class="nav-text">RenderingHelpers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#use_in_file_templates!"><span class="nav-number">7.1.</span> <span class="nav-text">use_in_file_templates!</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

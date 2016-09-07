@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-09-05T00:16:30.000Z</updated>
+  <updated>2016-09-06T13:58:59.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -16,11 +16,44 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>sinatra 0.3.0 源码学习</title>
+    <link href="http://judes.me/2016/09/06/sinatra-learning-0-3-0/"/>
+    <id>http://judes.me/2016/09/06/sinatra-learning-0-3-0/</id>
+    <published>2016-09-06T13:11:15.000Z</published>
+    <updated>2016-09-06T13:58:59.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 5 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>列一下本人运行 sinatra 0.3.0 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="change_log">change log</h2><p>TODO</p>
+]]></content>
+    
+    <summary type="html">
+    
+      通过 sinatra 学习 ruby 编程技巧（系列）
+    
+    </summary>
+    
+      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
+    
+    
+      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
+    
+      <category term="sinatra" scheme="http://judes.me/tags/sinatra/"/>
+    
+  </entry>
+  
+  <entry>
     <title>sinatra 0.2.0 源码学习</title>
     <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
     <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
     <published>2016-08-16T13:21:48.000Z</published>
-    <updated>2016-09-05T00:16:30.000Z</updated>
+    <updated>2016-09-07T00:25:23.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -647,6 +680,52 @@ m1 = Monkey.new(13)
 <p>举例说明一下本人所理解的依赖反转：把高层次的模块比作电器，把低层次的模块比作插座。要使两者配合起来为人所用，高层次的模块必须实现低层次模块指定的接口，这个接口就是特定的插头（或两脚或三脚）。</p>
 <p>RenderingHelpers 对外提供 <code>render</code> 方法，但要使用 <code>render</code> 方法，必须实现 <code>render_renderer</code> 方法，这个 <code>render_renderer</code> 就是特定的插头。</p>
 <p>这个版本的 sinatra 增加了多个渲染引擎的支持，这些引擎的实现细节各有不同（如 sass 不支持 layout），但增加这些引擎支持都不用修改 RenderingHelpers 里面的代码。你甚至可以加入自己的引擎，无需改动 RenderingHelpers ，只要它提供的 <code>render</code> 方法，并实现自己的 <code>render_renderer</code> 方法。这体现了开闭原则。</p>
+<h3 id="use_in_file_templates!">use_in_file_templates!</h3><p>渲染时需要的模板，除了可以放在别的文件中，还可以放在当前文件中：</p>
+<pre><code>get <span class="string">'/stylesheet.css'</span> <span class="keyword">do</span>
+  header <span class="string">'Content-Type'</span> =&gt; <span class="string">'text/css; charset=utf-8'</span>
+  sass <span class="symbol">:stylesheet</span>
+<span class="keyword">end</span>
+
+<span class="comment"># 这里需要的模板可以放在 "views/stylesheet.sass" 文件中，假设包含以下内容</span>
+
+  <span class="comment">#  body</span>
+  <span class="comment">#    #admin</span>
+  <span class="comment">#      :background-color #CCC</span>
+
+<span class="comment"># 也可以放在当前文件中，需要事先调用 use_in_file_templates! ，如下：</span>
+
+use_in_file_templates！
+
+<span class="constant">__END__</span>
+<span class="comment">## stylesheet</span>
+body
+  <span class="comment">#admin</span>
+    <span class="symbol">:background-color</span> <span class="comment">#CCC</span>
+</code></pre><p><code>use_in_file_templates！</code>实现的细节是首先找到调用 <code>use_in_file_templates！</code> 方法的文件。 <code>caller</code> 方法会以数组形式返回当前方法的调用栈，形式如下：</p>
+<pre><code>def a(skip)
+  caller(skip)
+<span class="operator"><span class="keyword">end</span>
+<span class="keyword">def</span> b(<span class="keyword">skip</span>)
+  a(<span class="keyword">skip</span>)
+<span class="keyword">end</span>
+<span class="keyword">def</span> <span class="keyword">c</span>(<span class="keyword">skip</span>)
+  b(<span class="keyword">skip</span>)
+<span class="keyword">end</span>
+<span class="keyword">c</span>(<span class="number">0</span>)   #=&gt; [<span class="string">"prog:2:in `a'"</span>, <span class="string">"prog:5:in `b'"</span>, <span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:10"</span>]
+<span class="keyword">c</span>(<span class="number">1</span>)   #=&gt; [<span class="string">"prog:5:in `b'"</span>, <span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:11"</span>]
+<span class="keyword">c</span>(<span class="number">2</span>)   #=&gt; [<span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:12"</span>]
+<span class="keyword">c</span>(<span class="number">3</span>)   #=&gt; [<span class="string">"prog:13"</span>]</span>
+</code></pre><p>然后把这个文件转换为字符串，定位到字符串的一个特殊标记。这里作者写错了这个特殊标记，应该是 <code>__END__</code> ，而不是 <code>__FILE__</code> 。虽然写成 <code>__FILE__</code> 也能跑过测试用例，但这个标记与 <code>__END__</code> 是完全不同的。</p>
+<p>ruby 有一个特殊的常量 <a href="https://ruby-doc.org/core-2.3.1/Object.html" target="_blank" rel="external"><code>DATA</code></a> ，它是一个 <code>File</code> 对象，包含了文件中的数据。你可以把数据和代码放在同一个文件当中， ruby 通过 <code>__END__</code> 这个标记分开代码和数据：</p>
+<pre><code><span class="preprocessor"># t.rb</span>
+puts DATA.gets
+__END__
+hello world!
+
+<span class="preprocessor"># ruby t.rb </span>
+<span class="preprocessor"># =&gt; hello world!</span>
+</code></pre><p>定位到数据部分后，把这部分字符串转换为 <a href="http://stackoverflow.com/questions/12592234/what-are-the-advantages-to-using-stringio-in-ruby-as-opposed-to-string" target="_blank" rel="external">StringIO</a> 对象，以便把字符串当作文件逐行解释。</p>
+<p>只要匹配到以 <code>##</code> 开头的行，就把捕获的字符串当作新的模板名字，没匹配行的就当作是模板的内容。</p>
 <p>全文完。</p>
 ]]></content>
     
@@ -3121,50 +3200,6 @@ end
     
     
       <category term="vim" scheme="http://judes.me/tags/vim/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>react_webpack_starter_kit</title>
-    <link href="http://judes.me/2015/12/12/react-webpack-starter-kit/"/>
-    <id>http://judes.me/2015/12/12/react-webpack-starter-kit/</id>
-    <published>2015-12-12T07:40:40.000Z</published>
-    <updated>2016-06-12T12:25:14.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="Talk_is_cheap,_show_you_the_code_here">Talk is cheap, show you the code <a href="https://github.com/yiyizym/react_starter_kit" target="_blank" rel="external">here</a></h2><h2 id="一些说明">一些说明</h2><ul>
-<li><p><strong> react 以及 react-bootstrap 都没有发布稳定版，将来 API 可能会大变，用于学习时以最新版为宜 </strong></p>
-</li>
-<li><p>npm 用起来有时会有点慢，建议使用<a href="http://npm.taobao.org/" target="_blank" rel="external">淘宝镜像</a></p>
-</li>
-<li><p>项目的文件组织风格及 webpack config <del>抄袭</del>借鉴 <a href="https://github.com/callemall/material-ui" target="_blank" rel="external">material-ui</a></p>
-</li>
-<li><p>对所有的CSS样式文件默认开启了 <a href="https://github.com/css-modules/css-modules" target="_blank" rel="external">CSS Modules</a></p>
-</li>
-<li><p>出于方便引入全局 bootstrap 样式，且方便覆盖样式的考虑，对所有SCSS样式文件默认不开启 CSS Modules ，我强烈建议所有人除非必要，在写 scss 样式文件时，一律将代码包在 :local 里面</p>
-</li>
-<li><p>因为不想在服务器端处理路由，没有开启 history 的 <a href="https://github.com/rackt/react-router/blob/master/docs/guides/basics/Histories.md" target="_blank" rel="external">createBrowserHistory</a> ，采用了 HashHistory</p>
-</li>
-</ul>
-<h2 id="Many_thanks_to">Many thanks to</h2><ul>
-<li><p>以上链接</p>
-</li>
-<li><p><a href="https://react-bootstrap.github.io/" target="_blank" rel="external">react-bootstrap</a></p>
-</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~
-    
-    </summary>
-    
-      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
-    
-    
-      <category term="react" scheme="http://judes.me/tags/react/"/>
-    
-      <category term="webpack" scheme="http://judes.me/tags/webpack/"/>
     
   </entry>
   

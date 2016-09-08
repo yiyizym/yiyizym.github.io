@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-09-08T13:06:38.000Z</updated>
+  <updated>2016-09-08T13:56:38.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/09/06/sinatra-learning-0-3-0/"/>
     <id>http://judes.me/2016/09/06/sinatra-learning-0-3-0/</id>
     <published>2016-09-06T13:11:15.000Z</published>
-    <updated>2016-09-08T13:06:38.000Z</updated>
+    <updated>2016-09-08T13:56:38.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 5 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -62,7 +62,18 @@ unless splats.<span class="keyword">empty</span>?
   params.delete_if { |<span class="keyword">k</span>, v| <span class="keyword">k</span> =~ /^_splat_\<span class="keyword">d</span>+$/ }
   params[<span class="string">"splat"</span>] = splats
 <span class="keyword">end</span></span>
-</code></pre><h2 id="ResponseHelpers">ResponseHelpers</h2><p>TODO</p>
+</code></pre><h2 id="ResponseHelpers">ResponseHelpers</h2><p>这里定义的几个方法，可以在路由时使用，如 <code>redirect</code> ：</p>
+<pre><code><span class="keyword">get</span> <span class="string">'/'</span> <span class="keyword">do</span>
+  redirect <span class="string">'/home'</span>
+end
+
+<span class="keyword">get</span> <span class="string">'/home'</span> <span class="keyword">do</span>
+  <span class="string">'welcome!'</span>
+end
+</code></pre><p><code>last_modified</code> 和 <code>entity_tag</code> 旨在节省网络流量（和节省计算资源,注释是这样说的），假如客户端请求的资源没有发生变化，就返回 304  Not Modified 。</p>
+<p><code>last_modified</code> 大体的实现就是在定义路由时，把响应资源的最后修改时间通过响应头传到浏览器，浏览器再次访问时会在请求头带有上一次请求时得到的时间字段，这时再判断响应资源的最后修改时间与传过来的时间时否一致，如果一致则直接抛出异常，返回 304 。</p>
+<p><code>entity_tag</code> 跟 <code>last_modified</code> 差不多，只不过比较的不是时间，而是更细粒度、更精确的标记。这个标记可以是用散列函数对资源求值得到哈希值，也可以是硬编码的版本号。</p>
+<p>以上两个方法只设置响应头和比较请求头，把时间和标记交由用户管理，这不是很智能。 Rails 用户无需在意某个请求涉及到的一系列资源有没有更新，只要它们都没有更新，前端再次请求时就会得到 304 ，只要更新了一个资源（ partial 或者 layout ），再次请求就会得到最新的响应。</p>
 ]]></content>
     
     <summary type="html">

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-09-06T13:58:59.000Z</updated>
+  <updated>2016-09-08T13:06:38.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/09/06/sinatra-learning-0-3-0/"/>
     <id>http://judes.me/2016/09/06/sinatra-learning-0-3-0/</id>
     <published>2016-09-06T13:11:15.000Z</published>
-    <updated>2016-09-06T13:58:59.000Z</updated>
+    <updated>2016-09-08T13:06:38.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 5 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -30,7 +30,39 @@
 <li>rack 1.4.1</li>
 <li>mongrel 1.1.5</li>
 </ul>
-<h2 id="change_log">change log</h2><p>TODO</p>
+<h2 id="本文主要内容">本文主要内容</h2><ul>
+<li>routes splat</li>
+<li>ResponseHelpers</li>
+<li>middleware</li>
+</ul>
+<h2 id="routes_splat">routes splat</h2><p>上一篇文章说到 sinatra 没有保存路由中由通配符 * 捕获的参数，这个版本用一个数组保存下来，可以用 <code>params[&#39;splat&#39;]</code> 来访问。具体的实现代码：</p>
+<pre><code>PARAM = /(:(#{URI_CHAR}+)|\*)/.freeze unless defined?(PARAM)
+SPLAT = /(.*?)/
+#...
+splats = <span class="operator">0
+regex = @<span class="keyword">path</span>.to_s.gsub(PARAM) <span class="keyword">do</span> |<span class="keyword">match</span>|
+  # <span class="keyword">match</span> 匹配 /(:(#{URI_CHAR}+)|\*)/
+  <span class="keyword">if</span> <span class="keyword">match</span> == <span class="string">"*"</span>
+    @param_keys &lt;&lt; <span class="string">"_splat_#{splats}"</span>
+    splats += <span class="number">1</span>
+    SPLAT.to_s
+  <span class="keyword">else</span>
+    # 如 /(.)(.)(\<span class="keyword">d</span>(\<span class="keyword">d</span>))/.<span class="keyword">match</span>(<span class="string">"THX1138."</span>).captures =&gt; [<span class="string">"H"</span>, <span class="string">"X"</span>, <span class="string">"11"</span>, <span class="string">"1"</span>]
+    # $<span class="number">1</span> 捕获 (:(#{URI_CHAR}+))
+    # $<span class="number">2</span> 捕获 (#{URI_CHAR}+)
+    @param_keys &lt;&lt; $<span class="number">2</span>
+    <span class="string">"(#{URI_CHAR}+)"</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+#...
+path_params = param_keys.zip($~.captures.<span class="keyword">map</span>{|s| unescape(s)}).to_hash
+params.<span class="keyword">merge</span>!(path_params)
+splats = params.select { |<span class="keyword">k</span>, v| <span class="keyword">k</span> =~ /^_splat_\<span class="keyword">d</span>+$/ }.<span class="keyword">sort</span>.<span class="keyword">map</span>(&amp;:<span class="keyword">last</span>)
+unless splats.<span class="keyword">empty</span>?
+  params.delete_if { |<span class="keyword">k</span>, v| <span class="keyword">k</span> =~ /^_splat_\<span class="keyword">d</span>+$/ }
+  params[<span class="string">"splat"</span>] = splats
+<span class="keyword">end</span></span>
+</code></pre><h2 id="ResponseHelpers">ResponseHelpers</h2><p>TODO</p>
 ]]></content>
     
     <summary type="html">
@@ -53,7 +85,7 @@
     <link href="http://judes.me/2016/08/16/sinatra-learning-0-2-0/"/>
     <id>http://judes.me/2016/08/16/sinatra-learning-0-2-0/</id>
     <published>2016-08-16T13:21:48.000Z</published>
-    <updated>2016-09-07T00:25:23.000Z</updated>
+    <updated>2016-09-08T00:12:27.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-09-08T13:56:38.000Z</updated>
+  <updated>2016-09-10T14:14:19.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/09/06/sinatra-learning-0-3-0/"/>
     <id>http://judes.me/2016/09/06/sinatra-learning-0-3-0/</id>
     <published>2016-09-06T13:11:15.000Z</published>
-    <updated>2016-09-08T13:56:38.000Z</updated>
+    <updated>2016-09-10T14:14:19.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 5 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -74,6 +74,21 @@ end
 <p><code>last_modified</code> 大体的实现就是在定义路由时，把响应资源的最后修改时间通过响应头传到浏览器，浏览器再次访问时会在请求头带有上一次请求时得到的时间字段，这时再判断响应资源的最后修改时间与传过来的时间时否一致，如果一致则直接抛出异常，返回 304 。</p>
 <p><code>entity_tag</code> 跟 <code>last_modified</code> 差不多，只不过比较的不是时间，而是更细粒度、更精确的标记。这个标记可以是用散列函数对资源求值得到哈希值，也可以是硬编码的版本号。</p>
 <p>以上两个方法只设置响应头和比较请求头，把时间和标记交由用户管理，这不是很智能。 Rails 用户无需在意某个请求涉及到的一系列资源有没有更新，只要它们都没有更新，前端再次请求时就会得到 304 ，只要更新了一个资源（ partial 或者 layout ），再次请求就会得到最新的响应。</p>
+<h2 id="middleware">middleware</h2><p>中间件的概念比较模糊，可以看<a href="http://stackoverflow.com/questions/2256569/what-is-rack-middleware" target="_blank" rel="external">这里</a>。简单来说，中间件可以帮你处理比如验证授权、缓存、打 log 等等的事情，这样你可以专心写业务逻辑。</p>
+<p>如果你还是觉得困惑，强烈推荐你看这篇<a href="https://codenoble.com/blog/understanding-rack-middleware/" target="_blank" rel="external">文章</a>，它用简单明了的代码在实现中间件的层层调用时，还说清楚了中间件的原理。</p>
+<p>上一个版本的 sinatra 就已经用到中间件：</p>
+<pre><code><span class="keyword">def</span> build_application
+  app = application
+  app = <span class="string">Rack:</span>:<span class="string">Session:</span>:Cookie.<span class="keyword">new</span>(app) <span class="keyword">if</span> Sinatra.options.sessions == <span class="literal">true</span>
+  app = <span class="string">Rack:</span>:CommonLogger.<span class="keyword">new</span>(app) <span class="keyword">if</span> Sinatra.options.logging == <span class="literal">true</span>
+  app
+end
+</code></pre><p>上面的 <code>Rack::Session::Cookie</code> 和 <code>Rack::CommonLogger</code> 都是中间件。中间件有如下特征：</p>
+<ul>
+<li>能响应 <code>new</code> 方法， <code>new</code> 方法的参数是下一个中间件或者是应用；</li>
+<li>能响应 <code>call</code> 方法，<code>call</code> 方法的参数是 <code>env</code> ，即 rack 的环境变量。</li>
+</ul>
+<p>TODO</p>
 ]]></content>
     
     <summary type="html">

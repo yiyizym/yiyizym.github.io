@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-09-10T14:14:19.000Z</updated>
+  <updated>2016-09-11T01:21:22.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/09/06/sinatra-learning-0-3-0/"/>
     <id>http://judes.me/2016/09/06/sinatra-learning-0-3-0/</id>
     <published>2016-09-06T13:11:15.000Z</published>
-    <updated>2016-09-10T14:14:19.000Z</updated>
+    <updated>2016-09-11T01:21:22.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 5 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
 <h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
@@ -88,7 +88,22 @@ end
 <li>能响应 <code>new</code> 方法， <code>new</code> 方法的参数是下一个中间件或者是应用；</li>
 <li>能响应 <code>call</code> 方法，<code>call</code> 方法的参数是 <code>env</code> ，即 rack 的环境变量。</li>
 </ul>
-<p>TODO</p>
+<p>这个版本的 sinatra 维护一个数组变量 <code>middleware</code> ：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">middleware</span></span>
+  optional_middleware + explicit_middleware
+<span class="keyword">end</span>
+</code></pre><p><code>optional_middleware</code> 是由 sinatra 提供的可选的中间件，处于 <code>middleware</code> 的前面位置， <code>explicit_middleware</code> 是由用户自定义的中间件，用户每次调用 <code>use</code> 都会往这个数组的末尾插入新增的中间件。</p>
+<p>每一个请求到来时，最终会调用： <code>pipeline.call(env)</code> ，<code>pipeline</code> 是把所有中间件以及业务处理器层层串连起来得到的新应用：</p>
+<pre><code>def pipeline
+  @pipeline ||=
+    middleware.inject(<span class="function"><span class="keyword">method</span><span class="params">(:dispatch)</span>) <span class="title">do</span> |<span class="title">app</span>,<span class="params">(klass,args,<span class="keyword">block</span>)</span>|
+      <span class="title">klass</span>.<span class="title">new</span><span class="params">(app, *args, &amp;<span class="keyword">block</span>)</span>
+    <span class="title">end</span>
+<span class="title">end</span></span>
+</code></pre><p><code>@pipeline ||= ...</code> 的写法使调用 <code>use</code> 时重置 <code>pipeline</code> 变得很简单，只要写 <code>pipeline = nil</code> 就行。</p>
+<p><code>inject</code> 跟 <code>reduce</code> 一样，根据给出的初始值，遍历处理数组的元素，记住每次处理的结果，并把它传到下一次处理中。</p>
+<p><code>method(:dispatch)</code> 是业务处理器，请求经过一系列中间件最后会到达此处。它作为 <code>Method</code> 的实例对象，能响应 <code>call</code> 方法。</p>
+<p>可以看到，请求最先被用户自定义的中间件处理，然后是 sinatra 提供的中间件，最后是业务处理器。处于 <code>middleware</code> 数组末尾的中间件最先起作用。</p>
 ]]></content>
     
     <summary type="html">

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-10-11T13:29:23.000Z</updated>
+  <updated>2016-10-11T14:47:57.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -16,11 +16,109 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>iOS浏览器内核导致 fixed 定位元素可能错位问题</title>
+    <link href="http://judes.me/2016/10/11/fixed-pos-problem-in-ios-wechat-browser/"/>
+    <id>http://judes.me/2016/10/11/fixed-pos-problem-in-ios-wechat-browser/</id>
+    <published>2016-10-11T13:32:43.000Z</published>
+    <updated>2016-10-11T14:47:57.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在企业号某个列表页面使用 <code>position: fixed;</code> 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。</p>
+<img src="/2016/10/11/fixed-pos-problem-in-ios-wechat-browser/problem_1.jpg" alt="在 iOS 输入法未弹出时显示正常" title="在 iOS 输入法未弹出时显示正常">
+<img src="/2016/10/11/fixed-pos-problem-in-ios-wechat-browser/problem_2.jpg" alt="在 iOS 输入法弹出后出现错位" title="在 iOS 输入法弹出后出现错位">
+<p>出问题的页面结构大致如下，完整的代码见<a href="https://gist.github.com/zymiboxpay/1e0a620284d1cf320f5f9603779a728d" target="_blank" rel="external">这里</a>：</p>
+<pre><code><span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"container"</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"fixed_part"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"text"</span> <span class="attribute">placeholder</span>=<span class="value">"输入文字"</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">div</span> <span class="attribute">class</span>=<span class="value">"overflow_part"</span>&gt;</span>
+    <span class="comment">&lt;!--items--&gt;</span>
+  <span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+</code></pre><p>相应的样式如下：</p>
+<pre><code><span class="class">.container</span> <span class="rules">{
+  <span class="rule"><span class="attribute">position</span>:<span class="value"> relative</span></span>;
+}</span>
+<span class="class">.fixed_part</span> <span class="rules">{
+  <span class="rule"><span class="attribute">position</span>:<span class="value"> fixed</span></span>;
+  <span class="rule"><span class="attribute">top</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">100%</span></span></span>;
+}</span>
+<span class="class">.fixed_part</span> &gt; <span class="tag">input</span> <span class="rules">{
+  <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">100%</span></span></span>;
+  <span class="rule"><span class="attribute">padding</span>:<span class="value"> <span class="number">5%</span></span></span>;
+  <span class="rule"><span class="attribute">border</span>:<span class="value"> none</span></span>;
+  <span class="rule"><span class="attribute">border-bottom</span>:<span class="value"> <span class="number">1px</span> solid <span class="hexcolor">#eee</span></span></span>;
+}</span>
+<span class="class">.overflow_part</span> <span class="class">.item</span> <span class="rules">{
+  <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">100px</span></span></span>;
+  <span class="rule"><span class="attribute">line-height</span>:<span class="value"> <span class="number">100px</span></span></span>;
+  <span class="rule"><span class="attribute">text-align</span>:<span class="value"> center</span></span>;
+  <span class="rule"><span class="attribute">border-bottom</span>:<span class="value"> <span class="number">1px</span> solid <span class="hexcolor">#eee</span></span></span>;
+}</span>
+</code></pre><p>最初遇到这个问题时，当作没看见（一，这是兼容性问题，手尾长；二，复现条件比较苛刻；三，产品经理没发现；四，手头上事情很多；五，不想做的理由总是很多），这事就过去了。</p>
+<p>后来又再次遇到，一时兴起想解决它。很快找到原因（ iOS 原生浏览器内核对 fixed 定位元素渲染有 bug ），还看到有文章给出了<a href="http://efe.baidu.com/blog/mobile-fixed-layout/" target="_blank" rel="external">解决方案</a>。借鉴文中的思路——放弃使用 fixed 定位，同时缩窄滚动区域——给出了自己的解决方案，完整的代码见<a href="https://gist.github.com/zymiboxpay/de6885576848a072b776c51acc556737" target="_blank" rel="external">这里</a>。</p>
+<p>页面结构没有改变。</p>
+<p>样式有大改变：</p>
+<pre><code><span class="class">.container</span> <span class="rules">{
+  <span class="comment">/* 让容器计算出自身高度 */</span>
+  <span class="rule"><span class="attribute">position</span>:<span class="value"> absolute</span></span>;
+  <span class="rule"><span class="attribute">top</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="rule"><span class="attribute">bottom</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="rule"><span class="attribute">left</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="rule"><span class="attribute">right</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="comment">/* 让子元素处理自身高度 */</span>
+  <span class="rule"><span class="attribute">display</span>:<span class="value"> flex</span></span>;
+}</span>
+<span class="class">.fixed_part</span> <span class="rules">{
+  <span class="comment">/* 用 absolute 代替 fixed */</span>
+  <span class="rule"><span class="attribute">position</span>:<span class="value"> absolute</span></span>;
+  <span class="rule"><span class="attribute">top</span>:<span class="value"> <span class="number">0</span></span></span>;
+  <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">100%</span></span></span>;
+}</span>
+<span class="class">.fixed_part</span> &gt; <span class="tag">input</span> <span class="rules">{
+  <span class="rule"><span class="attribute">box-sizing</span>:<span class="value"> border-box</span></span>;
+  <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">100%</span></span></span>;
+  <span class="rule"><span class="attribute">padding</span>:<span class="value"> <span class="number">5%</span></span></span>;
+  <span class="rule"><span class="attribute">border</span>:<span class="value"> none</span></span>;
+  <span class="rule"><span class="attribute">border-bottom</span>:<span class="value"> <span class="number">1px</span> solid <span class="hexcolor">#eee</span></span></span>;
+}</span>
+<span class="class">.overflow_part</span> <span class="rules">{
+  <span class="rule"><span class="attribute">width</span>:<span class="value"> <span class="number">100%</span></span></span>;
+  <span class="comment">/* 让滚动条出现在高度超过一屏的元素上面 */</span>
+  <span class="rule"><span class="attribute">overflow-y</span>:<span class="value"> auto</span></span>;
+}</span>
+<span class="class">.overflow_part</span> <span class="class">.item</span> <span class="rules">{
+  <span class="rule"><span class="attribute">height</span>:<span class="value"> <span class="number">100px</span></span></span>;
+  <span class="rule"><span class="attribute">line-height</span>:<span class="value"> <span class="number">100px</span></span></span>;
+  <span class="rule"><span class="attribute">text-align</span>:<span class="value"> center</span></span>;
+  <span class="rule"><span class="attribute">border-bottom</span>:<span class="value"> <span class="number">1px</span> solid <span class="hexcolor">#eee</span></span></span>;
+}</span>
+</code></pre><p>这个方案的好处是不需要写死——你要这样做也是可以的——任何一个元素的高度。</p>
+<p>完成后的效果图：</p>
+<img src="/2016/10/11/fixed-pos-problem-in-ios-wechat-browser/solution_1.jpg" alt="在 iOS 输入法未弹出时显示正常" title="在 iOS 输入法未弹出时显示正常">
+<img src="/2016/10/11/fixed-pos-problem-in-ios-wechat-browser/solution_2.jpg" alt="在 iOS 输入法弹出后显示正常" title="在 iOS 输入法弹出后显示正常">]]></content>
+    
+    <summary type="html">
+    
+      又是一个在开发微信企业号时遇到的问题，这次锅不在腾讯
+    
+    </summary>
+    
+      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
+    
+    
+      <category term="wechat" scheme="http://judes.me/tags/wechat/"/>
+    
+      <category term="浏览器" scheme="http://judes.me/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Tokyo go round</title>
     <link href="http://judes.me/2016/10/08/tokyo-go-round/"/>
     <id>http://judes.me/2016/10/08/tokyo-go-round/</id>
     <published>2016-10-08T15:00:54.000Z</published>
-    <updated>2016-10-11T13:29:23.000Z</updated>
+    <updated>2016-10-11T13:30:13.000Z</updated>
     
     <content type="html"><![CDATA[<p>祖国名山大川、风景古迹一直以来吸引着众多慕名而来的游客，因为讨厌人山人海，节假日我就没有出外旅游过；而偶尔得到大片连续工作日休息的机会，也总是“宅心仁厚”地窝在家里。</p>
 <p>古语有云，读万卷书行万里路，这是两种增长见闻的好方法，古人没想到在现代就算安心在家也可以环游世界吧，有旅游节目展示无限风光，有纪录片介绍世俗人情，通过镜头看到的景往往比实地游览的更优雅清静，人也更自然纯朴。如果一个人禁不住亲自到某地瞧瞧，发觉景致跟预想的差太多，很可能会大失所望吧。</p>
@@ -3225,39 +3323,6 @@ end
     
     
       <category term="笑话理论" scheme="http://judes.me/tags/%E7%AC%91%E8%AF%9D%E7%90%86%E8%AE%BA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>from nodejs request to promise</title>
-    <link href="http://judes.me/2016/04/16/request-to-promise/"/>
-    <id>http://judes.me/2016/04/16/request-to-promise/</id>
-    <published>2016-04-16T11:50:24.000Z</published>
-    <updated>2016-06-12T12:25:38.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>文中的 promisify 函数原型出自 月影 的<a href="http://blog.h5jun.com/post/decorator-functional.html" target="_blank" rel="external">这篇博客</a>。</p>
-<h2 id="了解Promise">了解<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" target="_blank" rel="external">Promise</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// &#21021;&#22987;&#21270;&#26102;&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910;&#21478;&#22806;&#20004;&#20010;&#26041;&#27861;&#10;new Promise(function(resolve, reject)&#123;&#10;//&#22312;&#27492;&#26041;&#27861;&#20013;&#20570;&#19968;&#20123;&#24322;&#27493;&#25805;&#20316;&#10;//&#22312;&#24322;&#27493;&#25805;&#20316;&#30340;&#22238;&#35843;&#26041;&#27861;&#20013;&#26681;&#25454;&#24773;&#20917;&#65292;&#20998;&#21035;&#35843;&#29992; resolve &#25110;&#32773; reject&#10;&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="了解request">了解<a href="https://github.com/request/request" target="_blank" rel="external">request</a></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//request &#26368;&#31616;&#21333;&#30340;&#29992;&#27861;&#10;request(url, function(err, response, body)&#123;&#10;  if(err)&#123;&#10;    //&#22788;&#29702;&#38169;&#35823;&#10;  &#125; else if(response.statusCode == 200)&#123;&#10;    //&#22788;&#29702;&#25104;&#21151;&#21709;&#24212;&#10;  &#125;&#10;&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="把_request_转换为_promise_的用例">把 request 转换为 promise 的用例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function()&#123;&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;)</span><br></pre></td></tr></table></figure>
-<h2 id="promisify_实现">promisify 实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="完整示例">完整示例</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;&#10;let request = require(&#39;request&#39;);&#10;//&#25509;&#25910;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#22788;&#21363;&#26159; request&#10;function promisify(func)&#123;&#10;  //&#36820;&#22238;&#21478;&#19968;&#20010;&#26041;&#27861;&#65292;&#27492;&#26041;&#27861;&#25509;&#25910; url&#10;  return function(url)&#123;&#10;    let requestArgs = arguments;&#10;    //&#36820;&#22238;&#19968;&#20010; Promise&#10;    return new Promise(function(resolve, reject)&#123;&#10;      //&#22312;&#26041;&#27861;&#20307;&#20869;&#20570;&#24322;&#27493;&#25805;&#20316;&#65292;&#21363;&#35843;&#29992; request&#10;      //&#19981;&#35201;&#24536;&#35760; request &#25509;&#25910;&#19968;&#20010; url &#20197;&#21450;&#19968;&#20010;&#22238;&#35843;&#20989;&#25968;&#10;      //&#20063;&#19981;&#35201;&#24536;&#35760;&#35201;&#22312;&#22238;&#35843;&#20989;&#25968;&#37324;&#26681;&#25454;&#24773;&#20917;&#20998;&#21035;&#35843;&#29992; resolve &#21644; reject&#10;      //&#25152;&#20197;&#35201;&#25226; resolve &#21644; reject &#22622;&#36827; request &#30340;&#22238;&#35843;&#20989;&#25968;&#20013;&#10;      let newArgs = Array.prototype.slice.call(requestArgs);&#10;      newArgs.push(function(err, response, body)&#123;&#10;        if(err)&#123;&#10;          reject(err);&#10;        &#125; else if(!err &#38;&#38; response.statusCode == 200) &#123;&#10;          resolve(body);&#10;        &#125;&#10;      &#125;);&#10;      //newArgs &#26159;&#19968;&#20010;&#25968;&#32452;&#65292;&#31532;&#19968;&#20010;&#20803;&#32032;&#26159; url &#65292;&#31532;&#20108;&#20010;&#26159;&#22238;&#35843;&#20989;&#25968;&#10;      func.apply(this, newArgs);&#10;    &#125;);      &#10;  &#125;&#10;&#125;&#10;//&#25226; request &#36890;&#36807; promisify &#36716;&#25442;&#21518;&#10;var getData = promisify(request);&#10;//&#23601;&#21487;&#20197;&#20351;&#29992; promise &#30340;&#26041;&#27861;&#10;getData(&#39;http://www.bing.com&#39;).then(function(content)&#123;&#10;  console.log(content);&#10;  //&#25104;&#21151;&#22238;&#35843;&#10;&#125;).catch(function(reason)&#123;&#10;  //&#24322;&#24120;&#22238;&#35843;&#10;  console.log(reason);&#10;&#125;);</span><br></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      把 nodejs 中的 request 模块 转换为 es2015 的 Promise
-    
-    </summary>
-    
-      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
-    
-    
-      <category term="es2015" scheme="http://judes.me/tags/es2015/"/>
-    
-      <category term="node" scheme="http://judes.me/tags/node/"/>
-    
-      <category term="promisify" scheme="http://judes.me/tags/promisify/"/>
-    
-      <category term="request" scheme="http://judes.me/tags/request/"/>
     
   </entry>
   

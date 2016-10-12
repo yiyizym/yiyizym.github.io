@@ -52,7 +52,8 @@ date: 2015-10-02 14:45:41
         <button onclick="location.href = 'http://www.yoursite.com?userName=<%= userName %>';">redirect</button>
 
     用户输入的 userName 到达浏览器之后，首先会被当作 HTML 解析，当 click 事件触发之后，又会被当作 script 解析，因为是 url 的一部分，最后还会被当作 url 来解析。
-    为了不出乱子，后台对 userName 的编码将是浏览器解码的逆过程，先是 url 编码，再是 script 编码，最后是 HTML 编码。
+
+    **为了不出乱子（即把用户的输入当作当前环境下的代码执行），后台对 userName 的编码将是浏览器解码的逆过程，先是 url 编码，再是 script 编码，最后是 HTML 编码。**
 
 - 解析 script 时，也有可能调用 HTML 解析器解析代码。这时先进行 script 解析，再进行 HTML 解析。
 

@@ -1054,7 +1054,7 @@ body {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #650eff;
+  background: #df09ec;
 }
 .sidebar-nav {
   margin: 0;
@@ -1320,6 +1320,12 @@ section.posts-expand .post-meta {
   margin: auto;
   padding: 3px;
   border: 1px solid #ddd;
+}
+.posts-expand .post-body .pic-title {
+  text-align: center;
+  text-decoration: underline;
+  font-style: italic;
+  color: #999;
 }
 .posts-expand .post-tags {
   margin-top: 40px;

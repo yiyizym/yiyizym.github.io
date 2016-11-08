@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-11-08T13:43:54.000Z</updated>
+  <updated>2016-11-08T14:02:37.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://judes.me/2016/11/07/snowflake-method/"/>
     <id>http://judes.me/2016/11/07/snowflake-method/</id>
     <published>2016-11-07T14:04:44.000Z</published>
-    <updated>2016-11-08T13:43:54.000Z</updated>
+    <updated>2016-11-08T14:02:37.000Z</updated>
     
     <content type="html"><![CDATA[<p>雪花分形方法，是由一个外国程序员/作家提出的小说创作手法，本文只作简介和稍许补充。等不及的朋友可以直接看<a href="http://www.advancedfictionwriting.com/articles/snowflake-method/" target="_blank" rel="external">原文</a>和来自某个程序员的<a href="https://medium.com/@gabrielgambetta/how-i-wrote-my-first-novel-during-my-daily-commute-e1d02c9447b9" target="_blank" rel="external">实践心得</a>。</p>
 <p>在看过一本精彩小说后，我时常有什么时候自己也写一本的想法。</p>
@@ -29,6 +29,7 @@
 <p>我放弃了坚持，但又一直心怀不服。伟大的作品，来自超群的天赋，可望而不可及；但优秀的作品，完全可以用规律、技巧写就，再精心打磨而成。</p>
 <p>过了很久，一天在看湾区日报的<a href="https://medium.com/@gabrielgambetta/how-i-wrote-my-first-novel-during-my-daily-commute-e1d02c9447b9" target="_blank" rel="external">这篇文章</a>时，我找到共鸣。</p>
 <p>文章的作者是一个程序员，他利用每天上下班的通勤时间写成一本小说。光成写好一本几百页的小说没什么值得关注的，有意思的是他在文章里分享了自己写小说的具体策略。</p>
+<p>他找了一个模仿（学习）的对象，丹布朗。首先把丹布朗的几本小说用 excel 表格列出它们的每一章的故事情节或者人物关系。</p>
 <p>以下是本文大纲：</p>
 <ul>
 <li><p>程序员 &amp;&amp; 文艺青年 的福音</p>

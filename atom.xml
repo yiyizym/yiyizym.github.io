@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-11-08T14:21:02.000Z</updated>
+  <updated>2016-11-09T00:30:33.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,32 +20,46 @@
     <link href="http://judes.me/2016/11/07/snowflake-method/"/>
     <id>http://judes.me/2016/11/07/snowflake-method/</id>
     <published>2016-11-07T14:04:44.000Z</published>
-    <updated>2016-11-08T14:21:02.000Z</updated>
+    <updated>2016-11-09T00:30:33.000Z</updated>
     
-    <content type="html"><![CDATA[<p>雪花分形方法，是由一个外国理论物理学博士/作家提出的小说创作手法，本文只作简介和稍许补充。等不及的朋友可以直接看<a href="http://www.advancedfictionwriting.com/articles/snowflake-method/" target="_blank" rel="external">原文</a>和来自某个程序员的<a href="https://medium.com/@gabrielgambetta/how-i-wrote-my-first-novel-during-my-daily-commute-e1d02c9447b9" target="_blank" rel="external">实践心得</a>。</p>
-<p>在看过一本精彩小说后，我时常有什么时候自己也写一本的想法。</p>
+    <content type="html"><![CDATA[<p>在看过一本精彩小说后，我时常有什么时候自己也写一本的想法。</p>
 <p>当我被各种文章鼓舞，开始坚持每天动手写一百几十字，几十天之后，发觉自己写的简直就是一页页垃圾。</p>
 <p>我深受打击，再也不相信那些所谓的“写作训练”，还有那些教你“成为作家”的空话。</p>
 <p>我放弃了坚持，但又一直心怀不服。伟大的作品，来自超群的天赋，可望而不可及；但优秀的作品，完全可以用规律、技巧写就，再精心打磨而成。</p>
 <p>过了很久，一天在看湾区日报的<a href="https://medium.com/@gabrielgambetta/how-i-wrote-my-first-novel-during-my-daily-commute-e1d02c9447b9" target="_blank" rel="external">这篇文章</a>时，我找到共鸣。</p>
-<p>文章的作者是一个程序员，他利用每天上下班的通勤时间写成一本小说。光成写好一本几百页的小说没什么值得关注的，有意思的是他在文章里分享了自己写小说的具体策略。</p>
+<p>文章的作者是一个程序员，他利用每天上下班的通勤时间写成一本小说。光成写好一本几百页的小说没什么值得关注的，有意思的是他在文章里分享了自己写小说的具体策略：</p>
 <p>他找了一个模仿（学习）的对象，丹布朗。</p>
 <p>首先把丹布朗的几本小说细读一遍，用 excel 表格列出它们的每一章的故事情节或者人物关系。</p>
 <p>他阅读大量的书籍，学习写作原理、技巧。</p>
-<p>然后他按照 Snowflake method ，把自己的小说逐渐由一句话扩展为一段话，再到几句纸，最终成为一杯小说。</p>
+<p>然后他按照 <a href="http://www.advancedfictionwriting.com/articles/snowflake-method/" target="_blank" rel="external">Snowflake method</a> ，把自己的小说逐渐由一句话扩展为一段话，再到几句纸，最终成为一本小说。</p>
 <p>这个过程花了他三年时间。</p>
-<p>以下是本文大纲：</p>
-<ul>
-<li><p>程序员 &amp;&amp; 文艺青年 的福音</p>
+<p>（^-^我需要一个转折过渡）</p>
+<p>Snowflake method （下称雪花分形方法），是一套完整的小说创作方法，名字来源于计算机画雪花的几个步骤：从粗略大致到具体细致。适合那些习惯做事前先从整体规划，再逐渐细化执行的人。如果你偏好斯蒂芬·金信马由缰式的创作手法，这种方法就不适用于你了。</p>
+<p>雪花分形方法大致分以下几个步骤：</p>
+<ol>
+<li><p>用一句话总结小说的内容</p>
 </li>
-<li><p>两种方式：信马由缰， top to bottom</p>
+<li><p>把这句话扩写成一段话（包含 5 个句子），要有故事开头（1句）、主角经受的主要磨难（3句）以及结尾（1句）</p>
 </li>
-<li><p>步骤</p>
+<li><p>塑造主要人物。每个主要人物都要用一页篇幅讲述他的以下特征：1，姓名；2，一句话总结的角色故事情节；3，角色的动机（偏向于抽象的）；4，角色的目标（偏向于具体的）；5，阻碍角色达到目标的事物；6，角色最终的感悟；7，一段话总结的角色故事情节</p>
 </li>
-<li><p>有益的补充（情节/人物）</p>
+<li><p>扩写之前的（即第 3 步完成的）那段故事梗概，将一段扩充成一页</p>
 </li>
-</ul>
-<p>TODO</p>
+<li><p>为每个主要角色写上一页纸的描述，为其他重要角色也写上半页描述。主要是从每个角色的角度去描述整个故事</p>
+</li>
+<li><p>把在第 4 步中完成的一页纸的故事概述，扩写成四页</p>
+</li>
+<li><p>把每个角色的所有资料都完善好。最重要的是：故事的末尾，角色有了什么样的转变、收获，这一点要写清楚</p>
+</li>
+<li><p>把在第 6 步中完成的四页纸中出现的故事场景，用 excel 一条一条记下来。一行一个场景，一行有多列，一列是故事情节，一列是出场人物，一列是大约写多少页</p>
+</li>
+<li><p>把第 8 步中完成的每一条场景扩写成一段，要在每一段中出现冲突，如果很难做到，你可以把它从 excel 中去掉</p>
+</li>
+<li><p>开始写初稿吧</p>
+</li>
+<li><p>不断地打磨作品</p>
+</li>
+</ol>
 ]]></content>
     
     <summary type="html">

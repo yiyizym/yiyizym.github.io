@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-11-12T14:33:28.000Z</updated>
+  <updated>2016-11-12T14:41:44.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -16,16 +16,29 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>csrf_protect_from_forgery</title>
+    <title>Rails 的 CSRF 对策</title>
     <link href="http://judes.me/2016/11/12/csrf-protect-from-forgery/"/>
     <id>http://judes.me/2016/11/12/csrf-protect-from-forgery/</id>
     <published>2016-11-12T14:33:28.000Z</published>
-    <updated>2016-11-12T14:33:28.000Z</updated>
+    <updated>2016-11-12T14:41:44.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一次偶然的_javascript_表单提交">一次偶然的 javascript 表单提交</h2><h2 id="CSRF_原理">CSRF 原理</h2><h2 id="jquery_ujs">jquery_ujs</h2><h2 id="form_tag">form_tag</h2><h2 id="protect_from_forgery">protect_from_forgery</h2><p>TODO</p>
+]]></content>
     
     <summary type="html">
     
+      protect_from_forgery 方法
+    
     </summary>
     
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="CSRF" scheme="http://judes.me/tags/CSRF/"/>
+    
+      <category term="frontend" scheme="http://judes.me/tags/frontend/"/>
+    
+      <category term="rails" scheme="http://judes.me/tags/rails/"/>
     
   </entry>
   

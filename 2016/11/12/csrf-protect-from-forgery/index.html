@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="judes, technical, life" />
+  <meta name="keywords" content="CSRF,frontend,rails," />
 
 
 
@@ -39,16 +39,16 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
 
 
-<meta name="description" content="记录生活的点点滴滴">
+<meta name="description" content="protect_from_forgery 方法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="csrf_protect_from_forgery">
+<meta property="og:title" content="Rails 的 CSRF 对策">
 <meta property="og:url" content="http://judes.me/2016/11/12/csrf-protect-from-forgery/index.html">
 <meta property="og:site_name" content="jude's life">
-<meta property="og:description" content="记录生活的点点滴滴">
-<meta property="og:updated_time" content="2016-11-12T14:33:28.000Z">
+<meta property="og:description" content="protect_from_forgery 方法">
+<meta property="og:updated_time" content="2016-11-12T14:41:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="csrf_protect_from_forgery">
-<meta name="twitter:description" content="记录生活的点点滴滴">
+<meta name="twitter:title" content="Rails 的 CSRF 对策">
+<meta name="twitter:description" content="protect_from_forgery 方法">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +58,7 @@
   };
 </script>
 
-  <title> csrf_protect_from_forgery | jude's life </title>
+  <title> Rails 的 CSRF 对策 | jude's life </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -167,7 +167,7 @@
           
           
             
-              csrf_protect_from_forgery
+              Rails 的 CSRF 对策
             
           
         </h1>
@@ -182,6 +182,21 @@
         </span>
 
         
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/tech/" itemprop="url" rel="index">
+                  <span itemprop="name">tech</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
 
         
           
@@ -195,11 +210,22 @@
       
 
       
-        <span itemprop="articleBody"></span>
+        <span itemprop="articleBody"><h2 id="一次偶然的_javascript_表单提交">一次偶然的 javascript 表单提交</h2><h2 id="CSRF_原理">CSRF 原理</h2><h2 id="jquery_ujs">jquery_ujs</h2><h2 id="form_tag">form_tag</h2><h2 id="protect_from_forgery">protect_from_forgery</h2><p>TODO</p>
+</span>
       
     </div>
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CSRF/" rel="tag">#CSRF</a>
+          
+            <a href="/tags/frontend/" rel="tag">#frontend</a>
+          
+            <a href="/tags/rails/" rel="tag">#rails</a>
+          
+        </div>
       
 
       
@@ -287,7 +313,7 @@
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">39</span>
+              <span class="site-state-item-count">41</span>
               <span class="site-state-item-name">标签</span>
               </a>
           </div>
@@ -322,7 +348,7 @@
           <div class="post-toc">
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一次偶然的_javascript_表单提交"><span class="nav-number">1.</span> <span class="nav-text">一次偶然的 javascript 表单提交</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSRF_原理"><span class="nav-number">2.</span> <span class="nav-text">CSRF 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jquery_ujs"><span class="nav-number">3.</span> <span class="nav-text">jquery_ujs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#form_tag"><span class="nav-number">4.</span> <span class="nav-text">form_tag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#protect_from_forgery"><span class="nav-number">5.</span> <span class="nav-text">protect_from_forgery</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

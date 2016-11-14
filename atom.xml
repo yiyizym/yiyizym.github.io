@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-11-12T14:41:44.000Z</updated>
+  <updated>2016-11-14T14:02:07.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -20,9 +20,32 @@
     <link href="http://judes.me/2016/11/12/csrf-protect-from-forgery/"/>
     <id>http://judes.me/2016/11/12/csrf-protect-from-forgery/</id>
     <published>2016-11-12T14:33:28.000Z</published>
-    <updated>2016-11-12T14:41:44.000Z</updated>
+    <updated>2016-11-14T14:02:07.000Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="一次偶然的_javascript_表单提交">一次偶然的 javascript 表单提交</h2><h2 id="CSRF_原理">CSRF 原理</h2><h2 id="jquery_ujs">jquery_ujs</h2><h2 id="form_tag">form_tag</h2><h2 id="protect_from_forgery">protect_from_forgery</h2><p>TODO</p>
+    <content type="html"><![CDATA[<p>最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</p>
+<p>原有的流程十分复杂，移植时想着后台代码能不改就不改，前端代码能重用的就重用。</p>
+<p>其中有一步是前端提交一个表单，后台根据处理结果，分别重定向到成功和失败页面。</p>
+<p>在 AJAX 流行之前，这是标准的做法（简单且重定向有效防止重复提交表单）。</p>
+<p>如今要用 AJAX 模拟表单提交很容易，但接下来要重定向页面就有点困难了。简单的做法就是创建一个表单元素，然后塞一些 input 元素进去，再调用表单元素的 submit 方法：</p>
+<pre><code><span class="keyword">var</span> <span class="keyword">form</span> = document.createElement('<span class="keyword">form</span>');
+<span class="keyword">form</span>.method = '<span class="keyword">post</span>'
+<span class="keyword">form</span>.action = '/where/to/<span class="keyword">post</span>'
+<span class="keyword">var</span> input_1 = document.createElement('<span class="keyword">input</span>');
+input_1.name = 'name_1';
+input_1.<span class="keyword">type</span> = 'hidden';
+input_1.val = 'val_1';
+
+<span class="keyword">form</span>.appendChild(input_1);
+document.body.appendChild(<span class="keyword">form</span>);
+
+<span class="keyword">form</span>.submit();
+</code></pre><p>(想来想去，与其写这么多 javascript ，还不如直接在 html 里放一个隐藏的表单元素。自己纯粹就是闲的)</p>
+<p>单看上面这段代码应该没问题，但实际上有很大的安全隐患，在 Rails 中会提交失败。</p>
+<p>这个安全隐患就是提交到这个路径 ‘/where/to/post’ 的表单很容易被恶意伪造，后台还没办法区分伪造的表单和正常的表单。用术语来说就是 cross site request forgery, [CSRF]（<a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)）" target="_blank" rel="external">https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)）</a> 。</p>
+<p>后台为识别用户的操作，可以在每个操作前都要求用户输入用户名和密码，这样做太麻烦了，为方便用户，后台和浏览器共同发展出一套只需输入一次用户名密码就能在一段时间内记住用户的 session 机制。这套机制依赖于保存在浏览器里的 cookie 。</p>
+<p>因此如果 cookie 漏泄了，被用来伪造用户身份的话，后台没有办法区分哪些是假冒操作，哪些正常操作。</p>
+<p>CSRF 正是利用了这个弱点。</p>
+<h2 id="jquery_ujs">jquery_ujs</h2><h2 id="form_tag">form_tag</h2><h2 id="protect_from_forgery">protect_from_forgery</h2><p>TODO</p>
 ]]></content>
     
     <summary type="html">

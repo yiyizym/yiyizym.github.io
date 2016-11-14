@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/11/12/csrf-protect-from-forgery/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="protect_from_forgery 方法">
-<meta property="og:updated_time" content="2016-11-14T14:02:07.000Z">
+<meta property="og:updated_time" content="2016-11-14T14:10:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Rails 的 CSRF 对策">
 <meta name="twitter:description" content="protect_from_forgery 方法">
@@ -229,7 +229,7 @@ document.body.appendChild(<span class="keyword">form</span>);
 <span class="keyword">form</span>.submit();
 </code></pre><p>(想来想去，与其写这么多 javascript ，还不如直接在 html 里放一个隐藏的表单元素。自己纯粹就是闲的)</p>
 <p>单看上面这段代码应该没问题，但实际上有很大的安全隐患，在 Rails 中会提交失败。</p>
-<p>这个安全隐患就是提交到这个路径 ‘/where/to/post’ 的表单很容易被恶意伪造，后台还没办法区分伪造的表单和正常的表单。用术语来说就是 cross site request forgery, [CSRF]（<a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)）" target="_blank" rel="external">https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)）</a> 。</p>
+<p>这个安全隐患就是提交到这个路径 ‘/where/to/post’ 的表单很容易被恶意伪造，后台还没办法区分伪造的表单和正常的表单。用术语来说就是 cross site request forgery, CSRF 。</p>
 <p>后台为识别用户的操作，可以在每个操作前都要求用户输入用户名和密码，这样做太麻烦了，为方便用户，后台和浏览器共同发展出一套只需输入一次用户名密码就能在一段时间内记住用户的 session 机制。这套机制依赖于保存在浏览器里的 cookie 。</p>
 <p>因此如果 cookie 漏泄了，被用来伪造用户身份的话，后台没有办法区分哪些是假冒操作，哪些正常操作。</p>
 <p>CSRF 正是利用了这个弱点。</p>

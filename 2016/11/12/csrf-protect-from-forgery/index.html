@@ -45,7 +45,7 @@
 <meta property="og:url" content="http://judes.me/2016/11/12/csrf-protect-from-forgery/index.html">
 <meta property="og:site_name" content="jude's life">
 <meta property="og:description" content="protect_from_forgery 方法">
-<meta property="og:updated_time" content="2016-11-14T14:30:05.000Z">
+<meta property="og:updated_time" content="2016-11-18T00:36:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Rails 的 CSRF 对策">
 <meta name="twitter:description" content="protect_from_forgery 方法">
@@ -233,7 +233,23 @@ document.body.appendChild(<span class="keyword">form</span>);
 <p>后台为识别用户的操作，可以在每个操作前都要求用户输入用户名和密码，这样做太麻烦了，为方便用户，后台和浏览器共同发展出一套只需输入一次用户名密码就能在一段时间内记住用户的 session 机制。这套机制依赖于保存在浏览器里的 cookie 。</p>
 <p>因此如果 cookie 漏泄了，被用来伪造用户身份的话，后台没有办法区分哪些是假冒操作，哪些正常操作。</p>
 <p>CSRF 正是利用了这个弱点。</p>
-<h2 id="jquery_ujs">jquery_ujs</h2><h2 id="form_tag">form_tag</h2><h2 id="protect_from_forgery">protect_from_forgery</h2><p>TODO</p>
+<p>Rails 为防止 CSRF ，默认会检查 post 请求中的请求头或请求正文，看里面有没有一个 token 字段，如果没有或者跟 session 中保存的值不一致，就判定为非法请求。</p>
+<p>Rails 的这一套机制覆盖了多种发出 post 请求的情况：</p>
+<h2 id="在前端">在前端</h2><ul>
+<li>jQuery</li>
+</ul>
+<p>如果使用 jQuery 的 ajax 方法，那么需要引入 jquery-ujs.js 。这个文件调用 <code>jQuery.ajaxPrefilter</code> 方法，为所有非跨域的请求（跨域的请求，后台通过 CORS ，检查 Origin 字段避免非法请求来源），在其请求头中加入一个 X-CSRF-Token 字段。 </p>
+<p>X-CSRF-Token 的值来自页面中的一个 meta 标签，这个标签在 layout 中通过设置：<code>&lt;%= csrf_meta_tags %&gt;</code> 生成。</p>
+<ul>
+<li>表单提交</li>
+</ul>
+<p>如果引入了 jQuery 和 jquery-ujs.js ，所有的 form 元素会在页面初始化时被塞进一个隐藏的 token 字段，它的值同样来自 meta 标签。</p>
+<ul>
+<li>form_tag</li>
+</ul>
+<p>如果没有引入 jquery-ujs.js 或不能用 javascript ，也可以使用 <code>form_tag</code>, <code>form_for</code><br>helper 方法，它们也会根据上述情况加入 token 字段。</p>
+<h2 id="在后台">在后台</h2><h2 id="protect_from_forgery">protect_from_forgery</h2><p>TODO</p>
+<h2 id="总结">总结</h2><p>Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。</p>
 </span>
       
     </div>
@@ -371,7 +387,7 @@ document.body.appendChild(<span class="keyword">form</span>);
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#jquery_ujs"><span class="nav-number">1.</span> <span class="nav-text">jquery_ujs</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#form_tag"><span class="nav-number">2.</span> <span class="nav-text">form_tag</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#protect_from_forgery"><span class="nav-number">3.</span> <span class="nav-text">protect_from_forgery</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#在前端"><span class="nav-number">1.</span> <span class="nav-text">在前端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在后台"><span class="nav-number">2.</span> <span class="nav-text">在后台</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#protect_from_forgery"><span class="nav-number">3.</span> <span class="nav-text">protect_from_forgery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>

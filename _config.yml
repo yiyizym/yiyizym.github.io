@@ -100,3 +100,6 @@ deploy:
   type: git
   repo: git@github.com:yiyizym/blog.git
   branch: gh-pages
+
+include:
+  - .nojekyll

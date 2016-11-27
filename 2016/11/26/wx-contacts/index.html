@@ -47,7 +47,7 @@
 <meta property="og:description" content="无聊做了个 web 版的功能跟微信里面那个差不多的通讯录">
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/60cdc5a5gw1fa5mumuv6sg20aw0j0kjm.gif">
 <meta property="og:image" content="http://judes.me/2016/11/26/wx-contacts/will_be.jpg">
-<meta property="og:updated_time" content="2016-11-26T14:16:08.000Z">
+<meta property="og:updated_time" content="2016-11-26T14:37:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="仿照微信的通讯录">
 <meta name="twitter:description" content="无聊做了个 web 版的功能跟微信里面那个差不多的通讯录">
@@ -225,7 +225,7 @@
 <li>联系人按姓名正确分类</li>
 <li>点索引要跳转到正确的分类</li>
 <li>当前类别要在顶栏显示</li>
-<li>要有检索过滤功能。</li>
+<li>要有检索过滤功能</li>
 </ul>
 <p>以上目标在动手前先写下来，然后一个个地实现，这样在断断续续的开发中也不会乱了优先级。</p>
 <p>真正动手时遇到几个问题：</p>
@@ -245,7 +245,7 @@
 </li>
 </ul>
 <ul>
-<li><p>点击索引跳转到相应类别。这个用 html 原生的 anchor 实现，灵感来自 MDN 。</p>
+<li><p>点击索引跳转到相应类别<br>这个用 html 原生的 anchor 实现，灵感来自 MDN 。</p>
 </li>
 <li><p>实时更新当前类别<br>要随着页面滚动更新顶栏的当前类别，不可避免要监听页面的 scroll 事件。 scroll 事件会在页面滚动过程中被频繁触发，可以用 underscore 的 throttle 来限制因事件触发而调用其他方法的频率，但我不想引入 underscore 。<br>在 MDN 上看到优化后的监听 scroll 事件的方式，思路是利用 requestAnimationFrame 方法设置开关，这个方法会在浏览器渲染下一帧前调用。也就是说可以利用它使得由 scroll 事件触发执行的事件在每一帧都只被执行一次。</p>
 </li>

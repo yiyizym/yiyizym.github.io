@@ -11,6 +11,7 @@ date: 2016-11-06 11:31:38
 - [五十音记忆练习](https://github.com/yiyizym/gojuon)
 - [下雨声](https://github.com/yiyizym/raining_sound)
 - [format_json](https://zymiboxpay.github.io/format_json/)，把 rails 后台 log 中的 json/hash 字符串格式化 ，[源码](https://github.com/zymiboxpay/format_json)
+- [web版微信通讯录](https://github.com/yiyizym/contacts)
 
 **Github:**
 - [yiyizym](https://github.com/yiyizym)

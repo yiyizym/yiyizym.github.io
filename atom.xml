@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-11-26T14:37:42.000Z</updated>
+  <updated>2016-12-03T01:04:59.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>仿照微信的通讯录</title>
+    <title>web 版微信通讯录</title>
     <link href="http://judes.me/2016/11/26/wx-contacts/"/>
     <id>http://judes.me/2016/11/26/wx-contacts/</id>
     <published>2016-11-26T09:54:03.000Z</published>
-    <updated>2016-11-26T14:37:42.000Z</updated>
+    <updated>2016-12-03T01:04:59.000Z</updated>
     
     <content type="html"><![CDATA[<p>这个通讯录现在长这个样子：<br><img src="http://ww4.sinaimg.cn/large/60cdc5a5gw1fa5mumuv6sg20aw0j0kjm.gif" alt="幼年期"></p>
 <p>以后可能就是这个样子了（我不保证）：<br><img src="/2016/11/26/wx-contacts/will_be.jpg" alt="完全体" title="完全体"></p>

@@ -85,8 +85,8 @@ feed:
   limit: 20
   hub:
 
-# baidu_analytics
-# baidu_analytics: a79afe9efef65d2c3c6e2d634afb64b5
+# google_analytics
+google_analytics: UA-88024669-1
 
 # Extensions
 ## Plugins: https://github.com/hexojs/hexo/wiki/Plugins

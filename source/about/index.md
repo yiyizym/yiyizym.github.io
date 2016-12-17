@@ -1,11 +1,10 @@
 title: about
-date: 2016-11-06 11:31:38
+date: 2016-12-04 11:31:38
 ---
 
-**自我描述：**
-- 广东出身，北京求学，现居深圳；
-- 性格内向，不善言辞，爱好读书；
+**[个人简历]（https://github.com/yiyizym/resume）**
 
+<<<<<<< Updated upstream
 **小玩具：**
 - [再笑一个](https://github.com/yiyizym/jokes)
 - [五十音记忆练习](https://github.com/yiyizym/gojuon)
@@ -25,3 +24,6 @@ date: 2016-11-06 11:31:38
 
 **微博账号：**
 - [ILoveEcon](http://weibo.com/1624098213/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1)
+=======
+**欢迎关注我的微博账号：[ILoveEcon](http://weibo.com/1624098213/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1)**
+>>>>>>> Stashed changes

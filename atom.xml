@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-12-06T13:57:12.000Z</updated>
+  <updated>2016-12-17T16:16:20.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -14,6 +14,49 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>逝去的 2016</title>
+    <link href="http://judes.me/2016/12/17/my-2016/"/>
+    <id>http://judes.me/2016/12/17/my-2016/</id>
+    <published>2016-12-17T13:12:06.000Z</published>
+    <updated>2016-12-17T16:16:20.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>下面用一句话来描述今年作为程序员的我：</p>
+<blockquote>
+<p>我享受编程的乐趣，也想用自身所学，做个有一点受众的产品。</p>
+</blockquote>
+<p>以前对算法和数据结构只有零零碎碎的印象，年初有幸看到《算法第 4 版》这本书，对算法和数据结构有了整体的认知。2、3月份那段时间每天一边细看，一边手写书上的代码加深理解，还顺便学习 java 。以我粗浅的眼光来看， java 的接口和泛型对团队合作来说是好东西。</p>
+<p>4 月份又遇到《Ruby 元编程》。 ruby 程序员怎样捧这本书都不为过。我之前连 ruby 对象的变量/方法存放的位置都不清楚，看完（还动手实现每章节的小测验）之后——既满足又有成就感——就忍不住用上各种黑魔法了。一本书写满知识而让读者看完感到满足并不难，难的是在前者之上还能让人全程都有成就感。</p>
+<p>我做的别的事情，都可以在 <a href="https://github.com/yiyizym" target="_blank" rel="external">github</a> / <a href="http://judes.me">blog</a> 上面看到，有三四个小东西。技术含量都不高，在做了一点点宣传之后，也没几个人用。即使如此，它们对我有很大意义：用所学践行自身所想：至少它们都满足了我个人的需求。</p>
+<p>我想以后会做出既满足了自己的需求，还迎合另一部分受众的产品。它们是通往这个目标的第一步。</p>
+<hr>
+<p>如果说今年发生了什么重大事情，却没有在别的地方留下痕迹的话，就是 4 月初的一次主动交涉。当时受某句话的鼓动，跑去跟人家直接说要把月薪加到多少多少。交涉的结果就是月薪上涨 40% 。那句鼓动我的话是：</p>
+<blockquote>
+<p>一旦你跨了个性的界，那么你在同类人中就会成为佼佼者。</p>
+</blockquote>
+<p>本人个性一直很怕主动跟人接触，更别说主动要求那么大幅度的加薪。那个举动，没有源自金钱方面的压力，完全出自挑战自己固有界限的冲动。</p>
+<p>加薪一大好处就是，9 月份凑够了钱办签证去东京玩一趟。</p>
+<hr>
+<p>最后，写下一句话，希望对读者有些许启发：</p>
+<blockquote>
+<p>要得到自己所想的，就先设立最终目标，然后把最终目标分解成大中小目标，努力去完成一个个小目标，定期检查付出的努力是不是达到既定目标，如果没有，就改变努力的方式，甚至改变自己一直改不了的性格、做事方式、缺点，反复检查改变后的成效，如果某个目标最终完成不了，就根据实际调整目标。</p>
+</blockquote>
+<p>（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）</p>
+]]></content>
+    
+    <summary type="html">
+    
+      回望今年，不是总结
+    
+    </summary>
+    
+      <category term="life" scheme="http://judes.me/categories/life/"/>
+    
+    
+      <category term="年终" scheme="http://judes.me/tags/%E5%B9%B4%E7%BB%88/"/>
+    
+  </entry>
   
   <entry>
     <title>模糊的正确</title>
@@ -3329,286 +3372,6 @@ end
       <category term="quick sort" scheme="http://judes.me/tags/quick-sort/"/>
     
       <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>sinatra 0.0.1 源码学习</title>
-    <link href="http://judes.me/2016/06/12/sinatra-learning-0-0-1/"/>
-    <id>http://judes.me/2016/06/12/sinatra-learning-0-0-1/</id>
-    <published>2016-06-12T12:14:30.000Z</published>
-    <updated>2016-07-10T06:53:46.000Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 1 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
-<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
-<p>列一下本人运行 sinatra 0.0.1 用到的 ruby 和关键 gem 的版本：</p>
-<ul>
-<li>ruby-1.8.7-p374</li>
-<li>rack 1.4.1</li>
-<li>mongrel 1.1.5</li>
-</ul>
-<h2 id="前期准备">前期准备</h2><p>把 <a href="https://github.com/sinatra/sinatra" target="_blank" rel="external">sinatra</a>克隆下来，用 <code>git tag</code> 可以看到最开始的版本是 0.0.1 。</p>
-<p>checkout 到 0.0.1 分支可以看到目录十分简单</p>
-<pre><code>├── examples
-│   └── hello
-│       ├── test<span class="class">.rb</span>
-│       └── views
-│           └── index<span class="class">.erb</span>
-├── files
-│   ├── default_index<span class="class">.erb</span>
-│   └── not_found<span class="class">.erb</span>
-├── lib
-│   ├── sinatra
-│   │   ├── core_ext
-│   │   │   ├── class<span class="class">.rb</span>
-│   │   │   └── hash<span class="class">.rb</span>
-│   │   ├── dispatcher<span class="class">.rb</span>
-│   │   ├── dsl<span class="class">.rb</span>
-│   │   ├── event<span class="class">.rb</span>
-│   │   ├── logger<span class="class">.rb</span>
-│   │   └── server<span class="class">.rb</span>
-│   └── sinatra<span class="class">.rb</span>
-├── test
-│   ├── helper<span class="class">.rb</span>
-│   └── sinatra
-│       ├── dispatcher_test<span class="class">.rb</span>
-│       └── event_test<span class="class">.rb</span>
-└── vendor
-    └── erb
-        ├── init<span class="class">.rb</span>
-        └── lib
-            └── erb<span class="class">.rb</span>
-
-<span class="number">12</span> directories, <span class="number">17</span> files
-</code></pre><p>跳到 examples/hello 目录下运行 <code>ruby test.rb</code> ，用浏览器打开 localhost:4567 便看到一个提交表单的页面。把文件里的路由都玩一遍，就能感觉到 sinatra 麻雀虽小，但五脏俱全。</p>
-<p>test.rb 采用 <code>$LOAD_PATH.unshift &#39;../../lib/&#39;</code> 把 lib 目录放进加载路径中。</p>
-<p>这种写法会导致如果在别的目录下，比如根目录，执行 <code>ruby examples/hello/test.rb</code> 报错，可以改为：</p>
-<p><code>$LOAD_PATH.unshift File.expand_path(&#39;../../lib&#39;,File.dirname(__FILE__))</code></p>
-<h2 id="rubygems_和_rack">rubygems 和 rack</h2><p>根据 lib/sinatra/sinatra.rb 里加载文件的顺序，逐一看看这个版本的 sinatra 做了些什么。</p>
-<p>sinatra.rb 第1到7行加载 两个 gem</p>
-<pre><code><span class="string">%w(rubygems rack)</span>.each <span class="keyword">do</span> |library|
-  <span class="keyword">begin</span>
-    <span class="keyword">require</span> library
-  <span class="keyword">rescue</span> <span class="constant">LoadError</span>
-    raise <span class="string">"== Sinatra cannot run without <span class="subst">#{library}</span> installed"</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-</code></pre><ul>
-<li><p>rubygems 对 ruby 1.9+ 来说已经是多余的，见<a href="http://guides.rubygems.org/patterns/#requiring_rubygems" target="_blank" rel="external">链接</a></p>
-</li>
-<li><p>rack 是 sinatra 以及 rails 的基础，简介以及基本用法见<a href="http://rack.github.io/" target="_blank" rel="external">官网</a>，用一句话描述 rack ：为 web 服务器向 ruby 应用提供简洁的接口。再详细点描述怎样应用 rack ：</p>
-<ul>
-<li>运行 rack 时需要提供一个能响应 call 方法的对象</li>
-<li>这个对象的 call 方法必须返回一个包含三个元素的数组</li>
-<li>这个返回数组第一个元素是 http 状态码，第二个是 http 响应头，第三个是 http body 对象</li>
-<li>body 对象要求能响应 each 方法</li>
-</ul>
-</li>
-</ul>
-<h2 id="核心扩展_core_ext">核心扩展 core_ext</h2><p>接下来 sinatra 加载两个核心扩展 core_ext/class.rb 以及 core_ext/hash.rb</p>
-<p><strong> class.rb </strong></p>
-<p>ruby 内置了 <code>attr_reader/attr_writer/attr_accessor</code> 方法，可以方便地在类实例中生成 getter/setter 方法，core_ext/class.rb 重新打开了 Class 类，对应地在类中生成 getter/setter 方法。</p>
-<p><code>class_eval</code> 在这当中起到重要作用。</p>
-<p>在 class.rb 中，因为没有显式调用 <code>class_eval</code> ，其 receiver 会指向 self ，而当前的 self 就是 Class 类的实例，即普通类，假设为 class 。 <code>class_eval</code> 把 self 指向 class ，也会重新打开 class ，当你需要动态地为类添加方法时很有用。如下例：</p>
-<pre><code><span class="comment">#!/usr/bin/env ruby</span>
-class <span class="type">TestClassEval</span>
-<span class="keyword">end</span>
-
-<span class="type">TestClassEval</span>.class_eval <span class="keyword">do</span> 
-  def instance_method
-    P 'instance <span class="keyword">method</span>'
-  <span class="keyword">end</span>
-  def self.class_method
-    p 'class <span class="keyword">method</span>'
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="type">TestClassEval</span>.class_method <span class="comment"># 'class method'</span>
-<span class="type">TestClassEval</span>.new.instance_mehtod <span class="comment"># 'instance method'</span>
-<span class="type">TestClassEval</span>.instance_mehtod <span class="comment"># NoMethodError</span>
-</code></pre><p>顺便说说 <code>instance_eval</code> ，<code>instance_eval</code> 把 self 指向 实例 ，也会重新打开实例的 singleton class ，为其添加单例方法，继续用上面的 TestClassEval 作例，下面的写法在其上定义了另一个类方法。</p>
-<pre><code><span class="comment">#!/usr/bin/env ruby</span>
-<span class="type">TestClassEval</span>.instance_eval <span class="keyword">do</span>
-  def another_class_method
-    p 'another class <span class="keyword">method</span>'
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="type">TestClassEval</span>.another_class_method <span class="comment"># 'another class method'  </span>
-</code></pre><p><strong> hash.rb </strong></p>
-<p>hash.rb 里使用了 inject 方法 symbolize  hash 的 key </p>
-<pre><code><span class="function"><span class="keyword">def</span> <span class="title">symbolize_keys</span></span>
-  <span class="keyword">self</span>.inject({}) { |h, (k, v)| h[k.to_sym] = v;h}
-<span class="keyword">end</span>
-</code></pre><h2 id="事件处理_event-rb">事件处理 event.rb</h2><p><strong> EventManager </strong></p>
-<p>EventManager 模块里有一个 extend self 方法调用，值得学习。</p>
-<p>extend 方法是把 module 的实例方法加入到 class 的类单例方法中，其常规用法如下：</p>
-<pre><code>module M
-  def p_method
-    p '<span class="keyword">method</span>'
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-class C
-  extend M
-<span class="keyword">end</span>
-
-C.p_method <span class="comment"># 'method'</span>
-</code></pre><p>如果不使用 extend ，也有其他途径的实现，如下：</p>
-<pre><code><span class="class"><span class="keyword">module</span> <span class="title">M</span></span>
-  <span class="function"><span class="keyword">def</span> <span class="title">p_method</span></span>
-    p <span class="string">'method'</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="class"><span class="keyword">class</span> <span class="title">D</span></span>
-  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
-    <span class="keyword">include</span> <span class="constant">M</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="constant">D</span>.p_method <span class="comment"># 'method'</span>
-</code></pre><p>在 EventManager 中，self 指向 module 自身， 因此 extend self 是用来高效地生成单例方法，可见<a href="http://ozmm.org/posts/singin_singletons.html" target="_blank" rel="external">链接</a> </p>
-<p><strong> EventContext </strong></p>
-<p>为 block 提供执行上下文， block 借此可以访问 request/params ，可以设置和访问 status/headers/body</p>
-<p>这里用到 alias, <code>alias :header :headers</code> ， ruby 中类似的用法还有 alias_method ，如果使用 alias_method ，要这样写 <code>alias_method :header, :headers</code> ，多一个逗号。</p>
-<p>alias 与 alias_method 还有其他区别，前者是关键字，后者是定义在 Module 的方法，这意味着 alias_method 可以被重写；调用 alias 时，其 self 是在定义时就已经决定下来，而 alias_method 的 self 是在运行时才决定的，见下面的例子<a href="http://blog.bigbinary.com/2012/01/08/alias-vs-alias-method.html" target="_blank" rel="external">(出自)</a>:</p>
-<pre><code><span class="comment"># alias_method</span>
-<span class="class"><span class="keyword">class</span> <span class="title">User</span></span>
-
-  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
-    puts <span class="string">"Johnnie Walker"</span>
-  <span class="keyword">end</span>
-
-  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">add_rename</span></span>
-    alias_method <span class="symbol">:name</span>, <span class="symbol">:full_name</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="class"><span class="keyword">class</span> <span class="title">Developer</span> <span class="inheritance">&lt; <span class="parent">User</span></span></span>
-  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
-    puts <span class="string">"Geeky geek"</span>
-  <span class="keyword">end</span>
-  add_rename
-<span class="keyword">end</span>
-
-<span class="constant">Developer</span>.new.name <span class="comment">#=&gt; 'Gekky geek'</span>
-
-<span class="comment"># alias</span>
-<span class="class"><span class="keyword">class</span> <span class="title">User</span></span>
-
-  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
-    puts <span class="string">"Johnnie Walker"</span>
-  <span class="keyword">end</span>
-
-  <span class="function"><span class="keyword">def</span> <span class="title">self</span>.<span class="title">add_rename</span></span>
-    <span class="keyword">alias</span> <span class="symbol">:name</span> <span class="symbol">:full_name</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-<span class="class"><span class="keyword">class</span> <span class="title">Developer</span> <span class="inheritance">&lt; <span class="parent">User</span></span></span>
-  <span class="function"><span class="keyword">def</span> <span class="title">full_name</span></span>
-    puts <span class="string">"Geeky geek"</span>
-  <span class="keyword">end</span>
-  add_rename
-<span class="keyword">end</span>
-
-<span class="constant">Developer</span>.new.name <span class="comment">#=&gt; 'Johnnie Walker'</span>
-</code></pre><p>基于上面的介绍，社区推荐使用 alias_method 。</p>
-<p><strong> Event </strong></p>
-<p>Event 在定义 initialize 方法时<strong>最后一个参数</strong>是 <code>&amp;block</code> ，这表明在调用 Event.new 时如果接收到一个 block ，用 &amp; 操作符把 block 转化为 proc 之后，在 initialize 方法内部可以调用 proc 的 call 方法。</p>
-<p>如果没有在方法内部调用 call 方法的需求，或者没有把 block 当成变量传给别的方法的需求，就没必要在定义方法时写上 &amp;block ，直接用 yield 关键字调用就行。</p>
-<p>可以用 &amp; 把 proc 转变为 block 。这个技巧用在 attend 方法里面，因为 instance_eval 只有<a href="http://ruby-doc.org/core-1.9.3/BasicObject.html#method-i-instance_eval" target="_blank" rel="external">两种调用方式</a>：要么接收一个字符串，要么接收一个 block ，所以要把 proc 转变为 block 当作参数传进去。</p>
-<p>如果跟在 &amp; 操作符后面的对象不是 proc ，&amp; 会调用跟在它后面的对象的 :to_proc 方法。 symbol 对象也有自己的 :to_proc 方法，你经常能看到类似下面的代码：</p>
-<pre><code><span class="function"><span class="keyword">def</span> <span class="title">tag_names</span></span>
-  <span class="variable">@tag_names</span> || tags.map(&amp;<span class="symbol">:name</span>).join(<span class="string">' '</span>)
-<span class="keyword">end</span>
-</code></pre><p>事实上这跟下面的代码是等效的：</p>
-<pre><code><span class="function"><span class="keyword">def</span> <span class="title">tag_names</span></span>
-  <span class="variable">@tag_names</span> || tags.map({ |tag| tag.name }).join(<span class="string">' '</span>)
-<span class="keyword">end</span>
-</code></pre><p>symbol 对象的 :to_proc 方法最早是 Rails 引进的，后面合并到 ruby 1.8.7 版本：</p>
-<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Symbol</span></span>
-  <span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
-    <span class="constant">Proc</span>.new <span class="keyword">do</span> |obj, *args|
-      obj.send <span class="keyword">self</span>, *args
-    <span class="keyword">end</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-</code></pre><p>上面整个例子都出自 <a href="http://stackoverflow.com/questions/1217088/what-does-mapname-mean-in-ruby" target="_blank" rel="external">stackoverflow</a></p>
-<p>关于 &amp; ，更多资料可以看看<a href="http://weblog.raganwald.com/2008/06/what-does-do-when-used-as-unary.html" target="_blank" rel="external">这篇文章</a></p>
-<h2 id="路由请求，封装响应_dispatcher-rb">路由请求，封装响应 dispatcher.rb</h2><p>dispatcher 负责将请求转发到对应的 event ，经 event 处理后，返回符合 rack 要求的响应。</p>
-<p>rack 会直接调用 dispatcher 的 call 方法，传入 env ，利用 rack <a href="http://www.rubydoc.info/gems/rack/Rack/Request" target="_blank" rel="external">提供的方法</a>可以得到 request 对象。</p>
-<p>用 array 的 detect 方法实现转发功能， detect 接受一个 <a href="http://ruby-doc.org/core-2.3.1/Enumerable.html#method-i-detect" target="_blank" rel="external">ifnone 参数</a>，如果找不到合适的 event ，就调用 ifnone 的 call 方法，将 call 方法的返回值作为 detect 的返回值，借此实现大家都熟悉的 404 。</p>
-<p>这里的 ifnone 是一个 lambda</p>
-<pre><code><span class="title">lambda</span> { <span class="title">not_found</span> }
-</code></pre><p>调用 lambda 的 call 会执行 not_found 方法，而 not_found 返回一个 Event 实例。</p>
-<h2 id="server-rb">server.rb</h2><p><a href="https://github.com/rack/rack/tree/2.0.0.alpha" target="_blank" rel="external">rack 2.0</a> 开始不支持 Mongrel 的 handler 。</p>
-<p><code>trap(&quot;INT&quot;) do ... end</code> 这段代码会捕获用户输入的 <code>ctrl + c</code> ，从而调用 Mongrel::HttpServer 的 <a href="https://github.com/mongrel/mongrel/blob/master/lib/mongrel.rb#L344" target="_blank" rel="external">stop</a> 方法。</p>
-<h2 id="dsl-rb">dsl.rb</h2><p>重新打开 Kernel ，增加 4 个 http 方法。</p>
-<p>所有 ruby 类（除了 BasicObject）都继承模块 Kernel ，这意味着一旦 require 这个文件，就连字符串都带这4个方法。</p>
-<p>可以打开 irb 验证一下，查看类的祖先链的方法是 ancestors ，如 <code>String.ancestors</code></p>
-<h2 id="erb">erb</h2><p><strong> init.rb </strong> 里有这样一行：</p>
-<pre><code><span class="constant">Sinatra:</span><span class="symbol">:EventContext</span>.send(<span class="symbol">:include</span>, <span class="constant">Sinatra:</span><span class="symbol">:Erb</span><span class="symbol">:</span><span class="symbol">:InstanceMethods</span>)
-</code></pre><p>ruby 里的方法调用其实就是向被调用方发送（send）一个方法，所以被调用方又叫 receiver 。 EventContext include 了 Erb::InstanceMethods ，就是把 Erb::InstanceMethods 插入到 EventContext 继承链的父亲节点，这样 EventContext 的实例就都可以调用 Erb::InstanceMethods 里面的方法。你也可以直接打开 EventContext 达到同样的目的：</p>
-<pre><code>class <span class="constant">Sinatra:</span><span class="symbol">:EventContext</span>
-  <span class="keyword">include</span> <span class="constant">Sinatra:</span><span class="symbol">:Erb</span><span class="symbol">:</span><span class="symbol">:InstanceMethods</span>
-<span class="keyword">end</span>
-</code></pre><p><strong> erb.rb </strong></p>
-<p>erb.rb 实现找到正确的模板，然后把渲染后的值赋给 EventContext 的实例变量 @body。</p>
-<p>在找模板时使用到一个全局变量 <code>$0</code> ，官方文档的<a href="http://ruby-doc.org/core-2.0.0/doc/globals_rdoc.html" target="_blank" rel="external">描述</a>： </p>
-<blockquote>
-<p>Contains the name of the script being executed. May be assignable.</p>
-</blockquote>
-<p>可以用它来实现类似 Python 判断当前文件是否被直接运行的功能（用来写测试用例）：</p>
-<pre><code><span class="keyword">if</span> __FILE_<span class="number">_</span> == <span class="variable">$0</span>
-  <span class="comment"># code goes here</span>
-<span class="keyword">end</span>
-</code></pre><p>sinatra 用它来实现寻找模板的默认路径。</p>
-<p>ERB 的 result 方法接收一个 binding 参数，默认值是 TOPLEVEL_BINDING 。 binding 是 Kernel 的方法，它会返回 当前作用域(local scope)。因为 binding 是在 EventContext 的某个实例里面运行，它返回的是那个实例的作用域，所以可以访问实例变量及实例方法，如 params 。举例如下：</p>
-<pre><code>class <span class="constant">MyClass</span>
-  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>(x)
-    <span class="variable">@x</span> = x
-  <span class="keyword">end</span>
-  <span class="function"><span class="keyword">def</span> <span class="title">get_binding</span></span>
-    binding
-  <span class="keyword">end</span>
-  <span class="function"><span class="keyword">def</span> <span class="title">print</span></span>
-    p <span class="string">'print out something'</span>
-  <span class="keyword">end</span>
-<span class="keyword">end</span>
-
-my_instance = <span class="constant">MyClass.</span>new(<span class="number">1</span>)
-my_binding = my_instance.get_binding
-
-eval <span class="string">'@x'</span>, b <span class="comment"># 1</span>
-eval <span class="string">'print'</span>, b <span class="comment"># 'print out something'</span>
-</code></pre><h2 id="最后，_at_exit">最后， at_exit</h2><p>at_exit 也是 Kernel 里的方法，它接受一个 block ，并将其转换成 Proc ，当程序退出时会调用 Proc 。如果调用了多次 at_exit 。那么这些 Proc 按倒序执行，如：</p>
-<pre><code>at_<span class="built_in">exit</span> <span class="keyword">do</span>
-  puts <span class="string">'再见！'</span>
-end
-
-at_<span class="built_in">exit</span> <span class="keyword">do</span>
-  puts <span class="string">'已经写完，'</span>
-end
-
-at_<span class="built_in">exit</span> <span class="keyword">do</span>
-  <span class="built_in">print</span> <span class="string">'sinatra 0.0.1 版本源码学习'</span>
-end
-</code></pre>]]></content>
-    
-    <summary type="html">
-    
-      通过 sinatra 学习 ruby 编程技巧（系列）
-    
-    </summary>
-    
-      <category term="ruby" scheme="http://judes.me/categories/ruby/"/>
-    
-    
-      <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
-    
-      <category term="sinatra" scheme="http://judes.me/tags/sinatra/"/>
     
   </entry>
   

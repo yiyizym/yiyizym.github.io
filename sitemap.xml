@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://judes.me/about/index.html</loc>
+    
+    <lastmod>2016-12-17T16:24:07.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://judes.me/2016/12/17/my-2016/</loc>
     
     <lastmod>2016-12-17T16:16:20.000Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>http://judes.me/2016/12/04/simplify-bayes-theorem/</loc>
     
     <lastmod>2016-12-06T13:57:12.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://judes.me/about/index.html</loc>
-    
-    <lastmod>2016-12-04T00:32:19.000Z</lastmod>
     
   </url>
   

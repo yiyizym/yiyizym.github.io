@@ -1,4 +1,4 @@
-title: 仿照微信的通讯录
+title: web 版微信通讯录
 date: 2016-11-26 17:54:03
 description: 无聊做了个 web 版的功能跟微信里面那个差不多的通讯录
 categories: frontend

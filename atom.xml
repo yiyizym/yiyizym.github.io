@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://judes.me/"/>
-  <updated>2016-12-31T06:31:30.000Z</updated>
+  <updated>2017-01-15T03:53:07.000Z</updated>
   <id>http://judes.me/</id>
   
   <author>
@@ -14,6 +14,40 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>方法只做一件事</title>
+    <link href="http://judes.me/2017/01/15/func-do-one-thing/"/>
+    <id>http://judes.me/2017/01/15/func-do-one-thing/</id>
+    <published>2017-01-15T02:31:26.000Z</published>
+    <updated>2017-01-15T03:53:07.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>当职业程序员有两年多，算上休息时写的，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</p>
+<p>我知道方法越短越好，但一旦自己写起短代码来，就导致一个简单的功能，实现代码会嵌套四/五层，曾经因此被人说过“代码分得太细”，我自己读着的感觉也不好：虽然方法都短小，但不易懂。</p>
+<p>后来我逐渐归纳出一个组织代码的想法：处于同一抽象层级的代码应该放在一起，不在同一抽象层级的代码就应该分开写。</p>
+<p>我想，这一个想法跟本文题目的意义是一样的。</p>
+<p>“方法只做一件事”这个论调很常见，在程序员界很政治正确，但落到实处，首先就会遇到这个问题：怎样才算是一件事？</p>
+<p>举个例子，要实现一个“把大象放进冰箱”的方法，方法内部大概可以这样写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def put_elephant_in_fridge:&#10;  &#10;  open_fridge&#10;  put_elephant_in&#10;  close_fridge&#10;&#10;end</span><br></pre></td></tr></table></figure></p>
+<p>上面的 <code>put_elephant_in_fridge</code> 方法，做了一件事还是三件事？显然会数数的人都会说是三件事，但我会说这是“一件事”。首先，这三件事都处在同一个抽象层级，然后，这三件事都处在 <code>put_elephant_in_fridge</code> 方法往下一级的抽象层级上。</p>
+<p>问题又来了，怎样判别方法是否处在同一个抽象层级呢？接着上面的例子，看另一种实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def put_elephant_in_fridge:&#10;  &#10;  figure_out_the_volume_of_fridge&#10;&#10;  if fridge_not_found or fridge_not_big_enough&#10;    buy_a_fridge&#10;    open_fridge&#10;  else&#10;    open_fridge&#10;&#10;  chop_elephant&#10;  full_fill_fridge&#10;&#10;  close_fridge&#10;&#10;end</span><br></pre></td></tr></table></figure></p>
+<p>上面的方法，前几行是确保找到足够大的冰箱， <code>chop_elephant</code> 和 <code>full_fill_fridge</code> 描述怎样处理大象，怎样把大象塞进冰箱。显然，这些方法相对 <code>close_fridge</code> 来说都是实现细节，它们都不在同一个抽象层级：第一层级是 <code>close_fridge</code> ，第二层是 <code>chop_elephant</code> 和 <code>full_fill_fridge</code> ，最下层的是前面几行代码。写代码的时候应该像第一段代码那样隔离不同层级的抽象，隐藏实现细节。</p>
+<p>现实情况下，要求程序员一边实现功能，一边把代码按不同抽象层级安放好或许有点强人所难，可以先后做这两件事。关键是要做，只有这样才能写出好代码。</p>
+<p>“方法只做一件事”，出自「clean code」。如果在我刚当程序员的时候看这本书，或许不会像如今有这么大收获，那时写过的代码少，遇到的问题也少，有过困惑和思考的就更少了；现在的我，看书的每一节都能联系到自己一直以来遇到过的、思考过的问题，这些问题有的已经有了模糊答案，有的想不明白，不论怎样书中的解释总能带给我新的启发。</p>
+<p>“方法只做一件事”就是如此。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      clean code 给我的启发
+    
+    </summary>
+    
+      <category term="tech" scheme="http://judes.me/categories/tech/"/>
+    
+    
+      <category term="clean code" scheme="http://judes.me/tags/clean-code/"/>
+    
+  </entry>
   
   <entry>
     <title>从读一本废话连篇的书说起</title>
@@ -3113,78 +3147,6 @@ end
       <category term="insertion sort" scheme="http://judes.me/tags/insertion-sort/"/>
     
       <category term="ruby" scheme="http://judes.me/tags/ruby/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>微信浏览器 location reload 失效解决办法</title>
-    <link href="http://judes.me/2016/07/02/wechat-reload/"/>
-    <id>http://judes.me/2016/07/02/wechat-reload/</id>
-    <published>2016-07-02T14:45:16.000Z</published>
-    <updated>2016-07-02T19:26:21.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>公司在微信企业号上开发了一个功能，用户通过这个功能完成一个个任务后可以获取奖励：</p>
-<ul>
-<li>用户首先进入页面 A 查看任务列表，列表中每一个任务都有各自的状态，一共有 5 个： 从状态 1 到状态 5 ；</li>
-<li>用户点击页面 A 中的某个条目进入页面 B 查看任务详情，用户需要先后进行 5 个操作更新任务状态，每个操作都会刷新页面 B 。</li>
-</ul>
-<p>在微信开发者工具上测试一切正常。但测试 Android ——苹果上没有问题—— 真机就发现一个很严重的 BUG ：每个操作成功后页面 B 并不刷新。</p>
-<p>刷新用的方法是简单的 <code>location.reload()</code> ，据网友反馈，失败的原因是微信浏览器缓存了 reload 请求。</p>
-<p>一提到解决浏览器缓存问题，自然会想到给资源加上指纹。</p>
-<p>这能解决问题，不过不管怎么说都是特殊处理： html 也加指纹，不希望应用到别处。也就是说，只针对 Android 微信浏览器使用。</p>
-<p>首先判断请求是否来自 Android 微信浏览器：</p>
-<pre><code><span class="keyword">var</span> isAndroidWechat = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
-  <span class="keyword">return</span> (<span class="regexp">/android/i</span>).test(<span class="built_in">window</span>.navigator.userAgent) &amp;&amp; (<span class="regexp">/micromessenger/i</span>).test(<span class="built_in">window</span>.navigator.userAgent)
-};
-</code></pre><p>如果 isAndroidWechat 为 true ，则在 url 上加上指纹：</p>
-<pre><code><span class="keyword">var</span> reload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
-  <span class="keyword">var</span> hash = +(<span class="keyword">new</span> <span class="built_in">Date</span>());
-  <span class="keyword">var</span> new_search = (<span class="regexp">/wechat_hash/</span>).test(location.search) ? 
-    <span class="comment">// 如果之前有添加过指纹，就更新它</span>
-    location.search.replace(<span class="regexp">/wechat_hash=\d+(&amp;?)/</span>,<span class="string">'wechat_hash='</span> + hash + <span class="string">'$1'</span>) :
-    <span class="comment">// 如果 search 为空</span>
-    location.search == <span class="string">""</span> ?
-    <span class="string">'?wechat_hash='</span> + hash :
-    <span class="comment">// 如果 search 不为空</span>
-    location.search + <span class="string">'&amp;wechat_hash='</span> + hash;
-  <span class="comment">// 重新加载页面</span>
-  location.reload(<span class="literal">true</span>);
-}
-</code></pre><p>这样看着还不错，不过很快就遇到新问题：如果在页面 B 先后进行了 4 次操作，这时点击后退按钮 ，还是会停留在页面 B ，要点击 4 次才能回到页面 A 。浏览器历史忠实地记录了我们先后 4 次更改 location.search 的操作。要立即返回页面 A ，我们还得更改历史：</p>
-<pre><code><span class="keyword">var</span> reload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>{
-  <span class="keyword">var</span> hash = +(<span class="keyword">new</span> <span class="built_in">Date</span>());
-  <span class="keyword">var</span> new_search = (<span class="regexp">/wechat_hash/</span>).test(location.search) ? 
-    <span class="comment">// 如果之前有添加过指纹，就更新它</span>
-    location.search.replace(<span class="regexp">/wechat_hash=\d+(&amp;?)/</span>,<span class="string">'wechat_hash='</span> + hash + <span class="string">'$1'</span>) :
-    location.search == <span class="string">""</span> ?
-    <span class="comment">// 如果 search 为空</span>
-    <span class="string">'?wechat_hash='</span> + hash :
-    <span class="comment">// 如果 search 不为空</span>
-    location.search + <span class="string">'&amp;wechat_hash='</span> + hash;
-  <span class="comment">// 修改浏览器历史</span>
-  <span class="keyword">var</span> current_title = <span class="built_in">document</span>.title;
-  <span class="keyword">var</span> new_uri = location.origin + location.pathname + new_search;
-  history.replaceState(<span class="literal">null</span>, current_title, new_uri);
-  <span class="comment">// 重新加载页面</span>
-  location.reload(<span class="literal">true</span>);
-};
-</code></pre><p>最后，完成的代码及测试例子已上传到 <a href="https://github.com/yiyizym/wechat_reload" target="_blank" rel="external">github</a> 。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      微信自家浏览器总有莫名其妙的 bug
-    
-    </summary>
-    
-      <category term="frontend" scheme="http://judes.me/categories/frontend/"/>
-    
-    
-      <category term="reload" scheme="http://judes.me/tags/reload/"/>
-    
-      <category term="微信" scheme="http://judes.me/tags/%E5%BE%AE%E4%BF%A1/"/>
-    
-      <category term="浏览器" scheme="http://judes.me/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/"/>
     
   </entry>
   

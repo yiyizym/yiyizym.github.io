@@ -1,7 +1,6 @@
----
-layout: post
 title: 川端康成三部名作中的男主人
 description: "川端康成擅长描写女性，他书中出现的男性则往往是为了展现女性美。"
+date: 2014-08-09 16:47:38
 keywords: 川端康成,雪国,古都,千只鹤,男性
 categories: reading
 ---

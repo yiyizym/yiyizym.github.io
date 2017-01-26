@@ -1,7 +1,6 @@
----
-layout: post
 title: 浅谈CSS2.1可视化格式模型
 description: "对CSS2.1可视化格式模型的一些总结"
+date: 2014-03-27 16:47:38
 keywords: 可视化格式模型, 包含块, 盒子, 定位方案, 浮动, 常规流
 categories: frontend
 ---

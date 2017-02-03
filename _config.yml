@@ -1,105 +1,36 @@
-# Hexo Configuration
-## Docs: http://hexo.io/docs/configuration.html
-## Source: https://github.com/hexojs/hexo/
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
 
-# Site
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
 title: jude's life
-subtitle:
-description: 记录生活的点点滴滴
-author: jude zhu 
+author: jude
 email: yiyizym@gmail.com
-avatar: /images/avatar.png
-# language: zh-CN
-language: zh-Hans
-
-# URL
-## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://judes.me
-root: /
-permalink: :year/:month/:day/:title/
-#tag_dir: tags
-archive_dir: archives
-category_dir: categories
-code_dir: downloads/code
-permalink_defaults:
-
-# Directory
-source_dir: source
-public_dir: public
-
-# Writing
-new_post_name: :title.md # File name of new posts
-default_layout: post
-titlecase: false # Transform title into titlecase
-external_link: true # Open external links in new tab
-filename_case: 0
-render_drafts: false
-post_asset_folder: true
-relative_link: false
-highlight:
-  enable: true
-  line_number: true
-  tab_replace:
-
-# Category & Tag
-default_category: uncategorized
-category_map:
-tag_map:
-
-# Archives
-## 2: Enable pagination
-## 1: Disable pagination
-## 0: Fully Disable
-archive: 2
-category: 2
-tag: 2
-
-# Server
-## Hexo uses Connect as a server
-## You can customize the logger format as defined in
-## http://www.senchalabs.org/connect/logger.html
-port: 4000
-server_ip: localhost
-logger: false
-logger_format: dev
-
-# Date / Time format
-## Hexo uses Moment.js to parse and display date
-## You can customize the date format as defined in
-## http://momentjs.com/docs/#/displaying/format/
-date_format: MMM D YYYY
-time_format: H:mm:ss
-
-# Pagination
-## Set per_page to 0 to disable pagination
-per_page: 0
-pagination_dir: page
-
-# duoshuo
-#duoshuo_shortname: judes
-
-# rss
-feed:
-  type: atom
-  path: atom.xml
-  limit: 20
-  hub:
+description: > # this means to ignore newlines until "baseurl:"
+  记录生活的点点滴滴
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://judes.me" # the base hostname & protocol for your site, e.g. http://example.com
+# twitter_username: yiyizym
+github_username:  yiyizym
 
 # google_analytics
 google_analytics: UA-88024669-1
 
-# Extensions
-## Plugins: https://github.com/hexojs/hexo/wiki/Plugins
-## Themes: https://github.com/hexojs/hexo/wiki/Themes
-theme: next
-exclude_generator:
-
-# Deployment
-## Docs: http://hexo.io/docs/deployment.html
-deploy:
-  type: git
-  repo: git@github.com:yiyizym/blog.git
-  branch: gh-pages
-
-include:
-  - .nojekyll
+# Build settings
+markdown: kramdown
+theme: minima
+gems:
+  - jekyll-feed
+exclude:
+  - Gemfile
+  - Gemfile.lock

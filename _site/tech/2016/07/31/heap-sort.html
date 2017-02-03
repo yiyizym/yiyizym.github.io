@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>写写堆排序</title>
+  <meta name="description" content="原理">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/tech/2016/07/31/heap-sort.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">写写堆排序</h1>
+    <p class="post-meta"><time datetime="2016-07-31T22:16:09+08:00" itemprop="datePublished">Jul 31, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="原理">原理</h2>
+
+<p>堆排序中的“堆”，它是：</p>
+
+<ul>
+  <li>一棵完全二叉树</li>
+  <li>树的每个节点都不比它的两个子节点小（有序）</li>
+</ul>
+
+<p>由此得到最有用的信息：根节点是二叉树里面最大的元素</p>
+
+<p>堆排序的过程是：</p>
+
+<ul>
+  <li>构造有序的堆</li>
+  <li>输出并删除最大的元素</li>
+  <li>重复前面两个步骤</li>
+</ul>
+
+<h2 id="联想">联想</h2>
+
+<ul>
+  <li>用数组表示二叉树，数组从索引 1 开始记录元素。这样做可以很方便地找到完全二叉树中某个节点的及其两个子节点。</li>
+  <li>从下往上地把二叉树变成堆</li>
+  <li>交换最大的元素与二叉树的最后一个元素的位置，把二叉树的节点数减 1 ，再把二叉树变成堆</li>
+  <li>重复上一步骤，直到二叉树只剩下 1 个节点</li>
+</ul>
+
+<p>把二叉树变成堆涉及一个重要的基本操作：下沉。就是通过不断比较父节点与子节点，如果父节点比子节点小，就交换两者的位置。如果从根节点开始下沉，会得到整棵树中最大的节点。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>def sink(arr, index, len)
+  while index * 2 &lt;= len
+    child_index = index * 2 
+    if child_index &lt; len &amp;&amp; arr[child_index] &lt; arr[child_index + 1]
+      child_index += 1
+    end
+    break nil if arr[child_index] &lt;= arr[index]
+    exchange(arr, index, child_index)
+    index = child_index * 2
+  end
+end
+
+def exchange(arr, i, j)
+  arr[i], arr[j] = arr[j], arr[i]
+end
+</code></pre>
+</div>
+
+<h2 id="用法">用法</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">#!/usr/bin/env ruby</span>
+<span class="n">sorted_array</span> <span class="o">=</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<h2 id="大体架构">大体架构</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>module HS
+  extend self
+  def sort(array)
+    heap_sort(array)
+  end
+  private
+  def heap_sort(array)
+    return array if array.length &lt; 2
+    # 构建符合格式的数组
+    # 构建堆
+    # 排序
+
+    array[1..-1]
+  end
+end
+</code></pre>
+</div>
+
+<h2 id="构建符合格式的数组">构建符合格式的数组</h2>
+
+<p>这个很简单，把数组第 1 个元素插入到数组末尾，然后把第 1 个元素置为 nil</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>array[0], array[array.length] = nil, array[0]
+</code></pre>
+</div>
+
+<h2 id="构建堆">构建堆</h2>
+
+<p>把符合格式的数组看成是一棵完全二叉树，要构建堆的话，当然可以从数组的第 2 个元素开始下沉，一直到最后一个元素。</p>
+
+<p>但这样的效率很低，单说最大可能交换的次数，假设 N 是树的高度，最大可能的交换次数一共是：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>2^0*(N-1)+2^1*(N-2)+...+2^(N-2)*1
+</code></pre>
+</div>
+
+<p>参考黑帮发展的形式可以得到比较好的思路：不用管一众小黑帮的喽啰，只要收拾了它们的头目，就可以掌管这些黑帮。一开始就要找到小黑帮的头目，把他们打沉了，再往上找他们的头目。这样最大可能交换的次数一共是：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>2^0+2^1+...+2^(N-2)
+</code></pre>
+</div>
+
+<p>实现这个技巧的代码也很简单：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>def make_heap(array)
+  index = (array.length - 1) / 2
+  while index &gt;= 1
+    sink(array, index, array.length - 1)
+    index -= 1
+  end
+  array
+end
+</code></pre>
+</div>
+
+<h2 id="排序">排序</h2>
+
+<p>我们最终要得到一个从小到大的数组，得不断地把堆中最大的元素移到数组的末尾，缩小堆的大小之后，再使堆有序。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>def _sort(array)
+  len = array.length - 1
+  while len &gt; 1
+    exchange(array, 1, len)
+    len -= 1
+    sink(array, 1, len)
+  end
+end
+</code></pre>
+</div>
+
+<h2 id="完整的代码加测试用例如下">完整的代码，加测试用例如下：</h2>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="k">module</span> <span class="nn">HS</span>
+  <span class="kp">extend</span> <span class="nb">self</span>
+  <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">heap_sort</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">heap_sort</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array</span> <span class="k">if</span> <span class="n">array</span><span class="p">.</span><span class="nf">length</span> <span class="o">&lt;</span> <span class="mi">2</span>
+    <span class="c1"># 构建符合格式的数组</span>
+    <span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">array</span><span class="p">[</span><span class="n">array</span><span class="p">.</span><span class="nf">length</span><span class="p">]</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># 构建堆</span>
+    <span class="n">make_heap</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="c1"># 排序</span>
+    <span class="n">_sort</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+
+    <span class="n">array</span><span class="p">[</span><span class="mi">1</span><span class="p">.</span><span class="nf">.</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">make_heap</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">array</span><span class="p">.</span><span class="nf">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">while</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+      <span class="n">sink</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">array</span><span class="p">.</span><span class="nf">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+      <span class="n">index</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">end</span>
+    <span class="n">array</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">_sort</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">len</span> <span class="o">=</span> <span class="n">array</span><span class="p">.</span><span class="nf">length</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="n">len</span> <span class="o">&gt;</span> <span class="mi">1</span>
+      <span class="n">exchange</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span>
+      <span class="n">len</span> <span class="o">-=</span> <span class="mi">1</span>
+      <span class="n">sink</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">sink</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">len</span>
+      <span class="n">child_index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">*</span> <span class="mi">2</span>
+      <span class="k">if</span> <span class="n">child_index</span> <span class="o">&lt;</span> <span class="n">len</span> <span class="o">&amp;&amp;</span> <span class="n">arr</span><span class="p">[</span><span class="n">child_index</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">child_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">child_index</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="k">end</span>
+      <span class="k">break</span> <span class="kp">nil</span> <span class="k">if</span> <span class="n">arr</span><span class="p">[</span><span class="n">child_index</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">arr</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+      <span class="n">exchange</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">child_index</span><span class="p">)</span>
+      <span class="n">index</span> <span class="o">=</span> <span class="n">child_index</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">exchange</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+    <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+  <span class="k">end</span>
+
+<span class="k">end</span>
+
+<span class="k">if</span> <span class="kp">__FILE__</span> <span class="o">==</span> <span class="vg">$0</span>
+  <span class="nb">require</span> <span class="s1">'test/unit'</span>
+  <span class="k">class</span> <span class="nc">TestHS</span> <span class="o">&lt;</span> <span class="no">Test</span><span class="o">::</span><span class="no">Unit</span><span class="o">::</span><span class="no">TestCase</span>
+    <span class="k">def</span> <span class="nf">test_0</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'empty array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_1_0</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'one item array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_1_1</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'one item array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_2_0</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'two iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_2_1</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'two iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_2_2</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'two iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_3_0</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'three iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_3_1</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'three iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_3_2</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'three iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_3_3</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'three iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_3_4</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'three iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_4_0</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'four iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_4_1</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'four iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_4_2</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'four iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_10_0</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'ten iteHS array not equal'</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">test_10_1</span>
+      <span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+      <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+      <span class="n">assert_equal</span> <span class="no">HS</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">input</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="s1">'ten iteHS array not equal'</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@gmail.com">yiyizym@gmail.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

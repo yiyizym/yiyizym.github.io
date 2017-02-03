@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>vim 使用指南</title>
+  <meta name="description" content="想起一个笑话： 问：要怎样才能生成一个随机字符串呢？ 答：让一个新手退出 vim">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/tech/2016/03/26/how-to-vim.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">vim 使用指南</h1>
+    <p class="post-meta"><time datetime="2016-03-26T20:07:28+08:00" itemprop="datePublished">Mar 26, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>想起一个笑话：</p>
+<ul>
+  <li>问：要怎样才能生成一个随机字符串呢？</li>
+  <li>答：让一个新手退出 vim</li>
+</ul>
+
+<p>为什么要学习使用 vim ？首先是有意思。它是基于模式的编辑器，与别不同。其次是显得特别专业。狂敲键盘，光标不停地在字里行间辗转腾挪，不需要鼠标就能做所有的事情。</p>
+
+<p>至于怎样学。有人建议打开vim之后输入<code class="highlighter-rouge">:help</code>查看教程，认认真真看个把小时。但有更好的办法：直接在terminal输入<code class="highlighter-rouge">vimtutor</code>打开教程（有中文版）一边动手一边学，只需要20-30分钟，你就上手了。</p>
+
+<p>用上几天之后，你可能觉得vim没有别人所说的那么强大，于是上网看看别人是怎么用的，多半你会跟随别人装上一堆插件，定制了好多命令，折腾一番后vim变得很慢有明显的卡顿感。一次偶然的机会你看到了一个号称“是21世纪的编辑器”的编辑器，它更酷。如果此时你离vim而去，那vim带给你的就只有挫败感和浪费时间。</p>
+
+<p>所以为避免这种情况发生，请你先不要太早装插件，定制命令倒是可以有一些，比如显示行号、语法高亮、自动缩进、快速回到normal模式等等。</p>
+
+<p>可以学习一些简单却十分强大的命令。之所以说简单，是因为你不需要学习新的命令，这些强大的命令全都由你已经知道的命令组成。</p>
+
+<p>不知道你有没有发觉，入门教程以及网上其他一些教程只会教你删除一个单词或者删除一行，并没有教你删除从光标所在位置到同一行指定位置之间的单词，例如要删除下面这行文字中从 happens 到 till 之间的所有文字：</p>
+
+<p>Magic happens when you combine the motions find and till with operators</p>
+
+<p>你大概会图省事一直按<code class="highlighter-rouge">x</code>，或者先按<code class="highlighter-rouge">dw</code>，再一直按<code class="highlighter-rouge">.</code>，直到删光till前面的单词；这里介绍另外一种方法：<code class="highlighter-rouge">dtt</code>命令。</p>
+
+<p><code class="highlighter-rouge">dtt</code>命令由三个字母组成，每个字母都有其意义：</p>
+<ul>
+  <li><code class="highlighter-rouge">d</code> 代表一种操作，这里是删除，还可以是<code class="highlighter-rouge">yfcv</code>中的任意一个</li>
+  <li><code class="highlighter-rouge">t</code> 代表一种匹配范围，这里是‘直到’，还可以是<code class="highlighter-rouge">fia</code>中的任意一个。举例解释比较好：
+有这样一个字符串：<code class="highlighter-rouge">(How are you ?)</code>，假设光标在<code class="highlighter-rouge">a</code>的前面，如果你想删除直到问号前面的所有字符，就输入<code class="highlighter-rouge">dt?</code>；如果要删除直到右括号前面所有字符，就输入<code class="highlighter-rouge">df?</code>，可见<code class="highlighter-rouge">f</code>与<code class="highlighter-rouge">t</code>的区别就是一个包含第三个字母，另一个是不包含；如果你要删除括号内的所有内容，（注意当前你的光标是在<code class="highlighter-rouge">a</code>前面）你可以输入<code class="highlighter-rouge">di)</code>或者<code class="highlighter-rouge">di(</code>，都是删除括号之内的内容，如果想把括号也删除了，就输入<code class="highlighter-rouge">da)</code>或者<code class="highlighter-rouge">da(</code>，<code class="highlighter-rouge">a</code>与<code class="highlighter-rouge">i</code>的关系也是包含与不包含的关系。</li>
+  <li><code class="highlighter-rouge">t</code> 代表一种对象，这里只是一个字母，还可以是一个位置，比如<code class="highlighter-rouge">^$</code>开头和结尾。</li>
+</ul>
+
+<p>如果你掌握了上面提到的常用命令，可以去装插件了。想装什么插件才去装，不要搞个 spf13 ，装一箩筐插件其实没什么好。
+首先装个管理插件的插件：vundle，很多插件都支持用vundle安装，所以先装个vundle会方便很多。按<a href="https://github.com/VundleVim/Vundle.vim">官方指南</a>一步步走也不难。
+然后装个 <a href="https://github.com/jiangmiao/auto-pairs">autopairs</a>，这样输入括号、引号会方便很多。
+再装个<a href="https://github.com/Valloric/YouCompleteMe">YouCompleteMe</a>，用来自动补全，官方说明比较详细，所有特性都装会比较麻烦一点，用vundle安装，等一会儿就好，如果它提示你要重新编译一下，你就按文档运行 install.py 脚本，如果运行脚本时出错，就按错误提示来做。
+除此之外，推荐一个插件<a href="https://github.com/easymotion/vim-easymotion">vim-easymotion</a>，用来快速跳转到页面的某个位置的。</p>
+
+<p>最后附上我的<a href="https://github.com/yiyizym/.vimrc/issues/1">vimrc</a></p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@gmail.com">yiyizym@gmail.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

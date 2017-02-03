@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>微信浏览器 location reload 失效解决办法</title>
+  <meta name="description" content="公司在微信企业号上开发了一个功能，用户通过这个功能完成一个个任务后可以获取奖励：">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/frontend/2016/07/03/wechat-reload.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">微信浏览器 location reload 失效解决办法</h1>
+    <p class="post-meta"><time datetime="2016-07-03T06:45:16+08:00" itemprop="datePublished">Jul 3, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>公司在微信企业号上开发了一个功能，用户通过这个功能完成一个个任务后可以获取奖励：</p>
+
+<ul>
+  <li>用户首先进入页面 A 查看任务列表，列表中每一个任务都有各自的状态，一共有 5 个： 从状态 1 到状态 5 ；</li>
+  <li>用户点击页面 A 中的某个条目进入页面 B 查看任务详情，用户需要先后进行 5 个操作更新任务状态，每个操作都会刷新页面 B 。</li>
+</ul>
+
+<p>在微信开发者工具上测试一切正常。但测试 Android ——苹果上没有问题—— 真机就发现一个很严重的 BUG ：每个操作成功后页面 B 并不刷新。</p>
+
+<p>刷新用的方法是简单的 <code class="highlighter-rouge">location.reload()</code> ，据网友反馈，失败的原因是微信浏览器缓存了 reload 请求。</p>
+
+<p>一提到解决浏览器缓存问题，自然会想到给资源加上指纹。</p>
+
+<p>这能解决问题，不过不管怎么说都是特殊处理： html 也加指纹，不希望应用到别处。也就是说，只针对 Android 微信浏览器使用。</p>
+
+<p>首先判断请求是否来自 Android 微信浏览器：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var isAndroidWechat = function(){
+  return (/android/i).test(window.navigator.userAgent) &amp;&amp; (/micromessenger/i).test(window.navigator.userAgent)
+};
+</code></pre>
+</div>
+
+<p>如果 isAndroidWechat 为 true ，则在 url 上加上指纹：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var reload = function(){
+  var hash = +(new Date());
+  var new_search = (/wechat_hash/).test(location.search) ? 
+    // 如果之前有添加过指纹，就更新它
+    location.search.replace(/wechat_hash=\d+(&amp;?)/,'wechat_hash=' + hash + '$1') :
+    // 如果 search 为空
+    location.search == "" ?
+    '?wechat_hash=' + hash :
+    // 如果 search 不为空
+    location.search + '&amp;wechat_hash=' + hash;
+  // 重新加载页面
+  location.reload(true);
+}
+</code></pre>
+</div>
+
+<p>这样看着还不错，不过很快就遇到新问题：如果在页面 B 先后进行了 4 次操作，这时点击后退按钮 ，还是会停留在页面 B ，要点击 4 次才能回到页面 A 。浏览器历史忠实地记录了我们先后 4 次更改 location.search 的操作。要立即返回页面 A ，我们还得更改历史：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var reload = function(){
+  var hash = +(new Date());
+  var new_search = (/wechat_hash/).test(location.search) ? 
+    // 如果之前有添加过指纹，就更新它
+    location.search.replace(/wechat_hash=\d+(&amp;?)/,'wechat_hash=' + hash + '$1') :
+    location.search == "" ?
+    // 如果 search 为空
+    '?wechat_hash=' + hash :
+    // 如果 search 不为空
+    location.search + '&amp;wechat_hash=' + hash;
+  // 修改浏览器历史
+  var current_title = document.title;
+  var new_uri = location.origin + location.pathname + new_search;
+  history.replaceState(null, current_title, new_uri);
+  // 重新加载页面
+  location.reload(true);
+};
+</code></pre>
+</div>
+
+<p>最后，完成的代码及测试例子已上传到 <a href="https://github.com/yiyizym/wechat_reload">github</a> 。</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@gmail.com">yiyizym@gmail.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

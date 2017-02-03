@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>web 版微信通讯录</title>
+  <meta name="description" content="这个通讯录现在长这个样子： 幼年期">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/frontend/2016/11/27/wx-contacts.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">web 版微信通讯录</h1>
+    <p class="post-meta"><time datetime="2016-11-27T01:54:03+08:00" itemprop="datePublished">Nov 27, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>这个通讯录现在长这个样子：
+<img src="http://ww4.sinaimg.cn/large/60cdc5a5gw1fa5mumuv6sg20aw0j0kjm.gif" alt="幼年期" /><em>幼年期</em></p>
+
+<p>以后可能就是这个样子了（我不保证）：
+<img src="http://localhost:4000/assets/will_be.jpg" alt="完全体" /><em>完全体</em></p>
+
+<p>如果我最后放弃改进它，你可以在<a href="https://github.com/yiyizym/contacts" target="_blank">这里</a>找到源码，然后自己作修改。</p>
+
+<p>这件事情的由来是，公司的设计师在之前的项目里想实现一个跟微信通讯录一样的页面。我没多少把握能在 web 端实现跟微信原生一样的功能效果：可以想象东西做出来能覆盖微信原生 80% 的功能，但剩下的 20% 会被设计师挑刺当成是 bug ，（比如姓氏的正确分类，比如多个同姓的人的先后排序，比如多音字的处理，比如姓氏首字母切换的效果），要实现这 20% 的功能效果很费力气。所以当时就明说要做到一模一样有困难，要么多给我点时间做，要么做一个十分简单的带个搜索功能的列表。最终选了后者。</p>
+
+<p>这周处于迭代中间，有点空闲时间，回想这个通讯录功能，感觉可以做做。于是先到网上搜搜有没有现成可靠的插件，发现竟然没有。</p>
+
+<p>为什么这个功能会没有人做呢？忽然就产生自己来做一个的想法。要是做出来能用，也是挺好的。</p>
+
+<p>这个功能（或者说是前端插件），首先是要方便 Rails 用户使用，假设有一个不怎么懂前端的后端工程师，他只需要做一件事：提供一个联系人数组，每个元素有 id/name/url 等等属性就行。其余的事情交给这个插件。</p>
+
+<p>然后我打算只用原生 javascript 实现所有的功能。这样可以练习一下在没有 jQuery/underscore 的情况下写代码。</p>
+
+<p>然后是把这个功能做正确：</p>
+
+<ul>
+  <li>联系人按姓名正确分类</li>
+  <li>点索引要跳转到正确的分类</li>
+  <li>当前类别要在顶栏显示</li>
+  <li>要有检索过滤功能</li>
+</ul>
+
+<p>以上目标在动手前先写下来，然后一个个地实现，这样在断断续续的开发中也不会乱了优先级。</p>
+
+<p>真正动手时遇到几个问题：</p>
+
+<ul>
+  <li>把中文姓氏正确分类
+ 最初想法是找一个常用汉字与拼音一一对应的哈希表，遇到中文只需要查查表就行，虽然要引入大约十几KB的数据，但查表时间复杂度低。可惜找了一圈没找到合适的。</li>
+</ul>
+
+<p>后来在 ruby-china 论坛找到一个聪明的方法，用几行代码就可以找到中文字的拼音首字母。我在以下几个环境测试了下都没有问题：</p>
+
+<ul>
+  <li>
+    <p>iOS 10 的 safari</p>
+  </li>
+  <li>
+    <p>iOS 10 的微信，版本 6.3.30</p>
+  </li>
+  <li>
+    <p>android 5.0 的 chrome ， 版本 51</p>
+  </li>
+  <li>
+    <p>android 5.0 的微信，版本 6.3.30</p>
+  </li>
+  <li>
+    <p>点击索引跳转到相应类别
+ 这个用 html 原生的 anchor 实现，灵感来自 MDN 。</p>
+  </li>
+  <li>
+    <p>实时更新当前类别
+ 要随着页面滚动更新顶栏的当前类别，不可避免要监听页面的 scroll 事件。 scroll 事件会在页面滚动过程中被频繁触发，可以用 underscore 的 throttle 来限制因事件触发而调用其他方法的频率，但我不想引入 underscore 。
+ 在 MDN 上看到优化后的监听 scroll 事件的方式，思路是利用 requestAnimationFrame 方法设置开关，这个方法会在浏览器渲染下一帧前调用。也就是说可以利用它使得由 scroll 事件触发执行的事件在每一帧都只被执行一次。</p>
+  </li>
+  <li>
+    <p>图标
+ 实现搜索功能才发现没有搜索常用的“放大镜”图标，无论是使用字体图标还是 svg/png 图标，都意味着又得引入别的资源。看样子这个图标不就是个圆圈加根棍子么？自己动手用CSS画。</p>
+  </li>
+</ul>
+
+<p>我大致想了下未来这个插件会变成怎样，一是要把UI做得跟微信差不多，现在的太朴素了点。</p>
+
+<p>然后对同属一个类别下的联系人排序。排序是个有意思的工作，要选那些可以实现快速插入新元素的算法。</p>
+
+<p>不过在此之前，得先写一篇介绍这个插件的文章，宣传一下这个好东西。我现在很想在付出更大努力前，想办法知道值不值得。</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@gmail.com">yiyizym@gmail.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

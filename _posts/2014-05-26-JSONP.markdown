@@ -1,0 +1,95 @@
+---
+layout: post
+title: 一个应用JSONP的例子
+description: "ADS上一个JSONP的例子，服务器得知请求端函数名的具体实现"
+date: 2014-05-26 16:47:38
+keywords: ADS, JSONP, script标签、服务器
+categories: frontend
+---
+javascript出于安全考虑，禁止跨域访问资源。跨域是指以下情况：各级域名、端口、协议有任何一处不相同。
+
+因此AJAX是不能跨域请求数据的。但在页面中载入来源指向其他域的 script 标签却可以跨域下载javascript脚本。这种使用 script 标签从别的域请求数据的技术又叫JSONP。
+
+JSONP只能用 GET 方式获取数据。
+
+在ADS这本书中也提到JSONP，作者使用动态生成的 script 元素来模拟XMLHttpRequest对象。
+
+下面是实现的部分关键代码，初次看到的时候还没有看懂，特别是服务器端用PHP写的返回数据部分。
+
+	
+    XssHttpRequest.prototype ={
+    	//...省略部分代码
+    	open:function(url,timeout){
+
+            //...省略部分代码
+            
+            //以下代码将一个名为XSS_HTTP_REQUEST_CALLBACK的变量附加到URL
+            //传给服务器，用以指定回调函数的名称
+			this.url = url
+				+ ((url.indexOf("?") != -1) ? "&" : "?")
+				+ "XSS_HTTP_REQUEST_CALLBACK="
+				+ this.requestID
+				+ "_CALLBACK";
+                
+            //...省略部分代码
+            
+            send:function(){
+			 //...省略部分代码
+             //以下代码生成javascript标签，但并没有赋给它src属性值，也没有将它加入DOM。
+			this.scriptObject = document.createElement("script");
+			this.scriptObject.setAttribute("id",this.requestID);
+			this.scriptObject.setAttribute("type","text/javascript");
+            
+             //...省略部分代码
+             //以下代码十分关键，在window环境中创建（声明）一个名为
+             //this.requestID+"_CALLBACK"的方法，JSON参数是服务器返回的数据
+             window[this.requestID + "_CALLBACK"] = function(JSON){
+				//...省略部分代码
+
+				requestObject.responseJSON = JSON;
+			}
+			//...省略部分代码
+            //此时再设置script标签的src属性及将其进入DOM
+			this.scriptObject.setAttribute("src",this.url);
+			var head = document.getElementsByTagName("head")[0];
+			head.appendChild(this.scriptObject);
+            
+            //...省略部分代码
+            //以下是回调函数，
+            req.onreadystatechange = function() {
+                switch (req.readyState) {
+                   //...省略部分代码
+                    case 3:
+                        // Interactive
+                        if(options.ineractiveListener) {
+                            options.ineractiveListener.apply(req,arguments);
+                        }
+                        break;
+					//...省略部分代码
+                }
+            };
+            
+服务器端PHP可以这样写：
+	
+    <?php
+    header('Content-type: text/javascript');
+    //只允许回调函数存在数字、字母和下划线
+    $callback = preg_replace(
+    	'/[^A-Z0-9_]/i',
+        '',
+        $_GET[’XSS_HTTP_REQUEST_CALLBACK‘]
+    );
+    if($[callback]){
+    	$date = date('r');
+        echo
+    //这是PHP输出字符串的一种方法，这里的 JSON只是作为定界符
+    <<<JSON
+    //使用大括号可在字符串中输出变量，所以以下内容其实是一个函数调用，
+    //传入一个json对象作为参数
+    {$callback}({
+    	message: 'response on {$date}'
+    });
+    JSON;
+    }
+    ?>
+                

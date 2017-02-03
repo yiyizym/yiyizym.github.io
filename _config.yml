@@ -14,7 +14,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: jude's life
-author: jude
+author: jude zhu
 email: yiyizym@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   记录生活的点点滴滴
@@ -25,6 +25,9 @@ github_username:  yiyizym
 
 # google_analytics
 google_analytics: UA-88024669-1
+
+# service_worker
+service_worker: true
 
 # Build settings
 markdown: kramdown

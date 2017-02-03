@@ -1,0 +1,835 @@
+<!doctype html>
+<html class="theme-next  ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/libs/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+    <meta name="description" content="记录生活的点点滴滴" />
+
+
+
+  <meta name="keywords" content="algorithm,heap sort,ruby," />
+
+
+
+  <link rel="alternate" href="/atom.xml" title="jude's life" type="application/atom+xml" />
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="写写堆排序">
+<meta property="og:url" content="http://judes.me/2016/07/31/heap-sort/index.html">
+<meta property="og:site_name" content="jude's life">
+<meta property="og:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
+<meta property="og:updated_time" content="2016-07-31T09:33:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="写写堆排序">
+<meta name="twitter:description" content="为什么知道原理还是写不出正确的程序呢？(系列)">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'hide'
+  };
+</script>
+  <title> 写写堆排序 | jude's life </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-88024669-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">jude's life</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-next-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+  
+  
+  <article class="post post-type-normal " data-path="/2016/07/31/heap-sort/" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              写写堆排序
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-07-31T14:16:09+08:00" content="Jul 31 2016">
+            Jul 31 2016
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/tech/" itemprop="url" rel="index">
+                  <span itemprop="name">tech</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h2 id="原理">原理</h2><p>堆排序中的“堆”，它是：</p>
+<ul>
+<li>一棵完全二叉树</li>
+<li>树的每个节点都不比它的两个子节点小（有序）</li>
+</ul>
+<p>由此得到最有用的信息：根节点是二叉树里面最大的元素</p>
+<p>堆排序的过程是：</p>
+<ul>
+<li>构造有序的堆</li>
+<li>输出并删除最大的元素</li>
+<li>重复前面两个步骤</li>
+</ul>
+<h2 id="联想">联想</h2><ul>
+<li>用数组表示二叉树，数组从索引 1 开始记录元素。这样做可以很方便地找到完全二叉树中某个节点的及其两个子节点。</li>
+<li>从下往上地把二叉树变成堆</li>
+<li>交换最大的元素与二叉树的最后一个元素的位置，把二叉树的节点数减 1 ，再把二叉树变成堆</li>
+<li>重复上一步骤，直到二叉树只剩下 1 个节点</li>
+</ul>
+<p>把二叉树变成堆涉及一个重要的基本操作：下沉。就是通过不断比较父节点与子节点，如果父节点比子节点小，就交换两者的位置。如果从根节点开始下沉，会得到整棵树中最大的节点。</p>
+<pre><code>def sink(arr, <span class="keyword">index</span>, len)
+  <span class="keyword">while</span> <span class="keyword">index</span> * <span class="number">2</span> &lt;= len
+    child_index = <span class="keyword">index</span> * <span class="number">2</span> 
+    <span class="keyword">if</span> child_index &lt; len &amp;&amp; arr[child_index] &lt; arr[child_index + <span class="number">1</span>]
+      child_index += <span class="number">1</span>
+    <span class="keyword">end</span>
+    <span class="keyword">break</span> <span class="keyword">nil</span> <span class="keyword">if</span> arr[child_index] &lt;= arr[<span class="keyword">index</span>]
+    exchange(arr, <span class="keyword">index</span>, child_index)
+    <span class="keyword">index</span> = child_index * <span class="number">2</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+def exchange(arr, i, j)
+  arr[i], arr[j] = arr[j], arr[i]
+<span class="keyword">end</span>
+</code></pre><h2 id="用法">用法</h2><pre><code><span class="shebang">#!/usr/bin/env ruby</span>
+sorted_array = HS.sort(array)
+</code></pre><h2 id="大体架构">大体架构</h2><pre><code><span class="class"><span class="keyword">module</span> <span class="title">HS</span></span>
+  extend <span class="keyword">self</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">sort</span><span class="params">(array)</span></span>
+    heap_sort(array)
+  <span class="keyword">end</span>
+  private
+  <span class="function"><span class="keyword">def</span> <span class="title">heap_sort</span><span class="params">(array)</span></span>
+    <span class="keyword">return</span> array <span class="keyword">if</span> array.length &lt; <span class="number">2</span>
+    <span class="comment"># 构建符合格式的数组</span>
+    <span class="comment"># 构建堆</span>
+    <span class="comment"># 排序</span>
+
+    array[<span class="number">1</span>..-<span class="number">1</span>]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="构建符合格式的数组">构建符合格式的数组</h2><p>这个很简单，把数组第 1 个元素插入到数组末尾，然后把第 1 个元素置为 nil</p>
+<pre><code><span class="built_in">array</span>[<span class="number">0</span>], <span class="built_in">array</span>[<span class="built_in">array</span>.length] = nil, <span class="built_in">array</span>[<span class="number">0</span>]
+</code></pre><h2 id="构建堆">构建堆</h2><p>把符合格式的数组看成是一棵完全二叉树，要构建堆的话，当然可以从数组的第 2 个元素开始下沉，一直到最后一个元素。</p>
+<p>但这样的效率很低，单说最大可能交换的次数，假设 N 是树的高度，最大可能的交换次数一共是：</p>
+<pre><code><span class="number">2</span>^<span class="number">0</span>*(N-<span class="number">1</span>)+<span class="number">2</span>^<span class="number">1</span>*(N-<span class="number">2</span>)+...+<span class="number">2</span>^(N-<span class="number">2</span>)*<span class="number">1</span>
+</code></pre><p>参考黑帮发展的形式可以得到比较好的思路：不用管一众小黑帮的喽啰，只要收拾了它们的头目，就可以掌管这些黑帮。一开始就要找到小黑帮的头目，把他们打沉了，再往上找他们的头目。这样最大可能交换的次数一共是：</p>
+<pre><code><span class="number">2</span>^<span class="number">0</span>+<span class="number">2</span>^<span class="number">1</span>+...+<span class="number">2</span>^(N-<span class="number">2</span>)
+</code></pre><p>实现这个技巧的代码也很简单：</p>
+<pre><code><span class="function">def <span class="title">make_heap</span><span class="params">(<span class="built_in">array</span>)</span>
+  index </span>= (<span class="built_in">array</span>.length - <span class="number">1</span>) / <span class="number">2</span>
+  <span class="keyword">while</span> index &gt;= <span class="number">1</span>
+    sink(<span class="built_in">array</span>, index, <span class="built_in">array</span>.length - <span class="number">1</span>)
+    index -= <span class="number">1</span>
+  end
+  <span class="built_in">array</span>
+end
+</code></pre><h2 id="排序">排序</h2><p>我们最终要得到一个从小到大的数组，得不断地把堆中最大的元素移到数组的末尾，缩小堆的大小之后，再使堆有序。</p>
+<pre><code>def _sort(<span class="built_in">array</span>)
+  <span class="built_in">len</span> = <span class="built_in">array</span>.length - <span class="number">1</span>
+  <span class="keyword">while</span> <span class="built_in">len</span> &gt; <span class="number">1</span>
+    exchange(<span class="built_in">array</span>, <span class="number">1</span>, <span class="built_in">len</span>)
+    <span class="built_in">len</span> -= <span class="number">1</span>
+    sink(<span class="built_in">array</span>, <span class="number">1</span>, <span class="built_in">len</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><h2 id="完整的代码，加测试用例如下：">完整的代码，加测试用例如下：</h2><pre><code><span class="comment">#!/usr/bin/env ruby</span>
+
+module HS
+  extend self
+  def<span class="function"> sort(</span>array<span class="function">)</span>
+   <span class="function"> heap_sort(</span>array<span class="function">)</span>
+  end
+ <span class="keyword"> private</span>
+  def<span class="function"> heap_sort(</span>array<span class="function">)</span>
+   <span class="instruction"> return </span>array<span class="instruction"> if </span>array.length &lt; 2
+    <span class="comment"># 构建符合格式的数组</span>
+    array<span class="keyword">[</span>0], array<span class="keyword">[</span>array.length] = nil, array<span class="keyword">[</span>0]
+    <span class="comment"># 构建堆</span>
+   <span class="function"> make_heap(</span>array<span class="function">)</span>
+    <span class="comment"># 排序</span>
+   <span class="function"> _sort(</span>array<span class="function">)</span>
+
+    array<span class="keyword">[</span>1..-1]
+  end
+
+  def<span class="function"> make_heap(</span>array<span class="function">)</span>
+    index =<span class="function"> (</span>array.length - 1<span class="function">)</span> / 2
+    while index &gt;= 1
+     <span class="function"> sink(</span>array, index, array.length - 1<span class="function">)</span>
+      index -= 1
+    end
+   <span class="instruction"> array
+</span>  end
+
+  def<span class="function"> _sort(</span>array<span class="function">)</span>
+    len = array.length - 1
+    while len &gt; 1
+     <span class="function"> exchange(</span>array, 1, len<span class="function">)</span>
+      len -= 1
+     <span class="function"> sink(</span>array, 1, len<span class="function">)</span>
+    end
+  end
+
+  def<span class="function"> sink(</span>arr, index, len<span class="function">)</span>
+    while index * 2 &lt;= len
+      child_index = index * 2
+     <span class="instruction"> if </span>child_index &lt; len &amp;&amp; arr<span class="keyword">[</span>child_index] &lt; arr<span class="keyword">[</span>child_index + 1]
+        child_index += 1
+      end
+      break nil<span class="instruction"> if </span>arr<span class="keyword">[</span>child_index] &lt;= arr<span class="keyword">[</span>index]
+     <span class="function"> exchange(</span>arr, index, child_index<span class="function">)</span>
+      index = child_index
+    end
+  end
+
+  def<span class="function"> exchange(</span>arr, i, j<span class="function">)</span>
+    arr<span class="keyword">[</span>i], arr<span class="keyword">[</span>j] = arr<span class="keyword">[</span>j], arr<span class="keyword">[</span>i]
+  end
+
+end
+<span class="instruction">
+if </span>__FILE__ == $0
+  require 'test/unit'
+  class TestHS &lt; Test::Unit::TestCase
+    def test_0
+      input = <span class="keyword">[</span>]
+      expected = <span class="keyword">[</span>]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'empty<span class="instruction"> array </span>not equal'
+    end
+    def test_1_0
+      input = <span class="keyword">[</span>0]
+      expected = <span class="keyword">[</span>0]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'
+    end
+    def test_1_1
+      input = <span class="keyword">[</span>1]
+      expected = <span class="keyword">[</span>1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'one item<span class="instruction"> array </span>not equal'
+    end
+    def test_2_0
+      input = <span class="keyword">[</span>0,1]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'two iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_2_1
+      input = <span class="keyword">[</span>1,0]
+      expected = <span class="keyword">[</span>0,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'two iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_2_2
+      input = <span class="keyword">[</span>1,1]
+      expected = <span class="keyword">[</span>1,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'two iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_0
+      input = <span class="keyword">[</span>0,1,2]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_1
+      input = <span class="keyword">[</span>0,2,1]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_2
+      input = <span class="keyword">[</span>2,1,0]
+      expected = <span class="keyword">[</span>0,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_3
+      input = <span class="keyword">[</span>2,1,1]
+      expected = <span class="keyword">[</span>1,1,2]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_3_4
+      input = <span class="keyword">[</span>1,1,1]
+      expected = <span class="keyword">[</span>1,1,1]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'three iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_4_0
+      input = <span class="keyword">[</span>0,1,2,3]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'four iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_4_1
+      input = <span class="keyword">[</span>3,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'four iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_4_2
+      input = <span class="keyword">[</span>3,1,2,1]
+      expected = <span class="keyword">[</span>1,1,2,3]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'four iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_10_0
+      input = <span class="keyword">[</span>9,8,7,6,5,4,3,2,1,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'ten iteHS<span class="instruction"> array </span>not equal'
+    end
+    def test_10_1
+      input = <span class="keyword">[</span>9,5,7,3,8,4,6,1,2,0]
+      expected = <span class="keyword">[</span>0,1,2,3,4,5,6,7,8,9]
+      assert_equal<span class="function"> HS.sort(</span>input<span class="function">)</span>, expected, 'ten iteHS<span class="instruction"> array </span>not equal'
+    end
+  end
+end
+</code></pre></span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/algorithm/" rel="tag">#algorithm</a>
+          
+            <a href="/tags/heap-sort/" rel="tag">#heap sort</a>
+          
+            <a href="/tags/ruby/" rel="tag">#ruby</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/02/try-actioncable/" rel="prev">试用 Action Cable</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/29/try-merge-sort/" rel="next">写写归并排序</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="jude zhu" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">jude zhu</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">记录生活的点点滴滴</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">66</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">51</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="menu-item-icon icon-next-feed"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联想"><span class="nav-number">2.</span> <span class="nav-text">联想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法"><span class="nav-number">3.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大体架构"><span class="nav-number">4.</span> <span class="nav-text">大体架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建符合格式的数组"><span class="nav-number">5.</span> <span class="nav-text">构建符合格式的数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建堆"><span class="nav-number">6.</span> <span class="nav-text">构建堆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#排序"><span class="nav-number">7.</span> <span class="nav-text">排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整的代码，加测试用例如下："><span class="nav-number">8.</span> <span class="nav-text">完整的代码，加测试用例如下：</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jude zhu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/libs/jquery/index.js?v=2.1.3"></script>
+  <!-- added by jude -->
+  <script type="text/javascript" src="/js/nav-toggle.js"></script>
+  <script type="text/javascript" src="/js/goto_post.js"></script>
+  <!-- added by jude -->
+
+  
+  
+  
+    
+    
+
+  
+
+
+  
+  
+  <script type="text/javascript" src="/libs/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/js/motion_fallback.js?v=0.4.5.1" id="motion.fallback"></script>
+
+
+
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

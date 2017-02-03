@@ -1,0 +1,666 @@
+<!doctype html>
+<html class="theme-next  ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/libs/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+    <meta name="description" content="记录生活的点点滴滴" />
+
+
+
+  <meta name="keywords" content="条件概率,统计,贝叶斯定理," />
+
+
+
+  <link rel="alternate" href="/atom.xml" title="jude's life" type="application/atom+xml" />
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="如果没有贝叶斯定理，怎样得到大致正确的答案呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模糊的正确">
+<meta property="og:url" content="http://judes.me/2016/12/04/simplify-bayes-theorem/index.html">
+<meta property="og:site_name" content="jude's life">
+<meta property="og:description" content="如果没有贝叶斯定理，怎样得到大致正确的答案呢？">
+<meta property="og:updated_time" content="2016-12-29T23:16:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模糊的正确">
+<meta name="twitter:description" content="如果没有贝叶斯定理，怎样得到大致正确的答案呢？">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'hide'
+  };
+</script>
+  <title> 模糊的正确 | jude's life </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-88024669-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">jude's life</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-next-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+  
+  
+  <article class="post post-type-normal " data-path="/2016/12/04/simplify-bayes-theorem/" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              模糊的正确
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-12-04T21:30:28+08:00" content="Dec 4 2016">
+            Dec 4 2016
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/life/" itemprop="url" rel="index">
+                  <span itemprop="name">life</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：</p>
+<blockquote>
+<p>如果在每 1000 人中有 1 个人携带艾滋病的病毒(HIV)，<br> 再假设有一种检查可以百分百地诊断出真的携带该病毒的人;<br> 最后，假设这个检查有 5% 的可能性，把没有携带者说成是有。<br> 也就是说，这项检查在没有携带 HIV 的人中，也会错误地检测出有 5% 的人是携带病毒者。<br> 假设我们随便找一个人来进行这项检查，得到了呈阳性反应，亦即此人为 HIV 携带者。<br> 假定我们不知道这个人的患病史，那么他真的是 HIV 携带者的概率是多少呢?</p>
+</blockquote>
+<p>如果凭直觉大概会猜答案是 95% 。</p>
+<p>如果知道这是一道典型的条件概率题目，大概会认真对待：翻开书本，复习一下条件概率，然后套公式（贝叶斯定理）：</p>
+<ul>
+<li><p>首先找准事件：<br>设 H 为携带 HIV 事件<br>设 N 为没有携带 HIV 事件<br>设 + 为检测为阳性事件</p>
+</li>
+<li><p>然后可以得到：<br>P(H) = 0.1%<br>P(N) = 1 - P(H) = 99.9%<br>携带者接受检测，并检测出阳性的概率:<br>P(+|H) = 100%<br>没有携带者接受检测，并检测出阳性的概率:<br>P(+|N) = 5%</p>
+</li>
+<li><p>问题是 P(H|+) 等于多少</p>
+</li>
+<li><p>得到：<br>P(H|+) = P(+,H) / P(+) = P(+|H) <em> P(H) / P(+)<br>= P(+|H) </em> P(H) / (P(+,H) + P(+,N))<br>= P(+|H) <em> P(H) / (P(+|H) </em> P(H) + P(+|N) <em> P(N))<br>= 1 </em> 0.1% / (1 <em> 0.1% + 5% </em> 99.9%)<br>≈ 0.01963</p>
+</li>
+</ul>
+<p>那么新的问题又来了，如果没学过（或者忘记了）条件概率，有没有办法得出“正确的”答案呢？</p>
+<p>办法还是有的，有一种很简单的办法，能得到大致正确的答案。</p>
+<p>关键思路是：把概率化作统计。</p>
+<p>还记得题目问的是什么吗？<strong>一个检测呈阳性的人真实患病的概率有多大。这个问题可以略为简化一下，看成是真实患病的人占被检出阳性的人的比例有多大</strong>。</p>
+<ul>
+<li><p>首先随机找到 10,000 个人，根据条件，我们可以假设其中有 10 人患有艾滋病；</p>
+</li>
+<li><p>让这 10，000 人接受检查，那么这患病的 10 人一定会被检出阳性；</p>
+</li>
+<li><p>被检出阳性的人一共有多少呢？除去那真实患病的 10 人，还有不患病的 9990 人，他们当中被检出阳性的人数是 9990 * 5% ≈ 500 （要是算是 499.5 的话，得到的答案跟前面的方法是一样的）</p>
+</li>
+<li><p>那么这个比例就是： 10 / (10 + 500) ≈ 0.01961</p>
+</li>
+</ul>
+<p>这个简单的方法并不总能都得到正确答案，但足以用来评估大概数字，做出正确决策（起码不会猜 95% ^_^ ）。实际上这个方法得到的概率只会比正确答案要高，不会低。</p>
+<p>最后再来一个例子展示怎样使用这个简单的方法帮助我们做出正确判断：</p>
+<blockquote>
+<p>近来发生的多起恐怖活动中，某教人士所占比例非常大，导致人们大都信仰某教的人抱有成见：信仰某教的人很有可能是恐怖份子。问题来了，信仰某教的人是恐怖份子的概率有多大呢？<br> 已知的条件有：1, 假设恐怖份子都信仰某教 ；2, 全球有 1/100 人口信仰某教；3, 恐怖份子人数占全球人口 1/10,000 。</p>
+</blockquote>
+<p>按照“把概率化作统计”的思路：</p>
+<ul>
+<li><p>假设全球有 100，000 人口，那么当中的恐怖份子有 10 人，信仰某教的人数是 1,000 ，所以得到信仰某教的人是恐怖份子的概率只有 10 / 1,000 = 1%</p>
+</li>
+<li><p>考虑到信仰某教的实际人口比例比 1/100 要高，而恐怖份子则要比 1/10，000 低，所以这种成见是没有数据支持的。</p>
+</li>
+</ul>
+<p><strong>重要</strong><br>本文所述的简单方法，出自《x的奇幻之旅》</p>
+<p><strong>参考</strong></p>
+<ul>
+<li><a href="https://zh.wikipedia.org/zh-cn/条件概率" target="_blank" rel="external">条件概率</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/贝叶斯定理" target="_blank" rel="external">贝叶斯定理</a></li>
+</ul>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/条件概率/" rel="tag">#条件概率</a>
+          
+            <a href="/tags/统计/" rel="tag">#统计</a>
+          
+            <a href="/tags/贝叶斯定理/" rel="tag">#贝叶斯定理</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/17/my-2016/" rel="prev">逝去的 2016</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/26/wx-contacts/" rel="next">web 版微信通讯录</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="jude zhu" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">jude zhu</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">记录生活的点点滴滴</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">66</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">51</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="menu-item-icon icon-next-feed"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jude zhu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/libs/jquery/index.js?v=2.1.3"></script>
+  <!-- added by jude -->
+  <script type="text/javascript" src="/js/nav-toggle.js"></script>
+  <script type="text/javascript" src="/js/goto_post.js"></script>
+  <!-- added by jude -->
+
+  
+  
+  
+    
+    
+
+  
+
+
+  
+  
+  <script type="text/javascript" src="/libs/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/js/motion_fallback.js?v=0.4.5.1" id="motion.fallback"></script>
+
+
+
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

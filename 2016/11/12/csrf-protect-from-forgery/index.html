@@ -1,0 +1,672 @@
+<!doctype html>
+<html class="theme-next  ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/libs/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+    <meta name="description" content="记录生活的点点滴滴" />
+
+
+
+  <meta name="keywords" content="CSRF,frontend,rails," />
+
+
+
+  <link rel="alternate" href="/atom.xml" title="jude's life" type="application/atom+xml" />
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="protect_from_forgery 方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rails 的 CSRF 对策">
+<meta property="og:url" content="http://judes.me/2016/11/12/csrf-protect-from-forgery/index.html">
+<meta property="og:site_name" content="jude's life">
+<meta property="og:description" content="protect_from_forgery 方法">
+<meta property="og:updated_time" content="2016-11-26T09:51:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Rails 的 CSRF 对策">
+<meta name="twitter:description" content="protect_from_forgery 方法">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'hide'
+  };
+</script>
+  <title> Rails 的 CSRF 对策 | jude's life </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-88024669-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">jude's life</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-next-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+  
+  
+  <article class="post post-type-normal " data-path="/2016/11/12/csrf-protect-from-forgery/" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              Rails 的 CSRF 对策
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-11-12T22:33:28+08:00" content="Nov 12 2016">
+            Nov 12 2016
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/tech/" itemprop="url" rel="index">
+                  <span itemprop="name">tech</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</p>
+<p>原有的流程十分复杂，移植时想着后台代码能不改就不改，前端代码能重用的就重用。</p>
+<p>其中有一步是前端提交一个表单，后台根据处理结果，分别重定向到成功和失败页面。</p>
+<p>在 AJAX 流行之前，这是标准的做法（简单且重定向有效防止重复提交表单）。</p>
+<p>如今要用 AJAX 模拟表单提交很容易，但接下来要重定向页面就有点困难了。简单的做法就是创建一个表单元素，然后塞一些 input 元素进去，再调用表单元素的 submit 方法：</p>
+<pre><code><span class="keyword">var</span> <span class="keyword">form</span> = document.createElement('<span class="keyword">form</span>');
+<span class="keyword">form</span>.method = '<span class="keyword">post</span>'
+<span class="keyword">form</span>.action = '/where/to/<span class="keyword">post</span>'
+<span class="keyword">var</span> input_1 = document.createElement('<span class="keyword">input</span>');
+input_1.name = 'name_1';
+input_1.<span class="keyword">type</span> = 'hidden';
+input_1.val = 'val_1';
+
+<span class="keyword">form</span>.appendChild(input_1);
+document.body.appendChild(<span class="keyword">form</span>);
+
+<span class="keyword">form</span>.submit();
+</code></pre><p>(想来想去，与其写这么多 javascript ，还不如直接在 html 里放一个隐藏的表单元素。自己纯粹就是闲的)</p>
+<p>单看上面这段代码应该没问题，但实际上有很大的安全隐患，在 Rails 中会提交失败。</p>
+<p>这个安全隐患就是提交到这个路径 ‘/where/to/post’ 的表单很容易被伪造，后台没办法区分伪造的表单和正常的表单。这就是 cross site request forgery, <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29" target="_blank" rel="external">CSRF</a> 。</p>
+<p>事情得从头说起。</p>
+<p>后台为识别用户的操作，可以在每个操作前都要求用户输入用户名和密码，这样做太麻烦了，为方便用户，后台和浏览器共同发展出一套只需输入一次用户名密码就能在一段时间内记住用户身份的 session 机制。这套机制依赖于保存在浏览器里的 cookie 。</p>
+<p>因此如果 cookie 漏泄了，被用来伪造用户身份的话，后台没有办法区分哪些是假冒操作，哪些正常操作。</p>
+<p>CSRF 正是利用了这个弱点。</p>
+<p>Rails 为防止 CSRF ，默认会检查除 GET 、 HEAD 之外的其他请求当中的请求头或请求正文，看里面有没有一个 token 字段，如果没有或者跟 session 中保存的值不一致，就判定为非法请求。</p>
+<p>Rails 的这一套机制覆盖了多种发出请求的方式：</p>
+<p><strong> 在前端 </strong></p>
+<ul>
+<li><p>jQuery</p>
+<p>如果使用 jQuery 的 ajax 方法，那么需要引入 jquery-ujs.js 。这个文件调用 <code>jQuery.ajaxPrefilter</code> 方法，为所有非跨域的请求（跨域的请求，后台通过 CORS ，检查 Origin 字段避免非法请求来源），在其请求头中加入一个 X-CSRF-Token 字段。 </p>
+<p>X-CSRF-Token 的值来自页面中的一个 meta 标签，这个标签在 layout 中通过设置：<code>&lt;%= csrf_meta_tags %&gt;</code> 生成。</p>
+</li>
+<li><p>表单提交</p>
+<p>如果引入了 jQuery 和 jquery-ujs.js ，所有的 form 元素会在页面初始化时被塞进一个隐藏的 token 字段，它的值同样来自 meta 标签。</p>
+</li>
+</ul>
+<ul>
+<li><p>form_tag</p>
+<p>如果没有引入 jquery-ujs.js 或不能用 javascript ，也可以使用 <code>form_tag</code>, <code>form_for</code> helper 方法，它们也会根据上述情况加入 token 字段。</p>
+</li>
+</ul>
+<p><strong> 在后台 </strong></p>
+<p>ActionPack 提供一个 <strong> protect_from_forgery </strong> 方法，用脚手架生成的 Rails 应用，会在 ApplicationController 调用这个方法：</p>
+<pre><code><span class="comment">#Prevent CSRF attacks by raising an exception.</span>
+protect_from_forgery <span class="keyword">with</span>: :exception
+</code></pre><p>它做两件事情：</p>
+<ul>
+<li><p>在处理请求前，检验请求是不是 GET 或 HEAD 请求，是不是关闭了 protect_from_forgery ，请求头中的 X-CSRF-Token 字段是否正确， 请求正文中的 authenticity_token 字段是否正确，只要满足以上四个条件的一个，校验就算通过，可以处理请求；一个都不满足的话，就抛出异常。</p>
+</li>
+<li><p>在处理完请求，返回数据前，如果是 GET 请求并且不是 xhr 请求，抛出异常，不返回数据。这样做是为了防止有人使用 script 标签加载内容，并盗窃其中敏感的信息（因为 script 加载完成后会执行）。</p>
+</li>
+</ul>
+<p><strong> 总结 </strong></p>
+<p>Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CSRF/" rel="tag">#CSRF</a>
+          
+            <a href="/tags/frontend/" rel="tag">#frontend</a>
+          
+            <a href="/tags/rails/" rel="tag">#rails</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/26/wx-contacts/" rel="prev">web 版微信通讯录</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/07/snowflake-method/" rel="next">雪花分形</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="jude zhu" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">jude zhu</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">记录生活的点点滴滴</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">66</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">51</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="menu-item-icon icon-next-feed"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jude zhu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/libs/jquery/index.js?v=2.1.3"></script>
+  <!-- added by jude -->
+  <script type="text/javascript" src="/js/nav-toggle.js"></script>
+  <script type="text/javascript" src="/js/goto_post.js"></script>
+  <!-- added by jude -->
+
+  
+  
+  
+    
+    
+
+  
+
+
+  
+  
+  <script type="text/javascript" src="/libs/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/js/motion_fallback.js?v=0.4.5.1" id="motion.fallback"></script>
+
+
+
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

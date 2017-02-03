@@ -1,0 +1,1008 @@
+<!doctype html>
+<html class="theme-next  ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/libs/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+    <meta name="description" content="记录生活的点点滴滴" />
+
+
+
+  <meta name="keywords" content="ruby,sinatra," />
+
+
+
+  <link rel="alternate" href="/atom.xml" title="jude's life" type="application/atom+xml" />
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sinatra 0.1.0 源码学习">
+<meta property="og:url" content="http://judes.me/2016/07/10/sinatra-learning-0-1-0/index.html">
+<meta property="og:site_name" content="jude's life">
+<meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+<meta property="og:updated_time" content="2016-08-13T01:53:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sinatra 0.1.0 源码学习">
+<meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'hide'
+  };
+</script>
+  <title> sinatra 0.1.0 源码学习 | jude's life </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-88024669-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">jude's life</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-next-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+  
+  
+  <article class="post post-type-normal " data-path="/2016/07/10/sinatra-learning-0-1-0/" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              sinatra 0.1.0 源码学习
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-07-10T14:40:17+08:00" content="Jul 10 2016">
+            Jul 10 2016
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/ruby/" itemprop="url" rel="index">
+                  <span itemprop="name">ruby</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 2 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>列一下本人运行 sinatra 0.1.0 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="change_log">change log</h2><ul>
+<li>支持设置运行环境</li>
+<li>支持 session</li>
+<li>支持在路由的资源路径中传入变量</li>
+<li>增加测试用例</li>
+<li>支持直接输出静态资源</li>
+<li>支持渲染 layout</li>
+<li>增加处理请求完成后的事件回调</li>
+<li>支持后台日志实时打印</li>
+</ul>
+<h2 id="loader-rb">loader.rb</h2><p>sinatra 用 Loader 模块来加载/重新加载文件。用到 Set ，无需担心重复加载相同的文件。把 <code>load_file</code> 重命名为 <code>load_files</code>，也拯救了有强迫症的程序员。</p>
+<p>sinatra 接下来将会这样使用 Loader ：</p>
+<pre><code>Sinatra::Loader<span class="class">.load_files</span> Dir.<span class="function"><span class="title">glob</span><span class="params">(SINATRA_ROOT + <span class="string">'/lib/sinatra/core_ext/*.rb'</span>)</span></span>
+</code></pre><p>要注意如果 core_ext 目录下有多个文件， Dir.glob 是不保证按一定顺序（比如字母顺序）加载文件的，讨论<a href="http://stackoverflow.com/questions/6220753/does-dir-glob-guarantee-the-order" target="_blank" rel="external">见此</a>， 1.8.7 版本的 ruby ，其 Set 也不保证 each 的顺序一致，来源<a href="http://stackoverflow.com/questions/6590152/is-the-each-iterator-in-ruby-guaranteed-to-give-the-same-order-on-the-same-elem" target="_blank" rel="external">见此</a>。</p>
+<h2 id="kernel-rb">kernel.rb</h2><p>这里扩展了一个很有意思的方法 silence_warnings ，如你所见，就是屏蔽警告用的，用法如下：</p>
+<pre><code>silence_warnings <span class="operator"><span class="keyword">do</span>
+  <span class="keyword">value</span> = noisy_call # <span class="keyword">no</span> <span class="keyword">warning</span> voiced
+<span class="keyword">end</span></span>
+</code></pre><p>sinatra 只想在调用 silence_warnings 时屏蔽警告，其他时候显示警告。有时候我们也有类似的需求：调用某个方法之前改变某个配置，调用完了再把配置改回去。这涉及到保存配置和处理异常，可以借鉴 sinatra 在此处的做法。</p>
+<h2 id="继承关系及至对象模型">继承关系及至对象模型</h2><p>sinatra 在 core_ext 目录下，先后扩展了 Class, Module, Kernel, Object, Hash 等多个类，它们之间是什么关系呢？这个问题又牵扯到另一个终极问题： ruby 的对象模型是什么？当你清楚 ruby 的对象模型后，众多类之间的关系就不在话下了。</p>
+<p>空说无益，先教大家几个探索对象模型的方法，打开 irb ，写两个简单的类：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">A</span>;</span> <span class="keyword">end</span>
+<span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="inheritance">&lt; <span class="parent">A</span></span>;</span> <span class="keyword">end</span>
+</code></pre><p>我们知道 B 继承自 A ，B 有一个方法可以显示自己的父类是谁：</p>
+<pre><code>B.superclass <span class="comment">#=&gt; A</span>
+<span class="comment"># 当 B 继承了 A ，我们就说 A 是 B 的超类（这是 ruby 的中文术语吧，一般都叫父类的）</span>
+</code></pre><p>我们从 B 实例化出一个对象 b ，b 也有方法可以打印自己是属于哪个类的实例：</p>
+<pre><code><span class="tag">b</span> = B<span class="class">.new</span>
+<span class="tag">b</span><span class="class">.class</span> #=&gt; B
+</code></pre><p>我们要知道 ruby 中，类也是实例，如果在类上面调用 class 方法会打印什么呢？</p>
+<pre><code>A.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+B.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+Hash.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+<span class="keyword">Class</span>.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+<span class="keyword">Module</span>.<span class="keyword">class</span> #=&gt; <span class="keyword">Class</span>
+</code></pre><p>就连在 Class 上调用 class 方法也得到 Class 。这里得出一个结论，所有类都是 Class 类的实例。</p>
+<p>我们再回到继承这个话题，除了有办法看到一个类的超类，还有办法看到一个类的祖先链：</p>
+<pre><code>B.ancestors <span class="preprocessor">#=&gt; [B, A, Object, Kernel, BasicObject]</span>
+<span class="preprocessor">#=&gt; 上面的结果是在 ruby <span class="number">2.0</span><span class="number">.0</span> 版本中得到的，你的版本可能有少许不同</span>
+</code></pre><p>可以看到 B 继承自 A ，A 继承自 Object , Object 继承自 Kernel , Kernel 继承自 BasicObject 。嗯，这种说法是不对的，实际上 Object 继承自 BasicObject ， Kernel 模块是被 Object include 进来的：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Object</span> <span class="inheritance">&lt; <span class="parent">BasicObject</span></span></span>
+  <span class="keyword">include</span> <span class="constant">Kernel</span>
+<span class="keyword">end</span>
+</code></pre><p>被 include 进来的模块，都是刚好插入到类的祖先链的超类位置。</p>
+<p>你会发现，几乎所有的类的祖先链都包含 Object, Kernel, BasicObject 这三个类：</p>
+<pre><code>A.ancestors #=&gt; [A, <span class="built_in">Object</span>, Kernel, BasicObject]
+Array.ancestors #=&gt; [Array, Enumerable, <span class="built_in">Object</span>, Kernel, BasicObject]
+Fixnum.ancestors #=&gt; [Fixnum, Integer, Numeric, <span class="built_in">Comparable</span>, <span class="built_in">Object</span>, Kernel, BasicObject]
+<span class="built_in">String</span>.ancestors #=&gt; [<span class="built_in">String</span>, <span class="built_in">Comparable</span>, <span class="built_in">Object</span>, Kernel, BasicObject]
+</code></pre><p>这三个类可是继承链的发源地啊。</p>
+<p>你会发觉我们还没有讲到 Module ， Module 是 Class 的超类：</p>
+<pre><code><span class="keyword">Class</span>.ancestors #=&gt; [<span class="keyword">Class</span>, Module, <span class="keyword">Object</span>, Kernel, BasicObject]
+</code></pre><p>以上是基础版的 ruby 对象模型，其实也没说多少。</p>
+<h2 id="metaid-rb">metaid.rb</h2><p>sinatra 在这个里做了一个相当顶层的——Object——扩展，要理解这样做的目的，首先要明白 ruby 是怎样寻找一个方法的。打开 irb ，输入：</p>
+<pre><code>class A
+  def method_1
+    puts 'I am instance <span class="keyword">method</span>'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>首先要知道：方法都是存放在 类 ，而不是类的实例中的。如果类实例调用了某个方法，而在实例的类中找不到该方法，那么会沿着祖先链一直往上面找。如果最终还是找不到，就会转而调用该类的 method_missing 方法，如果该类没定义 method_missing 方法，也会沿祖先链一直往上找，直到 BasicObject(2.3.1 版 ruby ，1.8.7 版 ruby 是在 Kernel 上定义) 的 method_missing 方法。拿上面的例子来说：</p>
+<pre><code>a = <span class="type">A</span>.<span class="keyword">new</span>
+a.method_1 #=&gt; <span class="symbol">'I</span> am instance method'
+<span class="keyword">class</span> <span class="type">A</span>
+  def method_missing(method_name, *args, &amp;block)
+    puts <span class="string">"you have called method #{method_name}"</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a.method_2 #=&gt; <span class="symbol">'you</span> have called <span class="keyword">method</span> method_2'
+
+<span class="keyword">class</span> <span class="type">B</span> &lt; <span class="type">A</span>; <span class="keyword">end</span>
+
+b = <span class="type">B</span>.<span class="keyword">new</span>
+b.method_1 #=&gt; <span class="symbol">'I</span> am instance method'
+b.method_3 #=&gt; <span class="symbol">'you</span> have called <span class="keyword">method</span> method_3'
+</code></pre><p>有时候我们还会定义这样的方法：</p>
+<pre><code>class A
+  def self.method_4
+    puts 'I am singleton <span class="keyword">method</span> method_4'
+  <span class="keyword">end</span>
+
+  class &lt;&lt; self
+    def method_5
+      puts 'I am singleton <span class="keyword">method</span> method_5'
+    <span class="keyword">end</span>  
+  <span class="keyword">end</span>
+
+  def A.method_6
+    puts 'I am singleton <span class="keyword">method</span> method_6'
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>以上三种方法不同之处只在于名字不同，它们都是类的单例方法（singleton method）。刚说过：“方法都是存放在 类 ，而不是类的实例中的”，单例方法也是如此，它存在于实例的 metaclass 中（或者叫做 eigenclass ，官方称作 singleton class）。metaclass 一直待在我们的视野范围之外，官方没有提供让它们现形的方法， sinatra 要做的就是扩展一套这样的方法。</p>
+<p>metaid.rb 第 6、7 行的写法很帅气，但也很难看懂，稍为整理一下：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">metaclass</span></span>
+  <span class="comment">#1</span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span> <span class="comment">#2</span></span>
+    <span class="comment">#3</span>
+    <span class="keyword">self</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">meta_eval</span> <span class="title">&amp;</span><span class="title">blk</span></span>
+  metaclass.instance_eval &amp;blk
+<span class="keyword">end</span>
+</code></pre><p>分析 metaclass 方法，在 #1 处，如果把 self 打印出来，这个 self 会是 Object 的实例（具体得看是谁调用 metaclass 方法）；在 #2 处，运用 ruby 提供的语法 <code>class &lt;&lt; self</code> ，把 <code>class &lt;&lt; self; self; end</code> 块中的 self 设置为 Object 实例的 metaclass ；所以在 #3 处，如果把 self 打印出来，这个 self 会是 Object 实例的 metaclass ，而这个 self 会作为块的结果返回， metaclass 方法又将块的结果返回，最终得到 Object 实例的 metaclass 。</p>
+<p>附上对 metaclass 的分析参考资料：</p>
+<ul>
+<li><a href="https://www.amazon.com/Metaprogramming-Ruby-Program-Like-Facets/dp/1941222129" target="_blank" rel="external">Metaprogramming Ruby 2: Program Like the Ruby Pros (Facets of Ruby)</a></li>
+<li><a href="http://viewsourcecode.org/why/hacking/seeingMetaclassesClearly.html" target="_blank" rel="external">seeingMetaclassesClearly</a></li>
+<li><a href="http://yehudakatz.com/2009/11/15/metaprogramming-in-ruby-its-all-about-the-self/" target="_blank" rel="external">Metaprogramming in Ruby: It’s All About the Self</a></li>
+</ul>
+<h2 id="symbol-rb">symbol.rb</h2><p>在系列第 1 篇文章说过，可以给 Symbol 定义一个 to_proc 方法，方便与 &amp; 操作符配合使用。 sinatra 定义了一个看上去不一样的 to_proc ：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
+  <span class="constant">Proc.</span>new { |*args| args.shift.<span class="constant">__send__(</span><span class="keyword">self</span>, *args) }
+<span class="keyword">end</span>
+</code></pre><p>但做的事情跟第 1 篇文章中的一样。</p>
+<p><code>*</code> （splat operator）出现了两次，意义刚好相反，第一次出现是把调用方法时传进来的参数变为一个数组，第二次出现是把一个数组拆散成一个个的参数传到方法中。在 1.8 版本的 ruby ，只要是能响应 to_ary 方法的对象都可以这样用：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Foo</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_ary</span></span>
+    [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a, *b = <span class="constant">Foo</span>.new <span class="comment">#=&gt; a = 1, b = [2,3]</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">some_method</span><span class="params">(p1,p2,p3)</span></span>
+  p <span class="string">"<span class="subst">#{p1}</span> <span class="subst">#{p2}</span> <span class="subst">#{p3}</span>"</span>
+<span class="keyword">end</span>
+
+some_method(*<span class="constant">Foo</span>.new) <span class="comment">#=&gt; 1 2 3</span>
+</code></pre><p>上面这个例子出自<a href="https://blog.pivotal.io/labs/labs/ruby-pearls-vol-1-the-splat" target="_blank" rel="external">此处</a>。</p>
+<p><code>args.shift</code> 会删除并返回 args 数组第一个元素。</p>
+<p><code>__send__</code> 方法跟 <code>send</code> 方法做的事情一样。因为 send 这个单词太普通、常用了，很容易被程序员覆写，所以 ruby 又另外提供一个 <code>__send__</code> ，如果不小心覆写这个方法， ruby 会提示警告：</p>
+<pre><code><span class="attribute">warning</span>: <span class="string">redefining `__send__' may cause serious problem</span>
+</code></pre><p>附上对这个方法讨论的<a href="http://stackoverflow.com/questions/4658269/ruby-send-vs-send" target="_blank" rel="external">链接</a></p>
+<h2 id="module-rb">module.rb</h2><p>module.rb 在 Module 扩展了一个 attr_with_default 方法，这个方法类似 Class 中的 cattr_accessor ，只不过多了个默认值。</p>
+<p>这里出现元编程中常见的 <code>define_method</code> 方法，它是定义在 Module 中的私有方法，用来动态地生成方法。完整文档可以看<a href="http://ruby-doc.org/core-2.2.0/Module.html" target="_blank" rel="external">这里</a>。</p>
+<p>一般情况下 <code>define_method</code> 只能在定义类时直接调用（此时 self 指向类本身），如：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">A</span></span>
+  define_method(<span class="symbol">:m_a</span>) { p <span class="string">'m_a'</span> }
+<span class="keyword">end</span>
+
+<span class="constant">A</span>.new.m_a <span class="comment">#=&gt; m_a</span>
+</code></pre><p>如果要在实例方法里调用 <code>define_method</code> ，这样写会出报找不到方法错误：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    define_method(sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>} <span class="comment">#=&gt; NoMethodError: undefined method `define_method'</span>
+</code></pre><p>回顾 ruby 寻找方法的步骤：先到实例的类中找，找不到就沿着类的祖先链找，打印 B 的祖先链，里面并没有 Module ，这就是出错的原因：</p>
+<pre><code><span class="keyword">B.ancestors </span>#=&gt; [<span class="keyword">B, </span>Object, Kernel]
+</code></pre><p>而在定义类时直接调用 <code>define_method</code> 不报错，是因为此时 self 指向 A ，而 A 作为实例的话，它的类是 Class ，打印 Class 的祖先链，里面就有 Module：</p>
+<pre><code><span class="keyword">Class</span>.ancestors #=&gt; [<span class="keyword">Class</span>, Module, <span class="keyword">Object</span>, Kernel]
+</code></pre><p>在调用 <code>define_method</code> 时把 self 指向 B ，还是会报错：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    <span class="keyword">self</span>.<span class="keyword">class</span>.define_method(sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>} <span class="comment">#=&gt; NoMethodError: private method `define_method' called for B:Class</span>
+</code></pre><p>因为 <code>define_method</code> 是私有方法，不能显式调用，官方文档给出了解决办法：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">B</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">create_mehtod</span><span class="params">(sym, &amp;block)</span></span>
+    <span class="keyword">self</span>.<span class="keyword">class</span>.send(<span class="symbol">:define_method</span>, sym, &amp;block)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+b = <span class="constant">B</span>.new.create_method(<span class="symbol">:m_b</span>) {p <span class="string">'m_b'</span>}
+b.m_b <span class="comment">#=&gt; m_b</span>
+</code></pre><h2 id="request-rb">request.rb</h2><p>这里重新打开了 Rack::Request ，扩展了 request_method 方法。这样做的缘由是：html 的 form 元素只支持 GET 和 POST 方法， RESTful 定义的方法至少有 GET/POST/PUT/DELETE 四种，为了让 form 也用上 PUT 和 DELETE 方法， sinatra 检测 POST 请求中的 _method 参数，如果是 PUT 或者 DELETE ，就直接替换 POST 。相关讨论<a href="http://stackoverflow.com/questions/16805956/why-dont-browsers-support-put-and-delete-requests-and-when-will-they" target="_blank" rel="external">见此</a></p>
+<h2 id="environment-rb">environment.rb</h2><p>在加载完 core_ext 和 rack_ext 目录下的文件后，会加载 sinatra 目录下的文件，一时不知从何下手分析，看到后面有行代码：</p>
+<pre><code><span class="label">Sinatra::</span>Environment.prepare
+</code></pre><p>就从 environment.rb 说起吧。</p>
+<p><strong> ARGV </strong></p>
+<p>Environment 的 prepare 方法用来解释参数。 <code>ARGV</code> 是定义在 Object 中的常量，并且是 Array 的实例，表示在命令行运行脚本文件时传入的参数列表。</p>
+<h2 id="options-rb">options.rb</h2><p>parse! 实际上没有用到传进来的参数，它用的还是 ARGV 。</p>
+<p>这个版本的 sinatra 开始区分运行脚本的环境（test/development/production），如果当前处在 test 环境， parse! 方法立即返回。</p>
+<p>接下来解释参数的任务就交给 <a href="http://ruby-doc.org/stdlib-1.8.7/libdoc/optparse/rdoc/OptionParser.html" target="_blank" rel="external">OptionParser</a> 了。</p>
+<p>这里有一句 <code>env.intern</code> 。 env 是一个 String 实例， intern 方法获取字符串在 ruby 的内部实现（internal representation）。 ruby 最终会把字符串转换为符号，所以这个方法跟 to_sym 方法做一样的事情。 参见<a href="https://www.codecademy.com/en/forum_questions/512a675cf116c52d0d00674b" target="_blank" rel="external">相关讨论</a> (PS. 讨论中提及为什么 ruby 给同一个方法取不同的名字，很有启发意义)</p>
+<h2 id="logger-rb">logger.rb</h2><p>与前一个版本相比，这个文件多了一行代码：</p>
+<pre><code>define_method n <span class="keyword">do</span> |message|
+  <span class="variable">@stream</span>.puts message
+  <span class="variable">@stream</span>.flush <span class="comment">#多了这一行</span>
+<span class="keyword">end</span>
+</code></pre><p>@stream 是一个 IO 实例， flush 方法将 IO 实例中缓存的数据写到操作系统中去（<a href="http://ruby-doc.org/core-2.2.3/IO.html#method-i-flush" target="_blank" rel="external">官方文档</a>中解释操作系统仍然有可能缓存起来，所以并没有保证写到设备/文件中）。举个例子，在早期的 ruby 中，下面这段代码会等待 10 秒，然后在同一行打印 5 个点：</p>
+<pre><code><span class="number">5</span>.<span class="keyword">times</span> <span class="keyword">do</span>
+  <span class="keyword">print</span> <span class="string">'.'</span>
+  <span class="keyword">sleep</span> <span class="number">2</span>
+end
+</code></pre><p>要想每 2 秒打印一个点，可以在 <code>print &#39;.&#39;</code> 下面加上一句 <code>$stdout.flush</code>。</p>
+<p>缓存输出，直到打印换行符或者缓存满了，这个特性来源于 c 言语标准库，初衷应该是减少系统调用。后来不知道是 c 言语标准库还是 ruby 作了改动，修复了上面那个问题。</p>
+<p>推荐几篇有关 Ruby IO 的文章：</p>
+<ul>
+<li><a href="https://robots.thoughtbot.com/io-in-ruby" target="_blank" rel="external">IO in Ruby</a></li>
+<li><a href="https://www.ruby-forum.com/topic/208856" target="_blank" rel="external">Use of STDOUT.flush after puts</a></li>
+<li><a href="https://matt.berther.io/2009/02/11/puts-vs-print-in-ruby/" target="_blank" rel="external">puts vs print in ruby</a></li>
+</ul>
+<h2 id="irb-rb">irb.rb</h2><p>在运行 sinatra 时加上 -c 参数，就会用 console 模式启动 sinatra 。</p>
+<p>这个文件只定义了 start! 方法。在 ruby 中定义末尾带感叹号(!)的方法，意味着这个方法比不带感叹号的危险，要小心使用。</p>
+<p>start! 方法首先让 Object 加载 TestMethods 模块， <code>include</code> 方法是 Object 的私有方法，所以要使用 Object.send 加载（还记得这个技巧在 module.rb 那一节说过吗）。</p>
+<p>接着给 Object 类扩展了 reload! 和 show! 两个方法（建议现在就运行 sinatra 的 console 模式，动手玩玩这两个方法）。</p>
+<p>show! 调用了 IO.popen 方法。如果你想开一个子进程来调用外部命令，而且还想把外部命令的标准输入和标准输出跟 ruby 连接起来，那这个方法能满足你的需求。 popen 里的 p 指代 pipeline （管道）。管道是进程间通信的一种方式。</p>
+<p>举个使用 popen 的例子：</p>
+<pre><code>IO.popen(<span class="string">'tail -3'</span>, <span class="string">'w+'</span>) <span class="keyword">do</span> |<span class="keyword">pipe</span>|
+
+  <span class="comment"># ruby 会开一个子进程来运行这个 block </span>
+  <span class="comment"># 管道中属于 ruby 的这一头会作为参数传进来</span>
+
+  <span class="number">1</span>.upto(<span class="number">100</span>) <span class="keyword">do</span> { |i| <span class="keyword">pipe</span>.puts <span class="string">"line #{i}"</span> } 
+  <span class="keyword">pipe</span>.close_write <span class="comment">#在读取流之前一定要先把写入关闭，否则读取会阻塞</span>
+  puts <span class="keyword">pipe</span>.<span class="keyword">read</span>
+end
+
+<span class="comment"># line 98</span>
+<span class="comment"># line 99</span>
+<span class="comment"># line 100</span>
+</code></pre><p>show! 方法的意图是打开文本编辑器，并写入 TestMethods 模块中的几个方法 status / headers / body 的返回结果。</p>
+<p>举个例子，假设你能在命令行使用 <code>subl</code> 命令打开 sublime text 。你可以先跳转到 examples/hello 目录下，输入：</p>
+<pre><code>EDITOR=subl ruby hello<span class="class">.rb</span> -c
+</code></pre><p>这时你会进入 irb ，然后输入：</p>
+<pre><code><span class="function_or_atom">show</span><span class="exclamation_mark">!</span>
+</code></pre><p>这时你的 sublime text 就会被打开，里面已经写入了一些内容：</p>
+<pre><code><span class="xml"><span class="comment">&lt;!--
+        # Status: 404
+        # Headers: </span></span><span class="expression">{<span class="string">"Content-Type"</span>=&gt;<span class="string">"text/html"</span>, <span class="string">"Content-Length"</span>=&gt;<span class="string">"0"</span>}</span><span class="xml"><span class="comment">
+--&gt;</span></span>
+</code></pre><p>推荐一本用 ruby 来描述的关于进程的入门书 <a href="http://www.ituring.com.cn/minibook/347" target="_blank" rel="external">理解Unix进程</a>，里面有提及进程间通信的方式。</p>
+<p>还有几个关于 popen 的文档/讨论</p>
+<ul>
+<li><a href="http://www.rubydoc.info/stdlib/core/IO.popen" target="_blank" rel="external">IO.popen</a></li>
+<li><a href="https://www.safaribooksonline.com/library/view/ruby-cookbook/0596523696/ch20s08.html" target="_blank" rel="external">Driving an External Process with popen</a></li>
+</ul>
+<p>接下来 sinatra 先清空 ARGV 。如果当前目录（启动 sinatra 时所在的目录，而不是当前文件所在的目录， 运行 <code>Dir.pwd</code> 可以看到）下有 ‘.irbrc’ 文件，就把它保存到环境变量中， irb 会在启动时加载这个文件。</p>
+<p>当用户退出 irb 时，立即运行 <code>exit!</code> ，这样就退出了 sinatra 。</p>
+<p><code>exit!</code> 和 <code>exit</code> 的区别是前者会跳过退出时的处理程序(比如 at_exit )，前者默认的退出状态是 false ，而后者默认的退出状态是 true ( ruby 不同版本有不同的退出返回值， 1.8.7 版本 <code>exit</code> 默认返回 0 ， <code>exit!</code> 默认返回 -1 。 unix 会把返回值 0 当成 true ，其它返回值当成 false )。</p>
+<h2 id="server-rb">server.rb</h2><p>Server#start 方法首先调用 Server#tail 方法打印 log file 里面的内容。 tail 方法另开一个线程打开 log file ，然后不断地检查（ 1 秒 1 次）它有没有被改动，如果有则打印自上一次文件流的位置到最新文件流的末尾之间的内容。这段代码可以再精简一点：</p>
+<pre><code>File.open(log_file, 'r') <span class="operator"><span class="keyword">do</span> |<span class="keyword">f</span>|
+  <span class="keyword">loop</span> <span class="keyword">do</span>
+    <span class="keyword">if</span> <span class="keyword">f</span>.mtime &gt; last_checked
+      last_checked = <span class="keyword">f</span>.mtime
+      puts <span class="keyword">f</span>.<span class="keyword">read</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span></span>
+</code></pre><p>IO#read 方法会把 cursor 的位置定位到流的末尾，所以不需要手动调用 IO#seek 重新定位 cursor 的位置，这一点可以在调用 IO#read 之后再 打印 IO#pos 的结果证明。</p>
+<p>Server#start 最后调用 Thread#kill 方法杀掉这个线程。这一步很有可能是多余的，因为如果当前线程（ main thread ）结束了，所有其他线程都将会被杀死。</p>
+<p>sinatra 用到多进程和多线程，两者的区别以及使用时机可参考<a href="http://jayant7k.blogspot.com/2010/01/for.html" target="_blank" rel="external">这篇文章</a>和<a href="http://stackoverflow.com/questions/18575235/what-do-multi-processes-vs-multi-threaded-servers-most-benefit-from" target="_blank" rel="external">这篇文章</a></p>
+<p>stackoverflow 的一些讨论：</p>
+<ul>
+<li><a href="http://stackoverflow.com/questions/3481866/thread-join-blocks-the-main-thread" target="_blank" rel="external">Thread.join blocks the main thread</a></li>
+</ul>
+<h2 id="dispatcher-rb">dispatcher.rb</h2><p>在开发环境(development)中，sinatra 响应每一个请求前都会重新加载依赖文件以及在命令行中被 ruby 直接执行的脚本文件:</p>
+<pre><code>Loader.reload! <span class="keyword">if</span> Options<span class="class">.environment</span> == :development
+</code></pre><p>这样在开发环境中改动文件不需要重启就生效。 <code>Loader.reload!</code> 方法会重新加载被执行的脚本文件，看上去会产生循环加载的问题，举个例子，跳转到 examples/hello/ 目录下，在命令行中输入：</p>
+<pre><code>ruby hello.rb -c
+<span class="preprocessor"># =&gt; 通过 require <span class="string">'sinatra'</span> ， 加载 /lib/sinatra 目录下的相关文件，也把这些文件加载到 loaded_files 中</span>
+</code></pre><p>此时在命令行中输入：</p>
+<pre><code>reload!
+<span class="preprocessor"># =&gt; 重新加载 loaded_files 中的文件，然后加载 hello.rb 文件</span>
+</code></pre><p>hello.rb 文件中有 <code>require &#39;sinatra&#39;</code> ，这会不会导致 ruby 重新加载 sinatra 呢？</p>
+<p>不会。</p>
+<p><code>Kernel#require</code> 方法会在 <code>$LOAD_PATH</code> 中查找要加载的文件，它也会帮你加上 .rb 或者 .so 文件后缀。比如此处的 <code>require &#39;sinatra&#39;</code> ，它会在 lib/ 目录下找到 sinatra.rb 文件。</p>
+<p>已经被 <code>Kernel#require</code> 加载过的文件会保存在 <code>$&quot;</code> 变量中，<code>Kernel#require</code> 不会再次加载已经加载过的文件。</p>
+<p><code>Kernel#load</code> 方法要求在使用时写上文件路径以及文件后缀，如果文件路径不是绝对路径，会在 <code>$LOAD_PATH</code> 中查找文件。</p>
+<p><code>Kernel#load</code> 会再次加载已经加载过的文件。</p>
+<p>想关讨论可参考<a href="http://stackoverflow.com/questions/3170638/how-does-load-differ-from-require-in-ruby" target="_blank" rel="external">How does load differ from require in Ruby?</a></p>
+<p>ruby 预先定义了不少变量、常量，<a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/variable.html#dquote" target="_blank" rel="external">这是列表</a></p>
+<h2 id="sessions-rb">sessions.rb</h2><p>Rack::Session::Cookie 实现了基于 cookie 的 session 管理功能，只要浏览器发过来的 cookie 中有 key 为 session_id 的键值对，Rack 就能借此保存、读取数据。</p>
+<p>Rack::Session::Cookie 最初并没有实现基于 session_id 读写数据，所有数据都保存在 env[‘rack.session’] 下面，源码<a href="https://github.com/rack/rack/commit/417ac6a3d6b394dc2a2d30d9e1235148170dec50" target="_blank" rel="external">见此</a>。 0.1.0 的 sinatra 应该就是使用这个最初的实现，通过控制台可以看到 cookie 中直接使用 rack.session 保存加密后的数据。</p>
+<p>cookie 功能默认开启，如果要关闭它，可以在加载之后调用 dsl.rb 中定义的 <code>sessions</code> 方法：</p>
+<pre><code><span class="title">sessions</span> :<span class="built_in">off</span>
+</code></pre><p>sinatra 还提供 <code>session</code> 方法返回已保存的 session ，方便使用 cookie 功能，下面是一个例子：</p>
+<pre><code><span class="comment">#!usr/bin/env ruby</span>
+<span class="comment">#file examples/you_say.rb</span>
+<span class="keyword">require</span> <span class="string">'sinatra'</span>
+
+get <span class="string">'/'</span> <span class="keyword">do</span>
+  session[<span class="symbol">:you_say</span>] = params[<span class="symbol">:you_say</span>] || <span class="string">'no'</span>
+  <span class="comment"># 注意 session 和 params 都要用 symbol 作 key</span>
+  <span class="string">'hello'</span>
+<span class="keyword">end</span>
+
+get <span class="string">'/session'</span> <span class="keyword">do</span>
+  session[<span class="symbol">:you_say</span>]
+<span class="keyword">end</span>
+</code></pre><p>先访问 <code>localhost:4567/?you_say=hi</code> ，再访问 <code>localhost:4567/session</code> ，能看到页面显示 ‘hi’ 。</p>
+<h2 id="event-rb">event.rb</h2><p><strong> EventManager </strong> 负责注册事件、匹配事件。</p>
+<p>它调用 <code>determine_event</code> 匹配路由、方法，如果匹配不到，就调用 <code>present_error</code> 去找用户自定义的 404 路由处理器，如果用户没有预先定义，就调用 <code>not_found</code> ，使用默认的 404 处理器。</p>
+<p><a href="http://ruby-doc.org/core-1.8.7/Object.html#method-i-method" target="_blank" rel="external">Object#method</a> 根据名字返回方法（或者抛出 NameError 异常），被返回方法的 receiver 就是调用 Object#method 的对象，而且被返回方法就像闭包一样，能访问此对象的实例变量以及方法。举例如下：</p>
+<pre><code>class <span class="constant">A</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span></span>(v)
+    <span class="variable">@k</span> = v
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">get_put_k_method</span></span>
+    method(<span class="symbol">:put_k</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">put_k</span></span>
+    puts <span class="string">"k value is <span class="subst">#{<span class="variable">@k</span>}</span>"</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">get_another</span></span>
+    method(<span class="symbol">:set_put_k</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">set_put_k</span></span>(new_k=<span class="keyword">nil</span>)
+    <span class="variable">@k</span> = new_k
+    put_k
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+a = <span class="constant">A.</span>new(<span class="string">'hi'</span>)
+m = a.get_put_k_method
+m.call <span class="comment">#=&gt; k value is hi</span>
+
+m2 = a.get_another
+m2.call(<span class="string">'hello'</span>) <span class="comment">#=&gt; k value is hello</span>
+</code></pre><p>Event 类把路由匹配交由 Route 处理，还增加了事件处理回调 after_filters 。</p>
+<p>StaticEvent 负责处理静态资源，用法跟其他路由一样：</p>
+<pre><code>get <span class="string">'/'</span>, <span class="string">'home'</span>
+<span class="keyword">static</span> <span class="string">'/p'</span>, <span class="string">'public'</span>
+<span class="preprocessor">#请求 <span class="string">'/p/css/bootstrap.css'</span> 会被映射到 <span class="string">'public/css/bootstrap.css'</span></span>
+</code></pre><p>StaticEvent 的 <code>attend</code> 方法中有这样一行： <code>context.body self</code> ，之后还定义了 <code>each</code> 方法。这样做全因为 Rack 要求 http body 对象响应 each 方法。</p>
+<p><code>each</code> 方法用二进制读取模式打开静态文件。 <a href="http://ruby-doc.org/core-2.2.0/IO.html#method-i-read" target="_blank" rel="external">IO#read</a> 接受字节长度作为参数，从流中读取指定长度的字节，如果一开始就读到 EOF ，会返回 nil 。</p>
+<p>8192 字节（8KB）是常用的 chunk size 。</p>
+<p>在设置响应头的 Content-Type 时，用到了<code>#[]</code>方法：</p>
+<pre><code>File.extname(<span class="constant">@filename</span>)[<span class="number">1.</span>.-<span class="number">1</span>]
+<span class="preprocessor"># <span class="string">'.rb'</span>[1..-1] =&gt; <span class="string">'rb'</span></span>
+</code></pre><p>此处传入的 Range 参数（(1..-1)），表示的范围是：从左边数起第 2 个元素到右边数起第 1 个元素。</p>
+<h2 id="renderer-rb">renderer.rb</h2><p>EventContext 加载了 Sinatra::Renderer 模块，此模块为其他渲染方法提供基础方法，比如 Sinatra::Erb 和 Sinatra::Haml ，你还可以定制自己的渲染方法。注释里写了一个定制的例子，如果还有不清楚的地方，可以查看对应的测试用例： renderer_test.rb 。 </p>
+<p><code>render</code> 方法会根据参数 renderer ，动态调用真正实现渲染的方法 result_method 。</p>
+<p><code>render</code> 方法把传进来的 block 当作 layout 的来源之一。如果请求有对应的 layout ，在第二次调用 result_method 方法时把 layout 当成是 template 参数传进去。</p>
+<h2 id="route-rb">route.rb</h2><p>在实例化每个 Event 时，会一并实例化一个 Route 。而每一次调用 <code>Event#attend</code> ，会先把 <code>@route.params</code> 合并到 <code>request.params</code> 中。这就把用户具体的请求路径与路由的 symbol 对应起来。如：</p>
+<pre><code>get '/:controller/:<span class="keyword">method</span>' <span class="keyword">do</span>
+  <span class="string">"you #{params[:controller]} #{params[:method]}"</span>
+<span class="keyword">end</span>
+<span class="comment"># 当用户请求 '/say/hi' 时</span>
+<span class="comment"># 会返回 "you say hi"</span>
+</code></pre><p><code>Route#extract_keys</code> 把路由中的 symbol 提取出来，如：</p>
+<pre><code>temp_arr = <span class="string">"/:some/:words"</span>.scan(/:\w+/)
+<span class="preprocessor">#=&gt; temp_arr = [<span class="string">":some"</span>,<span class="string">":words"</span>]</span>
+temp_arr.map { |raw| <span class="built_in">eval</span>(raw) } <span class="preprocessor">#=&gt; [:some, :words]</span>
+</code></pre><p><code>Route#genereate_route</code> 生成用于匹配用户请求的路由。路由又分两种，带格式(format)和不带格式的，默认格式是 html 。</p>
+<p><code>Route#to_regex_route</code> 把路由转换成正则表达式，在点(.)前面加上反斜杠，把 <code>symbol</code> 替换成 <code>&#39;([^\/.,;?]+)&#39;</code>。在匹配成功后可以用 <code>captures</code> 方法找到用户请求的路径。如：</p>
+<pre><code>class A
+  def to_regex_route(<span class="keyword">template</span>)
+    /^<span class="comment">#{template.gsub(/\./,'\.').gsub(/:\w+/,'([^\/.,;?]+)')}$/</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+a = A.new
+reg = a.to_regex_route('/:path/:to/:file.html')
+<span class="comment"># reg =&gt; (?-mix:^\/([^\/.+,;?])\/([^\/.+,;?])\/([^\/.+,;?])\.html$)</span>
+'/a/b/c.html'.match(reg).captures
+<span class="comment"># =&gt; ['a','b','c']</span>
+</code></pre><p><code>/([^\/.,;?]+)/</code> 匹配不是斜杠(/)，点(.)，逗号(,)，分号(;)，问号(?)的其他字符。</p>
+<p><code>Route#recognize</code> 会在 <code>Event#attend</code> 中调用，所以每次都得先清空 <code>@params</code> 。</p>
+<p>如果成功匹配用户请求的路径，接下来就把 symbol 和具体的路径组合起来：</p>
+<pre><code>@keys.<span class="function"><span class="title">zip</span><span class="params">(param_values)</span></span>.to_hash
+</code></pre><p><code>Array#zip</code> 方法用法举例：</p>
+<pre><code>[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].zip([<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]) <span class="preprocessor">#=&gt; [[<span class="number">1</span>,<span class="number">4</span>],[<span class="number">2</span>,<span class="number">5</span>],[<span class="number">3</span>,<span class="number">6</span>]]</span>
+</code></pre><p><code>Array#to_hash</code> 方法是 sinatra 扩展的。</p>
+<p>一些方法参考： </p>
+<ul>
+<li><a href="http://ruby-doc.org/core-1.8.7/Object.html" target="_blank" rel="external">Object#freeze</a></li>
+<li><a href="http://ruby-doc.org/core-1.8.7/Array.html#method-i-compact" target="_blank" rel="external">Array#compact</a></li>
+<li><a href="http://ruby-doc.org/core-1.8.7/Object.html" target="_blank" rel="external">Object#dup</a></li>
+<li><a href="http://stackoverflow.com/questions/10183370/whats-the-difference-between-rubys-dup-and-clone-methods" target="_blank" rel="external">What’s the difference between Ruby’s dup and clone methods?</a></li>
+</ul>
+<h2 id="dsl-rb">dsl.rb</h2><p>dsl.rb 文件的最后调用 <code>include Sinatra::Dsl</code> 把 Sinatra::Dsl 模块放到 main 对象祖先链的父节点位置，这样就可以把 Sinatra::Dsl 定义的方法当作实例方法调用。</p>
+<p>也可以把 <code>include Sinatra::Dsl</code> 替换成 <code>extend Sinatra::Dsl</code> ，后者把 Sinatra::Dsl 定义的方法当作单例方法调用。</p>
+<p>看出问题了吗？</p>
+<p>main 对象同时作为 Object class 的实例以及 Object class 本身去调用方法，否则不能解释它既可以调用实例方法又可以调用单例方法。</p>
+<p>有一篇<a href="https://banisterfiend.wordpress.com/2010/11/23/what-is-the-ruby-top-level/" target="_blank" rel="external">文章</a>展示了神奇 main 对象。</p>
+<h2 id="test">test</h2><p>这一版本补充了单元测试。跑测试用例之前要先安装两个 gem ： mocha(0.5.6), test-spec(0.10.0) 。</p>
+<p>还要在 test/helper.rb 文件中，加载 mocha 和 test/sepc 时把 <code>stringio</code> 也加载进来，否则 request_test.rb 会跑不过。</p>
+<p>helper.rb 里把 <code>Sinatra::TestMethods</code> <code>include</code> 到 <code>Test::Unit::TestCase</code> 中，因而每个测试都可以使用 Sinatra::TestMethods 提供的方法。</p>
+<p><code>Rack::MockRequest</code> 让 <code>Sinatra::TestMethods</code> 模块里的几个方法不需要产生真实的 http 请求，就能调用到 sinatra 定义的请求处理器。详见<a href="http://www.rubydoc.info/github/rack/rack/Rack/MockRequest" target="_blank" rel="external"> MockRequest 的文档</a>。</p>
+<p>要跑所有测试用例，可以在根目录下运行：</p>
+<pre><code><span class="keyword">find</span> .<span class="regexp">/test/</span>sinatra -name <span class="string">'*.rb'</span> | xargs -n1 ruby
+</code></pre><p>全文完。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ruby/" rel="tag">#ruby</a>
+          
+            <a href="/tags/sinatra/" rel="tag">#sinatra</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/27/wechat-gem-wechat-api/" rel="prev">一个因挪动 wechat_api 引发的问题，以及问题探究</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/07/shell-sort/" rel="next">写写希尔排序</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="jude zhu" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">jude zhu</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">记录生活的点点滴滴</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">66</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">51</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="menu-item-icon icon-next-feed"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#loader-rb"><span class="nav-number">4.</span> <span class="nav-text">loader.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kernel-rb"><span class="nav-number">5.</span> <span class="nav-text">kernel.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系及至对象模型"><span class="nav-number">6.</span> <span class="nav-text">继承关系及至对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metaid-rb"><span class="nav-number">7.</span> <span class="nav-text">metaid.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#symbol-rb"><span class="nav-number">8.</span> <span class="nav-text">symbol.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#module-rb"><span class="nav-number">9.</span> <span class="nav-text">module.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#request-rb"><span class="nav-number">10.</span> <span class="nav-text">request.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#environment-rb"><span class="nav-number">11.</span> <span class="nav-text">environment.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#options-rb"><span class="nav-number">12.</span> <span class="nav-text">options.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#logger-rb"><span class="nav-number">13.</span> <span class="nav-text">logger.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#irb-rb"><span class="nav-number">14.</span> <span class="nav-text">irb.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-rb"><span class="nav-number">15.</span> <span class="nav-text">server.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dispatcher-rb"><span class="nav-number">16.</span> <span class="nav-text">dispatcher.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sessions-rb"><span class="nav-number">17.</span> <span class="nav-text">sessions.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#event-rb"><span class="nav-number">18.</span> <span class="nav-text">event.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#renderer-rb"><span class="nav-number">19.</span> <span class="nav-text">renderer.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#route-rb"><span class="nav-number">20.</span> <span class="nav-text">route.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dsl-rb"><span class="nav-number">21.</span> <span class="nav-text">dsl.rb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#test"><span class="nav-number">22.</span> <span class="nav-text">test</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jude zhu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/libs/jquery/index.js?v=2.1.3"></script>
+  <!-- added by jude -->
+  <script type="text/javascript" src="/js/nav-toggle.js"></script>
+  <script type="text/javascript" src="/js/goto_post.js"></script>
+  <!-- added by jude -->
+
+  
+  
+  
+    
+    
+
+  
+
+
+  
+  
+  <script type="text/javascript" src="/libs/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/js/motion_fallback.js?v=0.4.5.1" id="motion.fallback"></script>
+
+
+
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

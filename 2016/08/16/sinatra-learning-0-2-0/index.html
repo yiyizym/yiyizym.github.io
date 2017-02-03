@@ -1,0 +1,1288 @@
+<!doctype html>
+<html class="theme-next  ">
+<head>
+  
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/libs/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.5.1"/>
+
+
+    <meta name="description" content="记录生活的点点滴滴" />
+
+
+
+  <meta name="keywords" content="ruby,sinatra," />
+
+
+
+  <link rel="alternate" href="/atom.xml" title="jude's life" type="application/atom+xml" />
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.1" />
+
+
+<meta name="description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sinatra 0.2.0 源码学习">
+<meta property="og:url" content="http://judes.me/2016/08/16/sinatra-learning-0-2-0/index.html">
+<meta property="og:site_name" content="jude's life">
+<meta property="og:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+<meta property="og:updated_time" content="2016-09-08T00:12:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sinatra 0.2.0 源码学习">
+<meta name="twitter:description" content="通过 sinatra 学习 ruby 编程技巧（系列）">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'hide'
+  };
+</script>
+  <title> sinatra 0.2.0 源码学习 | jude's life </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-88024669-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-next-logo"></i>
+      </span>
+      <span class="site-title">jude's life</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-next-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-next-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-next-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            <i class="menu-item-icon icon-next-about"></i> <br />
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content"> 
+
+  <div id="posts" class="posts-expand">
+    
+  
+  
+  <article class="post post-type-normal " data-path="/2016/08/16/sinatra-learning-0-2-0/" itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              sinatra 0.2.0 源码学习
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-08-16T21:21:48+08:00" content="Aug 16 2016">
+            Aug 16 2016
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <a href="/categories/ruby/" itemprop="url" rel="index">
+                  <span itemprop="name">ruby</span>
+                </a>
+              </span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h2 id="声明">声明</h2><p>本文系 <strong>sinatra 源码系列</strong>第 4 篇。系列的目的是通过 sinatra 学习 ruby 编程技巧。文章按程序运行的先后顺序挑重点分析，前一篇文章分析过的略去不说。水平很有限，所写尽量给出可靠官方/讨论链接，不坑路人。</p>
+<h2 id="重要提醒">重要提醒</h2><p><strong>一定要先安装 1.8 版本的 ruby</strong> ，因为 1.9+ 的 ruby ，String 的实例是不响应 each 方法的，这会直接导致 rack 报错。可以使用 <a href="https://rvm.io/" target="_blank" rel="external">rvm</a> 安装 1.8.7 版本的 ruby ，如果使用 rvm ，请先升级到最新版本，否则安装 1.8.7 的 ruby 时也会报错。</p>
+<p>使用命令 <code>git log -1 --format=%ai 0.2.0</code> ，查看 0.2.0 版本 sinatra 的“出厂日期”，得到 <code>2008-04-11 16:29:36 -0700</code> ；而 1.8.7 版本的 ruby 是 2008 年 5 月发布的，两者兼容性应该比较好。</p>
+<p>列一下本人运行 sinatra 0.2.0 用到的 ruby 和关键 gem 的版本：</p>
+<ul>
+<li>ruby-1.8.7-p374</li>
+<li>rack 1.4.1</li>
+<li>mongrel 1.1.5</li>
+</ul>
+<h2 id="change_log">change log</h2><ul>
+<li>大重构，把功能模块都压缩在一个文件中</li>
+<li>增加大量测试用例</li>
+</ul>
+<h2 id="跑通所有测试用例">跑通所有测试用例</h2><p>首先修改一处代码错误，在 sinatra.rb 文件的 1022 行，将 <code>Rack::File::MIME_TYPES[ext.to_s] = type</code> 改为 <code>Rack::Mime::MIME_TYPES[ext.to_s] = type</code></p>
+<p>然后安装一些缺少的 gem ：</p>
+<pre><code>gem <span class="operator"><span class="keyword">install</span> builder -v <span class="string">'2.1.2'</span>
+gem <span class="keyword">install</span> sass -v <span class="string">'3.1.0'</span>
+gem <span class="keyword">install</span> haml -v <span class="string">'1.8.0'</span></span>
+</code></pre><p>跑测试用例，发现只有 <code>sym_params_test.rb</code> 文件中的一处跑不通过。</p>
+<p>此处的测试是验证可以用 String 和 Symbol 访问参数。实现的关键方法是：</p>
+<pre><code># sinatra.rb 663 行
+<span class="keyword">h</span> = Hash.new { |<span class="keyword">h</span>, k| <span class="keyword">h</span>[k.to_s] <span class="keyword">if</span> Symbol === k }
+</code></pre><p>调用 <code>Hash.new</code> 时传进一个 block ，可以设置当访问某个不存在于 Hash 的 Key 时的一些默认行为，比如上面的代码就是说，当 key 不存在且是 Symbol 时，把 key 转换为字符串再找找（再抢救一下…）</p>
+<p><code>Hash.new</code> 还可以用来初始化值为数组的键值对，在记录事件回调时很方便：</p>
+<pre><code>@events = Hash.<span class="keyword">new</span> { |hash, key| hash[key] = [] }
+
+<span class="preprocessor"># 出自这个版本的 sinatra.rb 的 738 行</span>
+<span class="preprocessor"># 再也不用先判断 key 是否存在，也不用手动初始化一个空数组了</span>
+</code></pre><p>回过头来修改代码以跑通测试用例，作者这里粗心写错了请求的方法，应该用 <code>post_it</code> ，而不是 <code>get_it</code> ，还要相应地修改路由：</p>
+<pre><code>specify <span class="string">"should be accessable as Strings or Symbols"</span> <span class="keyword">do</span>
+  post <span class="string">'/'</span> <span class="keyword">do</span>
+    params[<span class="symbol">:foo</span>] + params[<span class="string">'foo'</span>]
+  <span class="keyword">end</span>
+
+  post_it <span class="string">'/'</span>, <span class="symbol">:foo</span> =&gt; <span class="string">"X"</span>
+  assert_equal(<span class="string">'XX'</span>, body)
+<span class="keyword">end</span>
+</code></pre><p>要在这个版本的 sinatra 的 get 方法中传递参数，需要把参数写在 uri 中，下面的写法也能通过测试：</p>
+<pre><code>specify <span class="string">"should be accessable as Strings or Symbols"</span> <span class="built_in">do</span>
+  <span class="built_in">get</span> <span class="string">'/'</span> <span class="built_in">do</span>
+    <span class="built_in">params</span>[:foo] + <span class="built_in">params</span>[<span class="string">'foo'</span>]
+  <span class="function"><span class="keyword">end</span>
+
+  <span class="title">get_it</span> '/?<span class="title">foo</span>=<span class="title">X</span>'</span>
+  assert_equal(<span class="string">'XX'</span>, body)
+<span class="keyword">end</span>
+</code></pre><h2 id="从_at_exit_说起">从 at_exit 说起</h2><p>还是从 at_exit 开始读代码。</p>
+<p><code>$!</code> 记录异常信息，当调用 <code>raise</code> 的时候会设置这个变量，详见<a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/variable.html#dquote" target="_blank" rel="external">此处</a>。</p>
+<p>调用 <code>load_options!</code> 解释完启动参数后， sinatra 在所有环境设置遇到异常和 404 时的回调方法，在开发环境遇到异常和 404 的回调方法比其他环境暴露更多的信息。</p>
+<h3 id="OpenStruct">OpenStruct</h3><p>值得细看的是在非开发环境遇到异常时的回调方法：</p>
+<pre><code><span class="keyword">error</span> <span class="keyword">do</span>
+  raise request.env[<span class="comment">'sinatra.error'] if Sinatra.options.raise_errors</span>
+  <span class="comment">'<span class="xmlDocTag">&lt;h1&gt;</span>Internal Server Error<span class="xmlDocTag">&lt;/h1&gt;</span>'</span>
+<span class="keyword">end</span>
+</code></pre><p><code>Sinatra.options</code> 实际上是 <code>OpenStruct</code> 的实例。 <a href="http://ruby-doc.org/stdlib-1.9.3/libdoc/ostruct/rdoc/OpenStruct.html" target="_blank" rel="external"><code>OpenStruct</code></a> 与 <code>Hash</code> 相似，但它通过元编程提供了不少快捷访问、设置值的方法。 <code>OpenStruct</code> 用法举例：</p>
+<pre><code># 1
+<span class="keyword">person</span> = OpenStruct.new
+<span class="keyword">person</span>.name    = <span class="string">"John Smith"</span>
+p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John Smith"</span>
+
+# 2
+<span class="keyword">person</span> = OpenStruct.new(:name =&gt; <span class="string">"John Smith"</span>)
+p <span class="keyword">person</span>.name    #=&gt; <span class="string">"John Smith"</span>
+</code></pre><p>一个简单版本的 <code>OpenStruct</code> 实现：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">OpenStruct</span></span>
+  <span class="keyword">attr_accessor</span> <span class="symbol">:h</span>
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(hash = {})</span></span>
+    <span class="variable">@h</span> = hash
+
+    h.each <span class="keyword">do</span> |key, value|
+      <span class="keyword">self</span>.<span class="keyword">class</span>.send(<span class="symbol">:define_method</span>, key) <span class="keyword">do</span>
+        h[key]
+      <span class="keyword">end</span>
+      <span class="keyword">self</span>.<span class="keyword">class</span>.send(<span class="symbol">:define_method</span>, <span class="string">"<span class="subst">#{key}</span>="</span>) <span class="keyword">do</span> |value|
+        h[key] = value
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">method_missing</span><span class="params">(m, *args)</span></span>
+    <span class="keyword">if</span> args.size == <span class="number">1</span>
+      <span class="comment"># m is  :name=</span>
+      <span class="comment"># change m to :name</span>
+      h[m.to_s.chop.to_sym] = args[<span class="number">0</span>]
+    <span class="keyword">elsif</span> args.size == <span class="number">0</span>
+      h[m]
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">respond_to?</span><span class="params">(m)</span></span>
+    h.respond_to?(m) || <span class="keyword">super</span>
+  <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+<span class="keyword">require</span> <span class="string">'test/unit'</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">TestOS</span> <span class="inheritance">&lt; <span class="parent">Test::Unit</span></span>::<span class="title">TestCase</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">setup</span></span>
+    <span class="variable">@person_1</span> = <span class="constant">OpenStruct</span>.new
+    <span class="variable">@person_2</span> = <span class="constant">OpenStruct</span>.new(<span class="symbol">:name</span> =&gt; <span class="string">'zhu'</span>)
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">test_case_1</span></span>
+    assert_equal <span class="keyword">true</span>, <span class="variable">@person_1</span>.respond_to?(<span class="symbol">:name</span>)
+    assert_equal <span class="keyword">nil</span>, <span class="variable">@person_1</span>.name
+    <span class="variable">@person_1</span>.name = <span class="string">'zhu'</span>
+    assert_equal <span class="string">'zhu'</span>, <span class="variable">@person_1</span>.name
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">test_case_2</span></span>
+    assert_equal <span class="keyword">true</span>, <span class="variable">@person_2</span>.respond_to?(<span class="symbol">:name</span>)
+    assert_equal <span class="string">'zhu'</span>, <span class="variable">@person_2</span>.name
+    <span class="variable">@person_2</span>.name = <span class="string">'jude'</span>
+    assert_equal <span class="string">'jude'</span>, <span class="variable">@person_2</span>.name
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>以上只是我心血来潮写的， <code>OpenStruct</code> 的实现远远不是上面写的那么简单，有兴趣可以看看源码。</p>
+<p><code>Sinatra.options.raise_errors</code> 的值只能在代码里设置，当其值不为 nil 或 false 时，默认在非开发环境下直接抛出异常。要想在命令行启动时设置值，只需要在 <code>load_options!</code> 方法中添加一行：</p>
+<pre><code>op.<span class="literal">on</span>(<span class="string">'-r'</span>) { |env| default_options[:raise_errors] = <span class="literal">true</span> }
+</code></pre><p>在订制开发环境下的异常和 404 页面时，使用到 <code>%Q(...)</code> 。 ruby 会特殊处理以百分号 ‘%’ 开头的字符串，帮你省去不少转义引号的麻烦：</p>
+<blockquote>
+<p>The string expressions begin with % are the special form to avoid putting too many backslashes into quoted strings. <a href="http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html" target="_blank" rel="external">出处</a></p>
+</blockquote>
+<p>更多相似的用法见<a href="https://ruby-china.org/topics/18512" target="_blank" rel="external">Ruby 里的 %Q, %q, %W, %w, %x, %r, %s, %i</a>。</p>
+<p>在显示异常信息时，用 <code>escap_html</code> 来转义 <code>&amp;</code>,<code>&lt;</code>,<code>&gt;</code>,<code>/</code>,<code>&#39;</code>,<code>&quot;</code> ，把这些 ascii 字符编码成实体编码，防止 XSS 攻击，不过源码有注释说有 bug ：</p>
+<blockquote>
+<p> On 1.8, there is a kcode = ‘u’ bug that allows for XSS otherwhise</p>
+</blockquote>
+<p>源码中用正则表达式替换转义字符的<a href="https://github.com/rack/rack/blob/1.4.1/lib/rack/utils.rb#L181" target="_blank" rel="external">实现</a>值得参考。</p>
+<p>更多关于 XSS 的知识，可以看看本人之前写的<a href="http://judes.me/2015/10/02/xss-study/">这篇</a>。</p>
+<h3 id="lookup">lookup</h3><p>接下来看 Application 的 call 方法。</p>
+<p>首先由 <code>lookup</code> 方法实现根据请求找到正确的路由。</p>
+<pre><code>def lookup(request)
+  <span class="keyword">method</span> = request.request_method.downcase.to_sym
+  events[<span class="keyword">method</span>].eject(&amp;[:invoke, request]) ||
+    (events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="keyword">method</span> == :head) ||
+    errors[<span class="type">NotFound</span>].invoke(request)
+<span class="keyword">end</span>
+</code></pre><p>sinatra 在 <code>Enumerable</code> 上扩展了 <code>eject</code> 方法，因为 <code>Array</code> 加载了 <code>Enumberable</code> 模块，所以 <code>Array</code> 实例能用 <code>eject</code> 方法。</p>
+<pre><code>def eject(&amp;<span class="keyword">block</span>)
+  find { |e| <span class="literal">result</span> = <span class="keyword">block</span>[e] <span class="keyword">and</span> <span class="keyword">break</span> <span class="literal">result</span> }
+<span class="keyword">end</span>
+</code></pre><p>在 <code>eject</code> 方法内部，使用 <code>find</code> 方法找到第一个产生非 false 结果的 block ，并返回这个结果。<code>find</code> 方法本来会返回第一个符合条件的元素，通过 <code>break</code> 可以订制自己的返回值。</p>
+<p>这里 <code>e</code> 是 Event 的实例。 <code>block</code> 是由 Array 实例转化而来的 Proc 。</p>
+<p>系列<a href="http://judes.me/2016/06/12/sinatra-learning-0-0-1/">第一篇文章</a>提到过， 如果跟在 <code>&amp;</code> 后面对象的不是 Proc ，首先会调用这个对象的 <code>to_proc</code> 方法得到一个 Proc 实例，最后会调用这个 Proc 的 <code>call</code> 方法。</p>
+<p>sinatra 扩展了 Array 的 <code>to_proc</code> 方法：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">to_proc</span></span>
+  <span class="constant">Proc.</span>new { |*args| args.shift.<span class="constant">__send__(</span><span class="keyword">self</span>[<span class="number">0</span>], *(args + <span class="keyword">self</span>[<span class="number">1</span>..-<span class="number">1</span>])) }
+<span class="keyword">end</span>
+</code></pre><p>经过 <code>to_proc</code> 转换， <code>Proc#call</code> 把参数转换为一个数组，把这个数组第一个元素作为 <code>receiver</code> ，把调用 <code>to_proc</code> 方法的数组的第一个元素作为方法，把两个数组余下的元素作为方法的参数，拿前面的代码作例子：</p>
+<pre><code><span class="comment"># 在 lookup 方法里下面的这行代码</span>
+
+&amp;[:invoke, request]
+
+<span class="comment"># 会得到这样一个 Proc</span>
+
+<span class="comment">#=&gt; Proc.new { |*args| args.shift.__send__(:invoke, *(args + [request])) }</span>
+
+<span class="comment"># 在 eject 方法定义中</span>
+
+find { |e| <span class="literal">result</span> = <span class="keyword">block</span>[e] <span class="keyword">and</span> <span class="keyword">break</span> <span class="literal">result</span> }
+
+<span class="comment"># block[e] 就是把 e 当作参数调用  Proc#call ，做的事情是： 以 `request` 作为参数，调用 `e` 的 `invoke` 方法。</span>
+</code></pre><p><code>block[e]</code> 不能写成 <code>block(e)</code> ，否则 ruby 会把 <code>block</code> 当作是 main 的一个方法来调用。有三种方法可以调用 <a href="https://ruby-doc.org/core-2.2.0/Proc.html#method-i-5B-5D" target="_blank" rel="external"><code>Proc#call</code></a> ：</p>
+<pre><code><span class="preprocessor"># <span class="number">1</span></span>
+ a_proc.call()
+<span class="preprocessor"># <span class="number">2</span></span>
+ a_proc.()
+<span class="preprocessor"># <span class="number">3</span></span>
+ a_proc[]
+</code></pre><h3 id="invoke">invoke</h3><p><code>Event#invoke</code> 方法实现路由匹配和参数匹配。除了可以匹配路径，这个版本的 sinatra 还可以匹配 user_agent 和 host :</p>
+<pre><code><span class="keyword">if</span> agent = options[<span class="symbol">:agent</span>] 
+  <span class="keyword">return</span> <span class="keyword">unless</span> request.user_agent =~ agent
+  params[<span class="symbol">:agent</span>] = <span class="variable">$~</span>[<span class="number">1</span>..-<span class="number">1</span>]
+<span class="keyword">end</span>
+<span class="keyword">if</span> host = options[<span class="symbol">:host</span>] 
+  <span class="keyword">return</span> <span class="keyword">unless</span> host === request.host
+<span class="keyword">end</span>
+</code></pre><p>用法和测试举例如下：</p>
+<pre><code>require <span class="string">'sinatra'</span>
+
+<span class="keyword">get</span> <span class="string">'/path'</span>, :agent =&gt; /Windows/
+  request.env[<span class="string">'HTTP_USER_AGENT'</span>]
+end
+<span class="preprocessor"># get_it '/', :env =&gt; { :agent =&gt; 'Windows' }</span>
+<span class="preprocessor"># should.be.ok</span>
+<span class="preprocessor"># body.should.equal 'Windows'</span>
+
+<span class="preprocessor"># get_it '/', :agent =&gt; 'Mac'</span>
+<span class="preprocessor"># should.not.be.ok</span>
+
+
+
+<span class="keyword">get</span> <span class="string">'/path'</span>, {},<span class="constant"> HTTP_HOST </span>=&gt; <span class="string">'foo.test.com'</span>
+  <span class="string">'in foo'</span>
+end
+
+<span class="keyword">get</span> <span class="string">'/path'</span>, {},<span class="constant"> HTTP_HOST </span>=&gt; <span class="string">'bar.test.com'</span>
+  <span class="string">'in bar'</span>
+end
+
+<span class="preprocessor"># get_it '/foo', {}, 'HTTP_HOST' =&gt; 'foo.test.com'</span>
+<span class="preprocessor"># assert ok?</span>
+<span class="preprocessor"># assert_equal 'in foo', body</span>
+
+<span class="preprocessor"># get_it '/foo', {}, 'HTTP_HOST' =&gt; 'bar.test.com'</span>
+<span class="preprocessor"># assert ok?</span>
+<span class="preprocessor"># assert_equal 'in bar', body</span>
+
+<span class="preprocessor"># get_it '/foo'</span>
+<span class="preprocessor"># assert not_found?</span>
+</code></pre><p><code>request.user_agent</code> 最终调用 <code>env[&#39;HTTP_USER_AGENT&#39;]</code> ，在 /lib/sinatra/test/methods.rb 中， sinatra 重写了 <code>Rack::MockRequest#env_for</code> 方法：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Rack::MockRequest</span></span>
+  <span class="class"><span class="keyword">class</span> <span class="inheritance">&lt;</span><span class="inheritance">&lt; <span class="parent">self</span></span></span>
+    <span class="keyword">alias</span> <span class="symbol">:env_for_without_env</span> <span class="symbol">:env_for</span>
+    <span class="function"><span class="keyword">def</span> <span class="title">env_for</span><span class="params">(uri = <span class="string">""</span>, opts = {})</span></span>
+      env = { <span class="string">'HTTP_USER_AGENT'</span> =&gt; opts.delete(<span class="symbol">:agent</span>) }
+      env_for_without_env(uri, opts).merge(env)
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>这样在测试时就可以传递 <code>:agent =&gt; &#39;Windows&#39;</code> 作为 user_agent 的参数，否则要这样写： <code>&#39;HTTP_USER_AGENT&#39; =&gt; &#39;Windows&#39;</code> 。</p>
+<h4 id="call_the_overridden_method_from_the_new">call the overridden method from the new</h4><p>在 ruby 中重写一个方法，新方法中还要调用未被重写前的旧方法，有几个技巧。</p>
+<p>一，继承。需要修改每一处用到新方法的 reciever 。</p>
+<pre><code>class Foo
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+class Bar &lt; Foo
+  def <span class="keyword">say</span>
+    super + ' World!'
+  end
+end
+
+Foo.new.<span class="keyword">say</span> #=&gt; 'Hello'
+Bar.new.<span class="keyword">say</span> #=&gt; 'Hello World!'
+# 把 reciever 从 Foo 改为 Bar
+</code></pre><p>二，修改祖先链。这与继承类似，但修改的方向不一样。</p>
+<pre><code>moudle Bar
+  def <span class="keyword">say</span>
+    super + ' World!'
+  end
+end
+
+class Foo
+  prepend Bar
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+Foo.new.<span class="keyword">say</span> #=&gt; 'Hello World!'
+
+# 使用了 prepend 把 Bar 放在 Foo 祖先链的下游，当寻找 <span class="keyword">say</span> 方法时，首先找到 Bar 定义的 <span class="keyword">say</span> 方法
+</code></pre><p>三，使用 <a href="http://ruby-doc.org/core-1.9.3/UnboundMethod.html#method-i-bind" target="_blank" rel="external">UnboundMethod</a>  和 <code>define_method</code> 。</p>
+<pre><code>class Foo
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+# 在某处重新打开 Foo
+
+class Foo
+  old_say = instance_method(:<span class="keyword">say</span>)
+  define_method(:<span class="keyword">say</span>) do
+    old_say.bind(self)<span class="comment">[]</span> + ' World!'
+    # 调用 instance_method 得到一个 UnboundMethod ，你需要在调用它之前 bind 一个 Foo 的实例
+    # 前面说过调用 Proc#call 的三种方法，调用 Method#call 也是一样。这里采用了 <span class="comment">[]</span> ，你也可以用 .()
+  end
+end
+</code></pre><p>四， alias 。就是 sinatra 采用的方法。</p>
+<pre><code>class Foo
+  def <span class="keyword">say</span>
+    'Hello'
+  end
+end
+
+# 在某处重新打开 Foo
+
+class Foo
+  alias :old_say :<span class="keyword">say</span>
+  def <span class="keyword">say</span>
+    old_say + ' World!'
+  end
+end
+
+Foo.new.<span class="keyword">say</span> #=&gt; 'Hello World!'
+Foo.new.old_say #=&gt; 'Hello'
+# 使用这种技巧，仍然可以访问旧的方法
+</code></pre><p>更多的技巧，可参考<a href="http://stackoverflow.com/questions/4470108/when-monkey-patching-a-method-can-you-call-the-overridden-method-from-the-new-i" target="_blank" rel="external">这里</a>。</p>
+<p>继续看 <code>Event#invoke</code> 的实现，下面代码这行实现匹配路径：</p>
+<pre><code>return unless pattern =~ request<span class="class">.path_info</span><span class="class">.squeeze</span>(<span class="string">'/'</span>)
+</code></pre><p><code>String#squeeze</code> 方法用单个字符替换连续出现的字符，用法很灵活，参见<a href="https://ruby-doc.org/core-2.2.0/String.html#method-i-squeeze" target="_blank" rel="external">文档</a>。</p>
+<p>sinatra 实现路径匹配的参数匹配的思路是：</p>
+<ul>
+<li>将用户预先定义的路径转换为正则表达式</li>
+<li>用这些正则表达式去匹配实际请求的路径</li>
+<li>如果匹配成功，则把捕获的参数与定义的参数组成键值对保存起来</li>
+</ul>
+<p><code>Event#initialize</code> 实现了路径转换正则表达式：</p>
+<pre><code><span class="constant">URI_CHAR</span> = <span class="string">'[^/?:,&amp;#\.]'</span>.freeze <span class="keyword">unless</span> <span class="keyword">defined</span>?(<span class="constant">URI_CHAR</span>)
+<span class="constant">PARAM</span> = <span class="regexp">/:(<span class="subst">#{<span class="constant">URI_CHAR</span>}</span>+)/</span>.freeze <span class="keyword">unless</span> <span class="keyword">defined</span>?(<span class="constant">PARAM</span>)
+<span class="constant">SPLAT</span> = <span class="regexp">/(.*?)/</span>
+<span class="keyword">attr_reader</span> <span class="symbol">:pattern</span>
+
+<span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(path, options = {}, &amp;b)</span></span>
+  <span class="variable">@path</span> = <span class="constant">URI</span>.encode(path)
+  <span class="variable">@param_keys</span> = []
+  regex = <span class="variable">@path</span>.to_s.gsub(<span class="constant">PARAM</span>) <span class="keyword">do</span>
+    <span class="variable">@param_keys</span> &lt;&lt; <span class="variable">$1</span>
+    <span class="string">"(<span class="subst">#{<span class="constant">URI_CHAR</span>}</span>+)"</span>
+  <span class="keyword">end</span>
+
+  regex.gsub!(<span class="string">'*'</span>, <span class="constant">SPLAT</span>.to_s)
+
+  <span class="variable">@pattern</span> = <span class="regexp">/^<span class="subst">#{regex}</span>$/</span>
+<span class="keyword">end</span>
+</code></pre><p>首先把用户定义的路径编码成 URI ，因为 <a href="http://www.ietf.org/rfc/rfc1738.txt" target="_blank" rel="external">rfc1738</a> 文档规定在 URL 中出现的字符只能是 字母和数字[0-9a-zA-Z]、一些特殊符号”$-_.+!*’() 以及一些保留字符：</p>
+<blockquote>
+<p>only alphanumerics, the special characters “$-_.+!*’(),”, and reserved characters sed for their reserved purposes may be used unencoded within a URL.</p>
+</blockquote>
+<p>如果在路径或查询参数中出现其他字符，比如中文，需要先转义。</p>
+<p>然后把用户在定义路径中的参数找出来，替换为去掉冒号（:）后的正则表达式字符串。</p>
+<p><code>PARAM</code> 正则表达式———— <code>/:([^/?:,&amp;#\.]+)/</code>———— 匹配以冒号开头的，接下来的字符不是 <code>/ ? : , &amp; # .</code> 当中任意一个字符的字符串。</p>
+<p><code>$1</code> 保存了最近一次正则表达式捕获的第一个匹配结果。</p>
+<p>用户还可以定义不具名参数： ‘*’ ，这个功能还不完善，现阶段只能作占位符用，没法获取捕获的参数。</p>
+<p>接下来的事情就是把捕获的参数与定义的参数组成键值对保存在 <code>params</code> 中，之前的系列文章有说过。</p>
+<p>保存好参数后，调用 <code>Result.new(block, params, 200)</code> 生成 <code>Result</code> ，它是 <code>Struct</code> 的实例。跟 <code>OpenStruct</code> 不同， <code>Struct</code> 只能读、写在初始化时设定的 key ，不能新增 key ：</p>
+<pre><code>Bar = Struct.<span class="function"><span class="title">new</span><span class="params">(a,b)</span></span>
+bar = Bar.<span class="function"><span class="title">new</span><span class="params">(<span class="number">1</span>,<span class="number">2</span>)</span></span>
+bar<span class="class">.a</span> #=&gt; <span class="number">1</span>
+bar<span class="class">.c</span> #=&gt; undefined method `c<span class="string">' for #&lt;struct Bar a=1, b=2&gt;</span>
+</code></pre><p>sinatra 能正确响应 HEAD 请求方法。根据 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html" target="_blank" rel="external">rfc 文档</a>， HEAD 方法跟 GET 方法唯一的区别就是，响应 HEAD 方法时，响应报文不能带有 body 。响应报文的头应该跟 GET 方法的一致。 HEAD 方法主要用于验证资源的有效性、可用性以及最近是否修改过。</p>
+<p>如上所述，如果是 HEAD 请求， sinatra 会自动去找对应的 GET 方法回调：</p>
+<pre><code>(events[:get].eject(&amp;[:invoke, request]) <span class="keyword">if</span> <span class="function"><span class="keyword">method</span> == :</span>head)
+</code></pre><p>在生成 HEAD 请求的响应时，会设置 body 为空字符：</p>
+<pre><code><span class="preprocessor"># <span class="keyword">line</span> 839</span>
+body = <span class="string">''</span> <span class="keyword">if</span> request.request_method.upcase == <span class="string">'HEAD'</span>
+</code></pre><h3 id="to_result">to_result</h3><p>在获取响应的 body 时，不论是正常流程，还是异常流程，都调用了 <code>to_result</code> 方法。 sinatra 在很多类中都扩展了这个实例方法。</p>
+<p>正常流程的代码如下：</p>
+<pre><code>returned = run_safely <span class="operator"><span class="keyword">do</span>
+  catch(:halt) <span class="keyword">do</span>
+    filters[:<span class="keyword">before</span>].<span class="keyword">each</span> { |<span class="keyword">f</span>| <span class="keyword">context</span>.instance_eval(&amp;<span class="keyword">f</span>) }
+    [:<span class="keyword">complete</span>, <span class="keyword">context</span>.instance_eval(&amp;<span class="keyword">result</span>.<span class="keyword">block</span>)]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">body</span> = returned.to_result(<span class="keyword">context</span>)
+# 一切正常时， returned 是 [:<span class="keyword">complete</span>, <span class="keyword">context</span>.instance_eval(&amp;<span class="keyword">result</span>.<span class="keyword">block</span>)]</span>
+</code></pre><p>与此相关的两个 <code>to_result</code> 方法是：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Array</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    <span class="keyword">self</span>.shift.to_result(cx, *<span class="keyword">self</span>)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Symbol</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    cx.send(<span class="keyword">self</span>, *args)
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p><code>returned.to_result(context)</code> 最终是在 <code>context</code> 上调用 <code>complete</code> 方法，传入的参数是 <code>context.instance_eval(&amp;result.block)</code> 的返回值。</p>
+<p>异常流程，如在 before filters 中抛出 <code>:halt</code> ，在 README.doc 文档中详细说明了多种情况：</p>
+<blockquote>
+<p>Set the body to the result of a helper method</p>
+<p>throw :halt, :helper_method</p>
+<p>Set the body to the result of a helper method after sending it parameters from the local scope</p>
+<p>throw :halt, [:helper_method, foo, bar]</p>
+<p>Set the body to a simple string</p>
+<p>throw :halt, ‘this will be the body’</p>
+<p>Set status then the body</p>
+<p>throw :halt, [401, ‘go away!’]</p>
+<p>Set the status then call a helper method with params from local scope</p>
+<p>throw :halt, [401, [:helper_method, foo, bar]]</p>
+<p>Run a proc inside the Sinatra::EventContext instance and set the body to the result</p>
+<p>throw :halt, lambda { puts ‘In a proc!’; ‘I just wrote to $stdout!’ }</p>
+</blockquote>
+<p>在众多应对以上情况的 <code>to_proc</code> 中，值得一提的是以下这两个：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">String</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    args.shift.to_result(cx, *args)
+    <span class="keyword">self</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">NilClass</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">to_result</span><span class="params">(cx, *args)</span></span>
+    <span class="string">''</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p><code>throw :halt, &#39;this will be the body&#39;</code> 之后，最终会用到 <code>String#to_result</code> 方法，传入的参数只有一个 <code>context</code> ，因此 <code>args</code> 是个空数组， <code>args.shift</code> 得到 <code>nil</code> ，所以得扩展 <code>NilClass#to_result</code> ，但它什么也没做，径直返回空字符串。</p>
+<h3 id="context-body">context.body</h3><p>在处理返回报文的正文时，有如下代码：</p>
+<pre><code><span class="keyword">context</span>.<span class="keyword">body</span> = <span class="keyword">body</span>.kind_of?(<span class="typename">String</span>) ? [*<span class="keyword">body</span>] : <span class="keyword">body</span>
+</code></pre><p><code>kind_of?</code> 方法跟 <code>is_a?</code> 一样，回溯祖先链，找到祖先返回 true ，否则返回 false 。</p>
+<p><code>[*body]</code> 中的 <code>*</code> （splat operator）有很多用途，之前也说过它可以把函数的多个参数变为一个数组。此处是另外两种用法。</p>
+<p>其一是强制类型转换，把当前类型转换为 Array 类型：</p>
+<pre><code><span class="preprocessor"># Range 转换为 Array</span>
+a = *(<span class="number">1.</span><span class="number">.3</span>) <span class="preprocessor">#=&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span>
+
+<span class="preprocessor"># String 转换为 Array</span>
+b = *<span class="string">"one string"</span> <span class="preprocessor">#=&gt; [<span class="string">"one string"</span>]</span>
+
+<span class="preprocessor"># Array 仍然是 Array</span>
+c = *[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>] <span class="preprocessor">#=&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span>
+
+<span class="preprocessor"># nil 转换为 Array</span>
+d = *nil <span class="preprocessor">#=&gt; []</span>
+</code></pre><p>其二是展平数组：</p>
+<pre><code>e = [*[<span class="number">1</span>,<span class="number">2</span>],*[<span class="number">3</span>,<span class="number">4</span>]] <span class="preprocessor">#=&gt; [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span>
+
+<span class="preprocessor"># 这跟下面是一样的</span>
+
+f = [[<span class="number">1</span>,<span class="number">2</span>],[<span class="number">3</span>,<span class="number">4</span>]].flatten
+</code></pre><p>回头看 <code>[*body]</code> ，如果只是把字符串强制转换为数组的话， <code>*body</code> 就够了。但是这里必须用中括号（<code>[]</code>）包着，否则会报语法错误。用中括号包住，解决了语法问题，得到的还是原来的那个数组。</p>
+<p><code>*</code> 实际上并不是 operator ，而是 token ，而且很容易就会用错。大致有以下几种用法：</p>
+<pre><code><span class="preprocessor"># 用于赋值</span>
+
+first, *rest = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]
+<span class="preprocessor">#=&gt; first = <span class="number">1</span></span>
+<span class="preprocessor">#=&gt; rest = [<span class="number">2</span>,<span class="number">3</span>]</span>
+
+*rest, last = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]
+<span class="preprocessor">#=&gt; last = <span class="number">3</span></span>
+<span class="preprocessor">#=&gt; rest = [<span class="number">1</span>,<span class="number">2</span>]</span>
+
+first, *m, last = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]
+
+<span class="preprocessor"># 收集参数，分解参数</span>
+
+<span class="function">def <span class="title">foo</span><span class="params">(first, *args)</span></span>; end <span class="preprocessor">#=&gt; *args 只能放在最后</span>
+foo(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>) <span class="preprocessor">#=&gt; args = [<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>]</span>
+
+<span class="function">def <span class="title">bar</span><span class="params">(a, b)</span></span>; <span class="function">end
+<span class="title">bar</span><span class="params">(*[<span class="number">1</span>,<span class="number">2</span>])</span> #</span>=&gt; a = <span class="number">1</span>, b = <span class="number">2</span>
+
+<span class="preprocessor"># 强制类型转换，很容易出语法错误，所以最好用中括号包住</span>
+</code></pre><p><code>context#body</code> 由在 Class 类中的 <code>dslify_writer</code> 方法实现：写入 body 的值，并返回这个值。</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Class</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">dslify_writer</span><span class="params">(*syms)</span></span>
+    syms.each <span class="keyword">do</span> |sym|
+      class_eval &lt;&lt;-end_eval
+        <span class="function"><span class="keyword">def</span> <span class="comment">#{sym}(v=nil)</span></span>
+          <span class="keyword">self</span>.send <span class="string">"<span class="subst">#{sym}</span>="</span>, v <span class="keyword">if</span> v
+          v
+        <span class="keyword">end</span>
+      end_eval
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="class"><span class="keyword">class</span> <span class="title">Foo</span></span>
+  dslify_writer <span class="symbol">:bar</span>
+  <span class="comment"># 相当于这样写：</span>
+  <span class="comment"># def bar(v=nil)</span>
+  <span class="comment">#   self.send('bar=', v) if v</span>
+  <span class="comment">#   v</span>
+  <span class="comment"># end</span>
+<span class="keyword">end</span>
+</code></pre><p><code>context</code> 并没有实现 <code>body=</code> 方法，但它有实现 <code>method_missing</code> 方法，把找不到的 method 转发给 <code>@response</code> ，而 <code>@response</code> 是 <code>Rack::Response</code> 的实例，可以读写 <code>body</code> 。</p>
+<p>本小节参考文章：</p>
+<ul>
+<li><a href="http://blog.honeybadger.io/ruby-splat-array-manipulation-destructuring/" target="_blank" rel="external">Using splats to build up and tear apart arrays in Ruby</a></li>
+<li><a href="http://jacopretorius.net/2012/01/splat-operator-in-ruby.html" target="_blank" rel="external">Splat Operator in Ruby</a></li>
+<li><a href="https://endofline.wordpress.com/2011/01/21/the-strange-ruby-splat/" target="_blank" rel="external">The Strange Ruby Splat</a></li>
+<li><a href="http://stackoverflow.com/questions/776462/where-is-it-legal-to-use-ruby-splat-operator" target="_blank" rel="external">Where is it legal to use ruby splat operator?</a></li>
+</ul>
+<h3 id="context-finish">context.finish</h3><p><code>context.finish</code> 也是转发到 <code>response.finish</code> ：</p>
+<pre><code><span class="function"><span class="keyword">def</span> <span class="title">finish</span><span class="params">(&amp;block)</span></span>
+  <span class="variable">@block</span> = block
+
+  <span class="keyword">if</span> [<span class="number">204</span>, <span class="number">205</span>, <span class="number">304</span>].<span class="keyword">include</span>?(status.to_i)
+    header.delete <span class="string">"Content-Type"</span>
+    header.delete <span class="string">"Content-Length"</span>
+    [status.to_i, header, []]
+  <span class="keyword">else</span>
+    [status.to_i, header, <span class="keyword">self</span>]
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+</code></pre><p>包含以下<a href="https://zh.wikipedia.org/wiki/HTTP状态码" target="_blank" rel="external">状态码</a>的响应会被删除响应头的 Content-Type / Content-Length 字段：</p>
+<ul>
+<li>204 No Content ，服务器成功处理了请求，但不需要返回任何实体内容，浏览器不产生任何文档视图上的变化</li>
+<li>205 Reset Content ，服务器成功处理了请求，但不需要返回任何实体内容，浏览器要重置文档视图，比如重置表单</li>
+<li>304 Use Proxy ，被请求的资源必须通过指定的代理——在 location 字段中指定——才能被访问</li>
+</ul>
+<p>并且返回数组中的第三个元素是个空数组，表明响应正文为空。</p>
+<p>其他状态码返回数组中的第三个元素是 <code>self</code> ，能这样做的前提是 response 实现了 <code>each</code> 方法。</p>
+<h3 id="设置_body">设置 body</h3><p>application_test.rb 里有一个测试用例如下：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">TesterWithEach</span></span>
+  <span class="function"><span class="keyword">def</span> <span class="title">each</span></span>
+    <span class="keyword">yield</span> <span class="string">'foo'</span>
+    <span class="keyword">yield</span> <span class="string">'bar'</span>
+    <span class="keyword">yield</span> <span class="string">'baz'</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+specify <span class="string">"an objects result from each if it has it"</span> <span class="keyword">do</span>
+
+  get <span class="string">'/'</span> <span class="keyword">do</span>
+    <span class="constant">TesterWithEach</span>.new
+  <span class="keyword">end</span>
+
+  get_it <span class="string">'/'</span>
+  should.be.ok
+  body.should.equal <span class="string">'foobarbaz'</span>
+
+<span class="keyword">end</span>
+</code></pre><p>如果没有在 get block 中设置 body 值， sinatra 就会用 block 的返回值作为 body ，如果这个返回值不响应 <code>each</code> 方法， body 就会被设置为空字符。可以模仿这里的 <code>TesterWithEach#each</code> 实现一个简单的 <code>each</code> ：</p>
+<pre><code><span class="class"><span class="keyword">class</span> <span class="title">Foo</span></span>
+  <span class="keyword">attr_reader</span> <span class="symbol">:bar</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(*bar)</span></span>
+    <span class="variable">@bar</span> = bar
+  <span class="keyword">end</span>
+
+  <span class="function"><span class="keyword">def</span> <span class="title">each</span></span>
+    <span class="keyword">return</span> <span class="keyword">nil</span> <span class="keyword">unless</span> block_given?
+    i = <span class="number">0</span>
+    <span class="keyword">while</span> i &lt; bar.length
+      <span class="keyword">yield</span> bar[i]
+      i += <span class="number">1</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment"># foo = Foo.new(1,2,3,4)</span>
+<span class="comment"># foo.each { |i| p i  }</span>
+</code></pre><p>目前为止， sinatra 的基本功能都已经实现，剩下的扩展功能——如重定向、渲染xml/erb/sass/haml、传输文件等等——都是通过加载模块来实现。</p>
+<h2 id="Streaming">Streaming</h2><p>这一模块取自 ActionPack ，目的是用更少的内存消耗传输更大的文件，大体的做法是用流传输取代一次性输出整个文件。</p>
+<p>实现 Streaming 的关键代码如下：</p>
+<pre><code>class FileStreamer
+
+  #...
+
+  def to_result(cx, *args)
+    self
+  <span class="operator"><span class="keyword">end</span>
+
+  <span class="keyword">def</span> <span class="keyword">each</span>
+    <span class="keyword">File</span>.<span class="keyword">open</span>(<span class="keyword">path</span>, <span class="string">'rb'</span>) <span class="keyword">do</span> |<span class="keyword">file</span>|
+      <span class="keyword">while</span> buf = <span class="keyword">file</span>.<span class="keyword">read</span>(options[:buffer_size])
+        yield buf
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+  #...
+
+<span class="keyword">end</span>
+
+#...
+
+<span class="keyword">def</span> send_file(<span class="keyword">path</span>, options = {})
+
+  #...
+
+  <span class="keyword">if</span> options[:stream]
+    throw :halt, [options[:<span class="keyword">status</span>] || <span class="number">200</span>, FileStreamer.<span class="keyword">new</span>(<span class="keyword">path</span>, options)]
+  <span class="keyword">else</span>
+    <span class="keyword">File</span>.<span class="keyword">open</span>(<span class="keyword">path</span>, <span class="string">'rb'</span>) { |<span class="keyword">file</span>| throw :halt, [options[:<span class="keyword">status</span>] || <span class="number">200</span>, <span class="keyword">file</span>.<span class="keyword">read</span>] }
+  <span class="keyword">end</span>
+
+<span class="keyword">end</span></span>
+</code></pre><p>如果 <code>options[:stream]</code> 为 true 则通过自身的 <code>each</code> 方法每读入 4096 个字节就对外输出，否则一次性读入内存再输出。</p>
+<h3 id="protected">protected</h3><p>Streaming 模块中有两个 protected 方法。 ruby 的 protected 跟 java 的很像，一般情况下被设置为 protected 的实例方法只能从类（或子类）实例方法中访问。（借助 <code>send</code> 方法可以突破这层限制）</p>
+<pre><code>class <span class="keyword">Person</span>
+
+  def initialize(age)
+    @age = age
+  end
+
+  def older_than?(other_person)
+    if self.class == other_person.class
+      age &gt; other_person.age
+    end
+  end
+
+  protected
+
+  attr_reader :age
+
+end
+
+class Monkey
+
+  def initialize(age)
+    @age = age
+  end
+
+  def older_than?(<span class="keyword">person</span>)
+    age &gt; <span class="keyword">person</span>.age
+  end
+
+  protected
+
+  attr_reader :age
+end
+
+p1 = <span class="keyword">Person</span>.new(10)
+p2 = <span class="keyword">Person</span>.new(11)
+p1.older_than?(p2) #=&gt; false
+
+# p1.age #=&gt; protected method `age' called for #&lt;<span class="keyword">Person</span>:0x007f80cc0263c8 @age=10&gt; (NoMethodError)
+
+m1 = Monkey.new(13)
+
+# m1.older_than?(p1) #=&gt; protected method `age' called for #&lt;<span class="keyword">Person</span>:0x007fd3e4963880 @age=10&gt; (NoMethodError)
+</code></pre><p>ruby 的 protected 方法很少用到，如果要用的话，通常用于同类之间的比较（参见上面的 Person 类）。</p>
+<p>本小节参考文章：</p>
+<ul>
+<li><a href="http://nithinbekal.com/posts/ruby-protected-methods/" target="_blank" rel="external">When to Use Protected Methods in Ruby</a></li>
+<li><a href="https://tenderlovemaking.com/2012/09/07/protected-methods-and-ruby-2-0.html" target="_blank" rel="external">Protected Methods and Ruby 2.0</a></li>
+<li><a href="http://devblog.orgsync.com/2013/05/20/private-and-protected-they-might-not-mean-what-you-think-they-mean/" target="_blank" rel="external">Private and Protected: They might not mean what you think they mean</a></li>
+</ul>
+<h2 id="RenderingHelpers">RenderingHelpers</h2><p>sinatra 渲染的过程大致可以分为两个步骤：</p>
+<ul>
+<li>根据传进来的参数 (String/Symbol/Proc) ，找到对应的模板</li>
+<li>调用具体的渲染引擎渲染模板</li>
+</ul>
+<p>第一个步骤是共用的，抽出来形成 RenderingHelpers 。</p>
+<p>RenderingHelpers 的实现体现了两个软件设计原则： 1. 依赖反转； 2. 开闭原则（对扩展开放，对修改闭合）。</p>
+<p>举例说明一下本人所理解的依赖反转：把高层次的模块比作电器，把低层次的模块比作插座。要使两者配合起来为人所用，高层次的模块必须实现低层次模块指定的接口，这个接口就是特定的插头（或两脚或三脚）。</p>
+<p>RenderingHelpers 对外提供 <code>render</code> 方法，但要使用 <code>render</code> 方法，必须实现 <code>render_renderer</code> 方法，这个 <code>render_renderer</code> 就是特定的插头。</p>
+<p>这个版本的 sinatra 增加了多个渲染引擎的支持，这些引擎的实现细节各有不同（如 sass 不支持 layout），但增加这些引擎支持都不用修改 RenderingHelpers 里面的代码。你甚至可以加入自己的引擎，无需改动 RenderingHelpers ，只要它提供的 <code>render</code> 方法，并实现自己的 <code>render_renderer</code> 方法。这体现了开闭原则。</p>
+<h3 id="use_in_file_templates!">use_in_file_templates!</h3><p>渲染时需要的模板，除了可以放在别的文件中，还可以放在当前文件中：</p>
+<pre><code>get <span class="string">'/stylesheet.css'</span> <span class="keyword">do</span>
+  header <span class="string">'Content-Type'</span> =&gt; <span class="string">'text/css; charset=utf-8'</span>
+  sass <span class="symbol">:stylesheet</span>
+<span class="keyword">end</span>
+
+<span class="comment"># 这里需要的模板可以放在 "views/stylesheet.sass" 文件中，假设包含以下内容</span>
+
+  <span class="comment">#  body</span>
+  <span class="comment">#    #admin</span>
+  <span class="comment">#      :background-color #CCC</span>
+
+<span class="comment"># 也可以放在当前文件中，需要事先调用 use_in_file_templates! ，如下：</span>
+
+use_in_file_templates！
+
+<span class="constant">__END__</span>
+<span class="comment">## stylesheet</span>
+body
+  <span class="comment">#admin</span>
+    <span class="symbol">:background-color</span> <span class="comment">#CCC</span>
+</code></pre><p><code>use_in_file_templates！</code>实现的细节是首先找到调用 <code>use_in_file_templates！</code> 方法的文件。 <code>caller</code> 方法会以数组形式返回当前方法的调用栈，形式如下：</p>
+<pre><code>def a(skip)
+  caller(skip)
+<span class="operator"><span class="keyword">end</span>
+<span class="keyword">def</span> b(<span class="keyword">skip</span>)
+  a(<span class="keyword">skip</span>)
+<span class="keyword">end</span>
+<span class="keyword">def</span> <span class="keyword">c</span>(<span class="keyword">skip</span>)
+  b(<span class="keyword">skip</span>)
+<span class="keyword">end</span>
+<span class="keyword">c</span>(<span class="number">0</span>)   #=&gt; [<span class="string">"prog:2:in `a'"</span>, <span class="string">"prog:5:in `b'"</span>, <span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:10"</span>]
+<span class="keyword">c</span>(<span class="number">1</span>)   #=&gt; [<span class="string">"prog:5:in `b'"</span>, <span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:11"</span>]
+<span class="keyword">c</span>(<span class="number">2</span>)   #=&gt; [<span class="string">"prog:8:in `c'"</span>, <span class="string">"prog:12"</span>]
+<span class="keyword">c</span>(<span class="number">3</span>)   #=&gt; [<span class="string">"prog:13"</span>]</span>
+</code></pre><p>然后把这个文件转换为字符串，定位到字符串的一个特殊标记。这里作者写错了这个特殊标记，应该是 <code>__END__</code> ，而不是 <code>__FILE__</code> 。虽然写成 <code>__FILE__</code> 也能跑过测试用例，但这个标记与 <code>__END__</code> 是完全不同的。</p>
+<p>ruby 有一个特殊的常量 <a href="https://ruby-doc.org/core-2.3.1/Object.html" target="_blank" rel="external"><code>DATA</code></a> ，它是一个 <code>File</code> 对象，包含了文件中的数据。你可以把数据和代码放在同一个文件当中， ruby 通过 <code>__END__</code> 这个标记分开代码和数据：</p>
+<pre><code><span class="preprocessor"># t.rb</span>
+puts DATA.gets
+__END__
+hello world!
+
+<span class="preprocessor"># ruby t.rb </span>
+<span class="preprocessor"># =&gt; hello world!</span>
+</code></pre><p>定位到数据部分后，把这部分字符串转换为 <a href="http://stackoverflow.com/questions/12592234/what-are-the-advantages-to-using-stringio-in-ruby-as-opposed-to-string" target="_blank" rel="external">StringIO</a> 对象，以便把字符串当作文件逐行解释。</p>
+<p>只要匹配到以 <code>##</code> 开头的行，就把捕获的字符串当作新的模板名字，没匹配行的就当作是模板的内容。</p>
+<p>全文完。</p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ruby/" rel="tag">#ruby</a>
+          
+            <a href="/tags/sinatra/" rel="tag">#sinatra</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/06/sinatra-learning-0-3-0/" rel="prev">sinatra 0.3.0 源码学习</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/13/sinatra-learning-0-1-5/" rel="next">sinatra 0.1.5 源码学习</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+ </div>
+
+        
+
+        
+          <div class="comments" id="comments">
+            
+          </div>
+        
+      </div>
+
+      
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/images/avatar.png" alt="jude zhu" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">jude zhu</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">记录生活的点点滴滴</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">66</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">51</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="menu-item-icon icon-next-feed"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#声明"><span class="nav-number">1.</span> <span class="nav-text">声明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要提醒"><span class="nav-number">2.</span> <span class="nav-text">重要提醒</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change_log"><span class="nav-number">3.</span> <span class="nav-text">change log</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跑通所有测试用例"><span class="nav-number">4.</span> <span class="nav-text">跑通所有测试用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从_at_exit_说起"><span class="nav-number">5.</span> <span class="nav-text">从 at_exit 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenStruct"><span class="nav-number">5.1.</span> <span class="nav-text">OpenStruct</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lookup"><span class="nav-number">5.2.</span> <span class="nav-text">lookup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#invoke"><span class="nav-number">5.3.</span> <span class="nav-text">invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#call_the_overridden_method_from_the_new"><span class="nav-number">5.3.1.</span> <span class="nav-text">call the overridden method from the new</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#to_result"><span class="nav-number">5.4.</span> <span class="nav-text">to_result</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-body"><span class="nav-number">5.5.</span> <span class="nav-text">context.body</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#context-finish"><span class="nav-number">5.6.</span> <span class="nav-text">context.finish</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置_body"><span class="nav-number">5.7.</span> <span class="nav-text">设置 body</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Streaming"><span class="nav-number">6.</span> <span class="nav-text">Streaming</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#protected"><span class="nav-number">6.1.</span> <span class="nav-text">protected</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RenderingHelpers"><span class="nav-number">7.</span> <span class="nav-text">RenderingHelpers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#use_in_file_templates!"><span class="nav-number">7.1.</span> <span class="nav-text">use_in_file_templates!</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner"> <div class="copyright" >
+  
+  &copy; &nbsp; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-next-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">jude zhu</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+ </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/libs/jquery/index.js?v=2.1.3"></script>
+  <!-- added by jude -->
+  <script type="text/javascript" src="/js/nav-toggle.js"></script>
+  <script type="text/javascript" src="/js/goto_post.js"></script>
+  <!-- added by jude -->
+
+  
+  
+  
+    
+    
+
+  
+
+
+  
+  
+  <script type="text/javascript" src="/libs/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.1"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.1"></script>
+  
+
+  <script type="text/javascript" src="/js/motion_fallback.js?v=0.4.5.1" id="motion.fallback"></script>
+
+
+
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.1" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 0.4 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    var $tocContent = $('.post-toc-content');
+    if (isDesktop() && CONFIG.sidebar === 'post') {
+      if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+        displaySidebar();
+      }
+    }
+  });
+</script>
+
+
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      if (CONFIG.sidebar === 'always') {
+        displaySidebar();
+      }
+    });
+  </script>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/lazyload.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $("#posts").find('img').lazyload({
+        placeholder: "/images/loading.gif",
+        effect: "fadeIn"
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-03T16:54:39+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-03T16:57:32+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
@@ -61,10 +61,11 @@ end
 
 &lt;p&gt;上面的 &lt;code class=&quot;highlighter-rouge&quot;&gt;put_elephant_in_fridge&lt;/code&gt; 方法，做了一件事还是三件事？显然会数数的人都会说是三件事，但我会说这是“一件事”。首先，这三件事都处在同一个抽象层级，然后，这三件事都处在 &lt;code class=&quot;highlighter-rouge&quot;&gt;put_elephant_in_fridge&lt;/code&gt; 方法往下一级的抽象层级上。&lt;/p&gt;
 
-&lt;p&gt;问题又来了，怎样判别方法是否处在同一个抽象层级呢？接着上面的例子，看另一种实现：
-    def put_elephant_in_fridge:&lt;/p&gt;
+&lt;p&gt;问题又来了，怎样判别方法是否处在同一个抽象层级呢？接着上面的例子，看另一种实现：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  figure_out_the_volume_of_fridge
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def put_elephant_in_fridge:
+  
+  figure_out_the_volume_of_fridge
 
   if fridge_not_found or fridge_not_big_enough
     buy_a_fridge
@@ -77,9 +78,11 @@ end
 
   close_fridge
 
-end 上面的方法，前几行是确保找到足够大的冰箱， `chop_elephant` 和 `full_fill_fridge` 描述怎样处理大象，怎样把大象塞进冰箱。显然，这些方法相对 `close_fridge` 来说都是实现细节，它们都不在同一个抽象层级：第一层级是 `close_fridge` ，第二层是 `chop_elephant` 和 `full_fill_fridge` ，最下层的是前面几行代码。写代码的时候应该像第一段代码那样隔离不同层级的抽象，隐藏实现细节。
+end
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;p&gt;上面的方法，前几行是确保找到足够大的冰箱， &lt;code class=&quot;highlighter-rouge&quot;&gt;chop_elephant&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;full_fill_fridge&lt;/code&gt; 描述怎样处理大象，怎样把大象塞进冰箱。显然，这些方法相对 &lt;code class=&quot;highlighter-rouge&quot;&gt;close_fridge&lt;/code&gt; 来说都是实现细节，它们都不在同一个抽象层级：第一层级是 &lt;code class=&quot;highlighter-rouge&quot;&gt;close_fridge&lt;/code&gt; ，第二层是 &lt;code class=&quot;highlighter-rouge&quot;&gt;chop_elephant&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;full_fill_fridge&lt;/code&gt; ，最下层的是前面几行代码。写代码的时候应该像第一段代码那样隔离不同层级的抽象，隐藏实现细节。&lt;/p&gt;
 
 &lt;p&gt;现实情况下，要求程序员一边实现功能，一边把代码按不同抽象层级安放好或许有点强人所难，可以先后做这两件事。关键是要做，只有这样才能写出好代码。&lt;/p&gt;
 

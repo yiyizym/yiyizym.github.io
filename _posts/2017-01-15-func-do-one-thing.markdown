@@ -19,36 +19,34 @@ tags:
 “方法只做一件事”这个论调很常见，在程序员界很政治正确，但落到实处，首先就会遇到这个问题：怎样才算是一件事？
 
 举个例子，要实现一个“把大象放进冰箱”的方法，方法内部大概可以这样写：
-```
-  def put_elephant_in_fridge:
-    
-    open_fridge
-    put_elephant_in
-    close_fridge
 
-  end
-```
+    def put_elephant_in_fridge:
+      
+      open_fridge
+      put_elephant_in
+      close_fridge
+
+    end
+
 上面的 `put_elephant_in_fridge` 方法，做了一件事还是三件事？显然会数数的人都会说是三件事，但我会说这是“一件事”。首先，这三件事都处在同一个抽象层级，然后，这三件事都处在 `put_elephant_in_fridge` 方法往下一级的抽象层级上。
 
 问题又来了，怎样判别方法是否处在同一个抽象层级呢？接着上面的例子，看另一种实现：
-```
-  def put_elephant_in_fridge:
-    
-    figure_out_the_volume_of_fridge
+    def put_elephant_in_fridge:
+      
+      figure_out_the_volume_of_fridge
 
-    if fridge_not_found or fridge_not_big_enough
-      buy_a_fridge
-      open_fridge
-    else
-      open_fridge
+      if fridge_not_found or fridge_not_big_enough
+        buy_a_fridge
+        open_fridge
+      else
+        open_fridge
 
-    chop_elephant
-    full_fill_fridge
+      chop_elephant
+      full_fill_fridge
 
-    close_fridge
+      close_fridge
 
-  end
-```
+    end
 上面的方法，前几行是确保找到足够大的冰箱， `chop_elephant` 和 `full_fill_fridge` 描述怎样处理大象，怎样把大象塞进冰箱。显然，这些方法相对 `close_fridge` 来说都是实现细节，它们都不在同一个抽象层级：第一层级是 `close_fridge` ，第二层是 `chop_elephant` 和 `full_fill_fridge` ，最下层的是前面几行代码。写代码的时候应该像第一段代码那样隔离不同层级的抽象，隐藏实现细节。
 
 现实情况下，要求程序员一边实现功能，一边把代码按不同抽象层级安放好或许有点强人所难，可以先后做这两件事。关键是要做，只有这样才能写出好代码。

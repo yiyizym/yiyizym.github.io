@@ -55,8 +55,6 @@ display还有很多其他的取值，在此不作研究。
 
 假设div与p的display属性值均为blcok。实际如下图，div标签生成一个块容器盒子，若块容器盒子内包含块级盒子（本例正是此种情况：p为块级盒子），则强制此块容器盒子只包含块级盒子。文本节点“Some text”此时将被一个匿名块级盒子包裹。
 
-![anonymous_block_boxes]({{site.images}}/2014/03/anon-block.png)*anonymous_block_boxes*
-
 产生匿名块级盒子的情况是，当一个行内盒子包含一个流内（in-flow，流在这里指常规流）块级盒子时，这个行内盒子会被块级盒子腰斩成两个匿名块级盒子。由此形成的三个块级盒子是同辈的关系。匿名块级盒子还有很多细节，详见[文档](http://www.w3.org/TR/CSS21/visuren.html)。
 
 ### 行内盒子

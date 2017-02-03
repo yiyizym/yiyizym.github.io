@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-03T16:30:00+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude</name></author><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-03T16:54:39+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
 
@@ -37,7 +37,7 @@
 
 &lt;p&gt;回顾近两年所经历的敏捷开发,我总结出敏捷开发是一整套对所有参与其中的人员有着高要求的规范:他要求所有人主动承担整个产品的责任,人与人之间要密切沟通交流,最重要的是要求尽早的交付给客户有价值的能满足用户需要的产品。&lt;/p&gt;
 
-&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>http://localhost:4000/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
+&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>http://localhost:4000/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
 
 &lt;p&gt;我知道方法越短越好，但一旦自己写起短代码来，就导致一个简单的功能，实现代码会嵌套四/五层，曾经因此被人说过“代码分得太细”，我自己读着的感觉也不好：虽然方法都短小，但不易懂。&lt;/p&gt;
 
@@ -48,43 +48,44 @@
 &lt;p&gt;“方法只做一件事”这个论调很常见，在程序员界很政治正确，但落到实处，首先就会遇到这个问题：怎样才算是一件事？&lt;/p&gt;
 
 &lt;p&gt;举个例子，要实现一个“把大象放进冰箱”的方法，方法内部大概可以这样写：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  def put_elephant_in_fridge:
-    
-    open_fridge
-    put_elephant_in
-    close_fridge
 
-  end
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def put_elephant_in_fridge:
+  
+  open_fridge
+  put_elephant_in
+  close_fridge
+
+end
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
 &lt;p&gt;上面的 &lt;code class=&quot;highlighter-rouge&quot;&gt;put_elephant_in_fridge&lt;/code&gt; 方法，做了一件事还是三件事？显然会数数的人都会说是三件事，但我会说这是“一件事”。首先，这三件事都处在同一个抽象层级，然后，这三件事都处在 &lt;code class=&quot;highlighter-rouge&quot;&gt;put_elephant_in_fridge&lt;/code&gt; 方法往下一级的抽象层级上。&lt;/p&gt;
 
-&lt;p&gt;问题又来了，怎样判别方法是否处在同一个抽象层级呢？接着上面的例子，看另一种实现：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  def put_elephant_in_fridge:
-    
-    figure_out_the_volume_of_fridge
+&lt;p&gt;问题又来了，怎样判别方法是否处在同一个抽象层级呢？接着上面的例子，看另一种实现：
+    def put_elephant_in_fridge:&lt;/p&gt;
 
-    if fridge_not_found or fridge_not_big_enough
-      buy_a_fridge
-      open_fridge
-    else
-      open_fridge
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  figure_out_the_volume_of_fridge
 
-    chop_elephant
-    full_fill_fridge
+  if fridge_not_found or fridge_not_big_enough
+    buy_a_fridge
+    open_fridge
+  else
+    open_fridge
 
-    close_fridge
+  chop_elephant
+  full_fill_fridge
 
-  end
+  close_fridge
+
+end 上面的方法，前几行是确保找到足够大的冰箱， `chop_elephant` 和 `full_fill_fridge` 描述怎样处理大象，怎样把大象塞进冰箱。显然，这些方法相对 `close_fridge` 来说都是实现细节，它们都不在同一个抽象层级：第一层级是 `close_fridge` ，第二层是 `chop_elephant` 和 `full_fill_fridge` ，最下层的是前面几行代码。写代码的时候应该像第一段代码那样隔离不同层级的抽象，隐藏实现细节。
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-&lt;p&gt;上面的方法，前几行是确保找到足够大的冰箱， &lt;code class=&quot;highlighter-rouge&quot;&gt;chop_elephant&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;full_fill_fridge&lt;/code&gt; 描述怎样处理大象，怎样把大象塞进冰箱。显然，这些方法相对 &lt;code class=&quot;highlighter-rouge&quot;&gt;close_fridge&lt;/code&gt; 来说都是实现细节，它们都不在同一个抽象层级：第一层级是 &lt;code class=&quot;highlighter-rouge&quot;&gt;close_fridge&lt;/code&gt; ，第二层是 &lt;code class=&quot;highlighter-rouge&quot;&gt;chop_elephant&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;full_fill_fridge&lt;/code&gt; ，最下层的是前面几行代码。写代码的时候应该像第一段代码那样隔离不同层级的抽象，隐藏实现细节。&lt;/p&gt;
 
 &lt;p&gt;现实情况下，要求程序员一边实现功能，一边把代码按不同抽象层级安放好或许有点强人所难，可以先后做这两件事。关键是要做，只有这样才能写出好代码。&lt;/p&gt;
 
 &lt;p&gt;“方法只做一件事”，出自「clean code」。如果在我刚当程序员的时候看这本书，或许不会像如今有这么大收获，那时写过的代码少，遇到的问题也少，有过困惑和思考的就更少了；现在的我，看书的每一节都能联系到自己一直以来遇到过的、思考过的问题，这些问题有的已经有了模糊答案，有的想不明白，不论怎样书中的解释总能带给我新的启发。&lt;/p&gt;
 
-&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
+&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
 
 &lt;p&gt;之所以要自己读一读，是因为觉得看这种被人消化过的二手知识不好：一是会被他人的偏见带跑，二是理解不深刻，三是没有学到书本作者得出结论的具体方法。&lt;/p&gt;
 
@@ -116,7 +117,7 @@
 
 &lt;p&gt;除了背单词，看完一篇文章、学到一个暂时用不到的知识，受这本书的影响，我都用 xmind 整理一下。读懂作者所说，只是在被动接受，注意力集中在细节上面；而把它们整理一下，就是从整体层面上，用自己的理解重新组织知识、取重点、舍弃细节。这其实就是另一种的“建立心理表征”。&lt;/p&gt;
 
-&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry><entry><title type="html">逝去的 2016</title><link href="http://localhost:4000/life/2016/12/18/my-2016.html" rel="alternate" type="text/html" title="逝去的 2016" /><published>2016-12-18T05:12:06+08:00</published><updated>2016-12-18T05:12:06+08:00</updated><id>http://localhost:4000/life/2016/12/18/my-2016</id><content type="html" xml:base="http://localhost:4000/life/2016/12/18/my-2016.html">&lt;p&gt;下面用一句话来描述今年作为程序员的我：&lt;/p&gt;
+&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry><entry><title type="html">逝去的 2016</title><link href="http://localhost:4000/life/2016/12/18/my-2016.html" rel="alternate" type="text/html" title="逝去的 2016" /><published>2016-12-18T05:12:06+08:00</published><updated>2016-12-18T05:12:06+08:00</updated><id>http://localhost:4000/life/2016/12/18/my-2016</id><content type="html" xml:base="http://localhost:4000/life/2016/12/18/my-2016.html">&lt;p&gt;下面用一句话来描述今年作为程序员的我：&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;我享受编程的乐趣，也想用自身所学，做个有一点受众的产品。&lt;/p&gt;
@@ -150,7 +151,7 @@
   &lt;p&gt;要得到自己所想的，就先设立最终目标，然后把最终目标分解成大中小目标，努力去完成一个个小目标，定期检查付出的努力是不是达到既定目标，如果没有，就改变努力的方式，甚至改变自己一直改不了的性格、做事方式、缺点，反复检查改变后的成效，如果某个目标最终完成不了，就根据实际调整目标。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry><entry><title type="html">模糊的正确</title><link href="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html" rel="alternate" type="text/html" title="模糊的正确" /><published>2016-12-05T05:30:28+08:00</published><updated>2016-12-05T05:30:28+08:00</updated><id>http://localhost:4000/life/2016/12/05/simplify-bayes-theorem</id><content type="html" xml:base="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html">&lt;p&gt;在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：&lt;/p&gt;
+&lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry><entry><title type="html">模糊的正确</title><link href="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html" rel="alternate" type="text/html" title="模糊的正确" /><published>2016-12-05T05:30:28+08:00</published><updated>2016-12-05T05:30:28+08:00</updated><id>http://localhost:4000/life/2016/12/05/simplify-bayes-theorem</id><content type="html" xml:base="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html">&lt;p&gt;在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：&lt;/p&gt;
 &lt;blockquote&gt;
   &lt;p&gt;如果在每 1000 人中有 1 个人携带艾滋病的病毒(HIV)， 
  再假设有一种检查可以百分百地诊断出真的携带该病毒的人; 
@@ -248,7 +249,7 @@ P(H|+) = P(+,H) / P(+) = P(+|H) * P(H) / P(+)
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/zh-cn/条件概率&quot;&gt;条件概率&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/贝叶斯定理&quot;&gt;贝叶斯定理&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>jude</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：
+&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：
 
   如果在每 1000 人中有 1 个人携带艾滋病的病毒(HIV)， 
  再假设有一种检查可以百分百地诊断出真的携带该病毒的人; 
@@ -325,7 +326,7 @@ P(H|+) = P(+,H) / P(+) = P(+|H) * P(H) / P(+)
 
 &lt;p&gt;然后对同属一个类别下的联系人排序。排序是个有意思的工作，要选那些可以实现快速插入新元素的算法。&lt;/p&gt;
 
-&lt;p&gt;不过在此之前，得先写一篇介绍这个插件的文章，宣传一下这个好东西。我现在很想在付出更大努力前，想办法知道值不值得。&lt;/p&gt;</content><author><name>jude</name></author><category term="wechat" /><category term="微信" /><category term="frontend" /><summary type="html">这个通讯录现在长这个样子：
+&lt;p&gt;不过在此之前，得先写一篇介绍这个插件的文章，宣传一下这个好东西。我现在很想在付出更大努力前，想办法知道值不值得。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="wechat" /><category term="微信" /><category term="frontend" /><summary type="html">这个通讯录现在长这个样子：
 幼年期</summary></entry><entry><title type="html">Rails 的 CSRF 对策</title><link href="http://localhost:4000/tech/2016/11/13/csrf-protect-from-forgery.html" rel="alternate" type="text/html" title="Rails 的 CSRF 对策" /><published>2016-11-13T06:33:28+08:00</published><updated>2016-11-13T06:33:28+08:00</updated><id>http://localhost:4000/tech/2016/11/13/csrf-protect-from-forgery</id><content type="html" xml:base="http://localhost:4000/tech/2016/11/13/csrf-protect-from-forgery.html">&lt;p&gt;最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。&lt;/p&gt;
 
 &lt;p&gt;原有的流程十分复杂，移植时想着后台代码能不改就不改，前端代码能重用的就重用。&lt;/p&gt;
@@ -413,7 +414,7 @@ protect_from_forgery with: :exception
 
 &lt;p&gt;&lt;strong&gt;总结&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。&lt;/p&gt;</content><author><name>jude</name></author><category term="rails" /><category term="frontend" /><category term="CSRF" /><summary type="html">最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</summary></entry><entry><title type="html">雪花分形</title><link href="http://localhost:4000/life/2016/11/08/snowflake-method.html" rel="alternate" type="text/html" title="雪花分形" /><published>2016-11-08T06:04:44+08:00</published><updated>2016-11-08T06:04:44+08:00</updated><id>http://localhost:4000/life/2016/11/08/snowflake-method</id><content type="html" xml:base="http://localhost:4000/life/2016/11/08/snowflake-method.html">&lt;p&gt;时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。&lt;/p&gt;
+&lt;p&gt;Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="rails" /><category term="frontend" /><category term="CSRF" /><summary type="html">最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</summary></entry><entry><title type="html">雪花分形</title><link href="http://localhost:4000/life/2016/11/08/snowflake-method.html" rel="alternate" type="text/html" title="雪花分形" /><published>2016-11-08T06:04:44+08:00</published><updated>2016-11-08T06:04:44+08:00</updated><id>http://localhost:4000/life/2016/11/08/snowflake-method</id><content type="html" xml:base="http://localhost:4000/life/2016/11/08/snowflake-method.html">&lt;p&gt;时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。&lt;/p&gt;
 
 &lt;p&gt;被各种文章鼓舞，每天动手写一百几十字，几十天之后，发觉自己写的简直就是一页页垃圾。&lt;/p&gt;
 
@@ -460,15 +461,16 @@ protect_from_forgery with: :exception
   &lt;li&gt;
     &lt;p&gt;把这句话扩写成一段话（包含 5 个句子），要有故事开头（1句）、主角经受的主要磨难（3句）以及结尾（1句）&lt;/p&gt;
   &lt;/li&gt;
-  &lt;li&gt;塑造主要人物。每个主要人物都要用一页篇幅讲述他的以下特征：&lt;/li&gt;
-  &lt;li&gt;姓名&lt;/li&gt;
-  &lt;li&gt;一句话总结的角色故事情节&lt;/li&gt;
-  &lt;li&gt;角色的动机（偏向于抽象的）&lt;/li&gt;
-  &lt;li&gt;角色的目标（偏向于具体的）&lt;/li&gt;
-  &lt;li&gt;阻碍角色达到目标的事物&lt;/li&gt;
-  &lt;li&gt;角色最终的感悟&lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;一段话总结的角色故事情节&lt;/p&gt;
+  &lt;li&gt;塑造主要人物。每个主要人物都要用一页篇幅讲述他的以下特征：
+    &lt;ol&gt;
+      &lt;li&gt;姓名&lt;/li&gt;
+      &lt;li&gt;一句话总结的角色故事情节&lt;/li&gt;
+      &lt;li&gt;角色的动机（偏向于抽象的）&lt;/li&gt;
+      &lt;li&gt;角色的目标（偏向于具体的）&lt;/li&gt;
+      &lt;li&gt;阻碍角色达到目标的事物&lt;/li&gt;
+      &lt;li&gt;角色最终的感悟&lt;/li&gt;
+      &lt;li&gt;一段话总结的角色故事情节&lt;/li&gt;
+    &lt;/ol&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;扩写之前的（即第 2 步完成的）那段故事梗概，将一段扩充成一页&lt;/p&gt;
@@ -498,7 +500,7 @@ protect_from_forgery with: :exception
 
 &lt;p&gt;不过，愿望、方法、行动三者加起来并不一定等于成功，不要忽略了 Gabriel 可是花上整整三年才完成小说创作的。你有这份坚持吗？&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;祝你好运！&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude</name></author><category term="写作" /><category term="snowflake" /><summary type="html">时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。</summary></entry><entry><title type="html">iOS浏览器内核导致 fixed 定位元素可能错位问题</title><link href="http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html" rel="alternate" type="text/html" title="iOS浏览器内核导致 fixed 定位元素可能错位问题" /><published>2016-10-12T05:32:43+08:00</published><updated>2016-10-12T05:32:43+08:00</updated><id>http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser</id><content type="html" xml:base="http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html">&lt;p&gt;在企业号某个列表页面使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;position: fixed;&lt;/code&gt; 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;祝你好运！&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="写作" /><category term="snowflake" /><summary type="html">时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。</summary></entry><entry><title type="html">iOS浏览器内核导致 fixed 定位元素可能错位问题</title><link href="http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html" rel="alternate" type="text/html" title="iOS浏览器内核导致 fixed 定位元素可能错位问题" /><published>2016-10-12T05:32:43+08:00</published><updated>2016-10-12T05:32:43+08:00</updated><id>http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser</id><content type="html" xml:base="http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html">&lt;p&gt;在企业号某个列表页面使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;position: fixed;&lt;/code&gt; 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/problem_1.jpg&quot; alt=&quot;在 iOS 输入法未弹出时显示正常 &quot; /&gt;&lt;em&gt;在 iOS 输入法未弹出时显示正常&lt;/em&gt;
 &lt;img src=&quot;http://localhost:4000/assets/problem_2.jpg&quot; alt=&quot;在 iOS 输入法弹出后出现错位 &quot; /&gt;&lt;em&gt;在 iOS 输入法弹出后出现错位&lt;/em&gt;&lt;/p&gt;
@@ -591,7 +593,7 @@ protect_from_forgery with: :exception
 &lt;p&gt;完成后的效果图：&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/solution_1.jpg&quot; alt=&quot;在 iOS 输入法未弹出时显示正常 &quot; /&gt;&lt;em&gt;在 iOS 输入法未弹出时显示正常&lt;/em&gt;
-&lt;img src=&quot;http://localhost:4000/assets/solution_2.jpg&quot; alt=&quot;在 iOS 输入法弹出后显示正常 &quot; /&gt;&lt;em&gt;在 iOS 输入法弹出后显示正常&lt;/em&gt;&lt;/p&gt;</content><author><name>jude</name></author><category term="浏览器" /><category term="wechat" /><summary type="html">在企业号某个列表页面使用 position: fixed; 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。</summary></entry><entry><title type="html">Tokyo go round</title><link href="http://localhost:4000/life/2016/10/09/tokyo-go-round.html" rel="alternate" type="text/html" title="Tokyo go round" /><published>2016-10-09T07:00:54+08:00</published><updated>2016-10-09T07:00:54+08:00</updated><id>http://localhost:4000/life/2016/10/09/tokyo-go-round</id><content type="html" xml:base="http://localhost:4000/life/2016/10/09/tokyo-go-round.html">&lt;p&gt;祖国名山大川、风景古迹一直以来吸引着众多慕名而来的游客，我讨厌人山人海，节假日就没有出外旅游过，偶尔得到大片连续工作日休息的机会，也总是“宅心仁厚”地窝在家里。&lt;/p&gt;
+&lt;img src=&quot;http://localhost:4000/assets/solution_2.jpg&quot; alt=&quot;在 iOS 输入法弹出后显示正常 &quot; /&gt;&lt;em&gt;在 iOS 输入法弹出后显示正常&lt;/em&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="浏览器" /><category term="wechat" /><summary type="html">在企业号某个列表页面使用 position: fixed; 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。</summary></entry><entry><title type="html">Tokyo go round</title><link href="http://localhost:4000/life/2016/10/09/tokyo-go-round.html" rel="alternate" type="text/html" title="Tokyo go round" /><published>2016-10-09T07:00:54+08:00</published><updated>2016-10-09T07:00:54+08:00</updated><id>http://localhost:4000/life/2016/10/09/tokyo-go-round</id><content type="html" xml:base="http://localhost:4000/life/2016/10/09/tokyo-go-round.html">&lt;p&gt;祖国名山大川、风景古迹一直以来吸引着众多慕名而来的游客，我讨厌人山人海，节假日就没有出外旅游过，偶尔得到大片连续工作日休息的机会，也总是“宅心仁厚”地窝在家里。&lt;/p&gt;
 
 &lt;p&gt;读万卷书行万里路，这是古人熟知的两种增长见闻的好方法，他们没想到在现代就算安心在家也可以环游世界吧：有旅游节目展示无限风光，有纪录片介绍世俗人情，通过镜头看到的景往往比实地游览的更优雅清静，人也更自然纯朴。如果一个人禁不住亲自到某地瞧瞧，发觉景致跟预想的差太多，很可能会大失所望吧。&lt;/p&gt;
 
@@ -1016,4 +1018,4 @@ protect_from_forgery with: :exception
 
 &lt;p&gt;回到中国，在机场问了全日空的工作人员，她说忘记了归国报告书也不要紧的，向旅行社说明原因，用护照复印件也能销签。事后证明确实如此，幸好心情没被这事破坏，想起了最后许下的心愿，日本的神明还真是爱开玩笑呢。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/sos.jpg&quot; alt=&quot;带了这俩货回来&quot; /&gt;&lt;em&gt;带了这俩货回来&lt;/em&gt;&lt;/p&gt;</content><author><name>jude</name></author><category term="东京" /><category term="旅游" /><summary type="html">祖国名山大川、风景古迹一直以来吸引着众多慕名而来的游客，我讨厌人山人海，节假日就没有出外旅游过，偶尔得到大片连续工作日休息的机会，也总是“宅心仁厚”地窝在家里。</summary></entry></feed>
+&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/sos.jpg&quot; alt=&quot;带了这俩货回来&quot; /&gt;&lt;em&gt;带了这俩货回来&lt;/em&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="东京" /><category term="旅游" /><summary type="html">祖国名山大川、风景古迹一直以来吸引着众多慕名而来的游客，我讨厌人山人海，节假日就没有出外旅游过，偶尔得到大片连续工作日休息的机会，也总是“宅心仁厚”地窝在家里。</summary></entry></feed>

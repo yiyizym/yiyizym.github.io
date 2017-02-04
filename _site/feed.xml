@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-03T17:45:02+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-03T17:57:17+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
@@ -155,6 +155,7 @@ end
 &lt;/blockquote&gt;
 
 &lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry><entry><title type="html">模糊的正确</title><link href="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html" rel="alternate" type="text/html" title="模糊的正确" /><published>2016-12-05T05:30:28+08:00</published><updated>2016-12-05T05:30:28+08:00</updated><id>http://localhost:4000/life/2016/12/05/simplify-bayes-theorem</id><content type="html" xml:base="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html">&lt;p&gt;在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：&lt;/p&gt;
+
 &lt;blockquote&gt;
   &lt;p&gt;如果在每 1000 人中有 1 个人携带艾滋病的病毒(HIV)， 
  再假设有一种检查可以百分百地诊断出真的携带该病毒的人; 
@@ -252,14 +253,7 @@ P(H|+) = P(+,H) / P(+) = P(+|H) * P(H) / P(+)
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/zh-cn/条件概率&quot;&gt;条件概率&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/贝叶斯定理&quot;&gt;贝叶斯定理&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：
-
-  如果在每 1000 人中有 1 个人携带艾滋病的病毒(HIV)， 
- 再假设有一种检查可以百分百地诊断出真的携带该病毒的人; 
- 最后，假设这个检查有 5% 的可能性，把没有携带者说成是有。
- 也就是说，这项检查在没有携带 HIV 的人中，也会错误地检测出有 5% 的人是携带病毒者。 
- 假设我们随便找一个人来进行这项检查，得到了呈阳性反应，亦即此人为 HIV 携带者。 
- 假定我们不知道这个人的患病史，那么他真的是 HIV 携带者的概率是多少呢?</summary></entry><entry><title type="html">web 版微信通讯录</title><link href="http://localhost:4000/frontend/2016/11/27/wx-contacts.html" rel="alternate" type="text/html" title="web 版微信通讯录" /><published>2016-11-27T01:54:03+08:00</published><updated>2016-11-27T01:54:03+08:00</updated><id>http://localhost:4000/frontend/2016/11/27/wx-contacts</id><content type="html" xml:base="http://localhost:4000/frontend/2016/11/27/wx-contacts.html">&lt;p&gt;这个通讯录现在长这个样子：
+&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：</summary></entry><entry><title type="html">web 版微信通讯录</title><link href="http://localhost:4000/frontend/2016/11/27/wx-contacts.html" rel="alternate" type="text/html" title="web 版微信通讯录" /><published>2016-11-27T01:54:03+08:00</published><updated>2016-11-27T01:54:03+08:00</updated><id>http://localhost:4000/frontend/2016/11/27/wx-contacts</id><content type="html" xml:base="http://localhost:4000/frontend/2016/11/27/wx-contacts.html">&lt;p&gt;这个通讯录现在长这个样子：
 &lt;img src=&quot;http://ww4.sinaimg.cn/large/60cdc5a5gw1fa5mumuv6sg20aw0j0kjm.gif&quot; alt=&quot;幼年期&quot; /&gt;&lt;em&gt;幼年期&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;以后可能就是这个样子了（我不保证）：

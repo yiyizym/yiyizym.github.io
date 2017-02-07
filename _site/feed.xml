@@ -1,15 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-06T22:44:26+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;h2 id=&quot;代码被覆盖&quot;&gt;代码被覆盖&lt;/h2&gt;
-
-&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-07T08:45:34+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
 
 &lt;p&gt;老司机最怕的就是在新手面前装逼失败,比如说我刚刚向新人传授一系列确保不覆盖别人的代码的方法,转过头就有新人(将他称为 A)反映我覆盖了他的代码。&lt;/p&gt;
 
-&lt;p&gt;覆盖别人代码这种事,我已经很久没做过了。所以当听到这个消息时，我半信半疑。仔细的看过他给我展示的代码后,发觉确实是被覆盖了。在查看的文件的提交历史时,发现文件的提交历史只有寥寥几次,我的提交历史消失了,更难以置信的是, A 的提交历史一个都没有。&lt;/p&gt;
+&lt;p&gt;覆盖别人代码这种事,我已经很久没做过了。所以当听到这个消息时，我半信半疑。仔细的看过他给我展示的代码后,发觉确实是被覆盖了。在查看的文件的提交历史时,发现文件的提交历史只有寥寥几次，难以置信的是, A 的提交历史一个都没有。&lt;/p&gt;
 
-&lt;p&gt;这真是一件很有意思的事情,但是当务之急是证明代码不是我覆盖的。&lt;/p&gt;
+&lt;p&gt;而且我清楚记得自己在那个文件添加过几行代码,如今也都不见了。&lt;/p&gt;
 
-&lt;p&gt;我清楚记得自己在那个文件添加过几行代码,如今也都不见了,实际上我也是受害者啊。&lt;/p&gt;
+&lt;p&gt;文件的提交历史消失真是一件很有意思的事情,但是当务之急是证明代码不是我覆盖的。&lt;/p&gt;
 
 &lt;p&gt;没有了文件的提交历史，只好查看开发分支上面所有的提交历史。找到 A 那些被覆盖的代码最初引进来的提交,以及最新提交,把两个提交之间的所有提交都按顺序仔细看一遍。&lt;/p&gt;
 
@@ -21,8 +19,11 @@
 
 &lt;p&gt;事情就此告一段落，过了一个多月，直到最近看到这篇文章&lt;a href=&quot;http://coolshell.cn/articles/17680.html&quot; target=&quot;_blank&quot;&gt;《从GITLAB误删除数据库想到的》&lt;/a&gt;，Gitlab 员工误删数据库非但不跑路，还在网上记录犯错的详细过程，这种追根究底的精神感动了我，忽然回想起文件提交历史神秘消失的事情。&lt;/p&gt;
 
+&lt;p&gt;TODO&lt;/p&gt;
+
 &lt;h2 id=&quot;神秘的提交历史消失&quot;&gt;神秘的提交历史消失&lt;/h2&gt;
-&lt;h2 id=&quot;git-log-隐藏行为&quot;&gt;git log 隐藏行为&lt;/h2&gt;</content><author><name>jude zhu</name></author><summary type="html">代码被覆盖</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;git-log-隐藏行为&quot;&gt;git log 隐藏行为&lt;/h2&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
 
@@ -60,7 +61,7 @@
 
 &lt;p&gt;回顾近两年所经历的敏捷开发,我总结出敏捷开发是一整套对所有参与其中的人员有着高要求的规范:他要求所有人主动承担整个产品的责任,人与人之间要密切沟通交流,最重要的是要求尽早的交付给客户有价值的能满足用户需要的产品。&lt;/p&gt;
 
-&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>http://localhost:4000/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
+&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>http://localhost:4000/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
 
 &lt;p&gt;我知道方法越短越好，但一旦自己写起短代码来，就导致一个简单的功能，实现代码会嵌套四/五层，曾经因此被人说过“代码分得太细”，我自己读着的感觉也不好：虽然方法都短小，但不易懂。&lt;/p&gt;
 
@@ -111,7 +112,7 @@ end
 
 &lt;p&gt;“方法只做一件事”，出自「clean code」。如果在我刚当程序员的时候看这本书，或许不会像如今有这么大收获，那时写过的代码少，遇到的问题也少，有过困惑和思考的就更少了；现在的我，看书的每一节都能联系到自己一直以来遇到过的、思考过的问题，这些问题有的已经有了模糊答案，有的想不明白，不论怎样书中的解释总能带给我新的启发。&lt;/p&gt;
 
-&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
+&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
 
 &lt;p&gt;之所以要自己读一读，是因为觉得看这种被人消化过的二手知识不好：一是会被他人的偏见带跑，二是理解不深刻，三是没有学到书本作者得出结论的具体方法。&lt;/p&gt;
 

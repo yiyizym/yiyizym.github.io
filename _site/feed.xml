@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-07T08:45:34+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-07T22:09:35+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
 
 &lt;p&gt;老司机最怕的就是在新手面前装逼失败,比如说我刚刚向新人传授一系列确保不覆盖别人的代码的方法,转过头就有新人(将他称为 A)反映我覆盖了他的代码。&lt;/p&gt;
 
-&lt;p&gt;覆盖别人代码这种事,我已经很久没做过了。所以当听到这个消息时，我半信半疑。仔细的看过他给我展示的代码后,发觉确实是被覆盖了。在查看的文件的提交历史时,发现文件的提交历史只有寥寥几次，难以置信的是, A 的提交历史一个都没有。&lt;/p&gt;
-
-&lt;p&gt;而且我清楚记得自己在那个文件添加过几行代码,如今也都不见了。&lt;/p&gt;
+&lt;p&gt;覆盖别人代码这种事,我已经很久没做过了。所以当听到这个消息时，我半信半疑。仔细的看过他给我展示的代码后,发觉确实是被覆盖了。我清楚记得自己在那个文件添加过几行代码,如今也都不见了。在查看的文件的提交历史时,发现文件的提交历史只有寥寥几次，里面并没有 A 的提交历史。&lt;/p&gt;
 
 &lt;p&gt;文件的提交历史消失真是一件很有意思的事情,但是当务之急是证明代码不是我覆盖的。&lt;/p&gt;
 
 &lt;p&gt;没有了文件的提交历史，只好查看开发分支上面所有的提交历史。找到 A 那些被覆盖的代码最初引进来的提交,以及最新提交,把两个提交之间的所有提交都按顺序仔细看一遍。&lt;/p&gt;
 
-&lt;p&gt;A 说是我覆盖了代码，是因为他在其中一个提交里看到我删除了他的代码。我并没有这样做过，但面对清清楚楚的代码，又无从辩白，只好在众人鄙视的眼光下默默地寻找真相。&lt;/p&gt;
+&lt;p&gt;A 说是我覆盖了代码，是因为他在最新的一个提交里（那是个合并提交）看到我删除了他的代码。我没印象这样做过，但面对清清楚楚的代码，又无从辩白，只好在众人鄙视的眼光下默默地寻找真相。&lt;/p&gt;
 
 &lt;p&gt;这些提交都出自两个人,一个是我,另外一个暂且称他为 B 。我的代码也被覆盖了,所以推测覆盖代码的人肯定就是 B 。&lt;/p&gt;
 
@@ -19,11 +17,89 @@
 
 &lt;p&gt;事情就此告一段落，过了一个多月，直到最近看到这篇文章&lt;a href=&quot;http://coolshell.cn/articles/17680.html&quot; target=&quot;_blank&quot;&gt;《从GITLAB误删除数据库想到的》&lt;/a&gt;，Gitlab 员工误删数据库非但不跑路，还在网上记录犯错的详细过程，这种追根究底的精神感动了我，忽然回想起文件提交历史神秘消失的事情。&lt;/p&gt;
 
-&lt;p&gt;TODO&lt;/p&gt;
+&lt;p&gt;我首先弄明白了为什么在最新的那个提交里显示的是我删除了代码,我却没有印象。因为那次合并没有产生冲突,是一次快速合并。覆盖代码就是在双方修改同一个文件并产生冲突时,在合并冲突过程中错误的删除了别人的代码。解决完冲突后的提交,在填写提交 message 时,会自动生成提示语表明这是一次产生过冲突的提交。因此,以后如果发生了代码覆盖,就应该首先关注那些有冲突提示的合并提交。&lt;/p&gt;
 
-&lt;h2 id=&quot;神秘的提交历史消失&quot;&gt;神秘的提交历史消失&lt;/h2&gt;
+&lt;p&gt;接下来就是文件提交历史的消失。首先我注意到文件的提交历史并没有消失,毕竟它们出现在分支的提交历史中。最初,我猜测这是我们用的工具的一个 bug ，为了证实这一点,我在 terminal 中运行了 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log -- filename&lt;/code&gt; 命令,发现竟然跟工具显示的一模一样,于是我又猜想,难道这是 git 的 bug ？直觉告诉我不可能。&lt;/p&gt;
 
-&lt;h2 id=&quot;git-log-隐藏行为&quot;&gt;git log 隐藏行为&lt;/h2&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;同时,我还发现这些消失的历史提交的一个特点,可以这样描述：一个文件提交了 n 次，假如第 2 次跟第 n-1 次提交后文件内容相同，文件提交历史就只显示 1,2,n 三个历史，第 3 次直到第 n-2 次的提交都消失不见了。&lt;/p&gt;
+
+&lt;p&gt;如果这并不是一个 bug 的话，难道这是一个特性？我不由得想起了那个笑话：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;It’s not a bug, it’s a feature .&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;想到这一点,我不由得看起了 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log&lt;/code&gt; 的帮助文档,文档有 1600 多行,我试着先查找一些关键字,比如 full ，结果还真被我很快地找到了 &lt;code class=&quot;highlighter-rouge&quot;&gt;--full-history&lt;/code&gt; 这个选项。&lt;/p&gt;
+
+&lt;p&gt;原来 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log&lt;/code&gt; 在查看某个文件提交历史时，默认下会隐藏一些提交历史。&lt;/p&gt;
+
+&lt;p&gt;这一切得先从一个关键概念开始： &lt;strong&gt;TREESAME&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;假设有一个文件 foo ，如果某次提交改变了文件的内容，那么针对文件 foo 来说，这次提交与父提交的关系就是 !TREESAME ， 否则就是 TREESAME .&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;用 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log&lt;/code&gt; 查看某个文件的提交历史，默认只会显示那些与之前任何一个父提交都是 !TREESAME 的提交，而且当一个提交是合并提交，且这个提交与其中一个父提交 TREESAME ，不显示别的父提交。&lt;/p&gt;
+
+&lt;p&gt;接下来借用文档中的例子，简单说明上面的行为。&lt;/p&gt;
+
+&lt;p&gt;下图是一个图形化的提交历史：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   .-A---M---N 
+  /     /   / 
+ I     B   C  
+  \   /   /  
+   `-------
+
+  注： &quot;A--M---N&quot; 是在 master 分支上的提交
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;I 是初始提交，这个提交新建了一个名为 foo 的文件，内容是 asdf ，因为是初始提交，所以 I 是 !TREESAME&lt;/li&gt;
+  &lt;li&gt;A 提交中，把 foo 的内容改为 foo ，显然 A 是 !TREESAME&lt;/li&gt;
+  &lt;li&gt;B 处在 I 提交之后，在其基础上 checkout 出来的一个新分支（称为 b_branch），在 B 提交中，也把 foo 的内容改为 foo ，显然 B 是 !TREESAME&lt;/li&gt;
+  &lt;li&gt;M 是在 master 分支上， A 与 B 合并得到的提交。显然 M 中 foo 的内容跟两个父提交都是一样的，所以 M 是 TREESAME&lt;/li&gt;
+  &lt;li&gt;C 处在 I 提交之后，在其基础上 checkout 出来的一个新分支（称为 c_branch），在 C 提交中，没有发动 foo 的内容，而是新增了一个文件： c_file 。显然 C 是 TREESAME&lt;/li&gt;
+  &lt;li&gt;N 是在 master 分支上， M 与 C 合并得到的提交。在 N 提交中，把 foo 的内容改变为 foobar (要做到这个点不难，在合并时带上 –no-commit 选项，之后手动修改 foo 的内容)，显然 N 是 !TREESAME&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;做完上面的步骤之后，在 master 分支上运行命令： &lt;code class=&quot;highlighter-rouge&quot;&gt;git log --oneline -- foo&lt;/code&gt; ，就会看到类似下面的提交历史：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;9959742 N
+5a52a9b A
+e6d934b I
+
+# 提交 M B C 都消失了。B 消失了是因为 M 与 A TREESAME ，M 的其他父提交（B）不显示
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;要看到较为完整的提交历史，在 master 分支上运行命令： &lt;code class=&quot;highlighter-rouge&quot;&gt;git log --oneline --full-history -- foo&lt;/code&gt; ：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;9959742 N
+0cf1684 B
+5a52a9b A
+e6d934b I
+
+#此时 M 提交仍然不显示
+#因为单独使用 `--full-history` （不带 `--parents` 或 `--children`）时不显示与两个父提交都 TREESAME 的提交
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;要看到最为完整的提交历史，在 master 分支上运行命令： &lt;code class=&quot;highlighter-rouge&quot;&gt;git log --oneline --full-history --sparse -- foo&lt;/code&gt; ：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;9959742 N
+e513d97 C
+b4cc017 M
+0cf1684 B
+5a52a9b A
+e6d934b I
+
+#这时所有的提交都显示出来了
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后，这个例子的&lt;a href=&quot;https://github.com/zymiboxpay/git_log_full_history&quot;&gt;源码&lt;/a&gt;已经上传到 github ，建议仔细看文档之余亲自动手试试。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
 

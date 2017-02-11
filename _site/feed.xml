@@ -1,5 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-07T22:09:35+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-11T14:12:57+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">微信小程序组件开发示例</title><link href="http://localhost:4000/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>http://localhost:4000/tech/2017/02/11/wechat_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;缘由&quot;&gt;缘由&lt;/h2&gt;
+
+&lt;p&gt;最近在微信小程序上要实现上传图片的功能，因为多个页面都会用到这个功能，我试着就像网页开发一样，写一个能复用的组件。&lt;/p&gt;
+
+&lt;p&gt;上传图片的功能，微信小程序已经提供了相应的组件和API，结合 weui 样式，如果不考虑复用的话，很容易实现（官方 demo 就可以拿来用 ^_^ ）。&lt;/p&gt;
+
+&lt;p&gt;如果要复用，可以利用模板，但是会面临微信小程序的很多限制。&lt;/p&gt;
+
+&lt;h2 id=&quot;限制&quot;&gt;限制&lt;/h2&gt;
+
+&lt;p&gt;举个例子，下面是一个模板文件 customer.wxml （ 注意模板文件里绑定了一个回调函数 sayHello ）&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;template name=&quot;customer&quot; data-customerid=&quot;&quot; bindtap=&quot;sayHello&quot;&amp;gt;
+  &amp;lt;text&amp;gt;{{ name }}&amp;lt;/text&amp;gt;
+  &amp;lt;text&amp;gt;{{ gender }}&amp;lt;/text&amp;gt;
+  &amp;lt;text&amp;gt;{{ age }}&amp;lt;/text&amp;gt;
+  &amp;lt;block wx:for=&quot;orders&quot; wx:for-item=&quot;order&quot;&amp;gt;
+    &amp;lt;view&amp;gt;{{order.id}}&amp;lt;/view&amp;gt;
+    &amp;lt;view&amp;gt;{{order.detail}}&amp;lt;/view&amp;gt;
+  &amp;lt;/block&amp;gt;
+&amp;lt;/template&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;页面 A.wxml 引用了这个模板文件 :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;import src=&quot;path/to/customer.wxml&quot;&amp;gt;
+&amp;lt;template is=&quot;customer&quot; data=&quot;{{...customer}}&quot;&amp;gt;&amp;lt;/template&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;如果要显示模板里的 &lt;code class=&quot;highlighter-rouge&quot;&gt;orders&lt;/code&gt; 部分，页面 A 的 js 文件里 data 必须有一个名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;customer&lt;/code&gt; 的 key （否则会报错： &lt;code class=&quot;highlighter-rouge&quot;&gt;firstRender not the data from Page.data&lt;/code&gt; ，应该是因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;setData&lt;/code&gt; 在模板解析之后执行），如果要调用模板里的回调函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;sayHello&lt;/code&gt; ，同样必须在页面 A 的 js 文件里先定义它：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// A.js
+Page({
+  data: {
+    customer: {} // 可以先写成空 hash ，稍后更新，但 key 必须先存在
+  },
+  sayHello: function(e){
+    // say hello
+    // e.target.dataset.customerid
+  }
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;解决办法&quot;&gt;解决办法&lt;/h2&gt;
+
+&lt;p&gt;因为这两个限制，必须找出一个办法让模板文件能动态改变引用它的文件（以下称为宿主）的作用域下的一些变量和方法，如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// A.js
+require('path/to/customer.js');
+
+Page({
+  data: {
+    customer: {}
+  }
+  onLoad: function(){
+    // this 是宿主的执行上下文环境
+    // this.data 可以访问 data
+    // this.setData 可以更新 data
+    // this.func = function() {} 可以往宿主增加新方法
+    new Customer(this);
+  }
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// customer.js
+// 这里用到 es6 的类定义语法
+
+class Customer {
+  constructor(pageContext){
+    this.page = pageContext
+    this.page.sayHello = this.sayHello
+  }
+
+  sayHello(e){
+    // say hello
+    // e.target.dataset.customerid
+  }
+}
+
+module.exports = Customer
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 github 源码</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
 
 &lt;p&gt;老司机最怕的就是在新手面前装逼失败,比如说我刚刚向新人传授一系列确保不覆盖别人的代码的方法,转过头就有新人(将他称为 A)反映我覆盖了他的代码。&lt;/p&gt;
 
@@ -597,97 +687,4 @@ protect_from_forgery with: :exception
 
 &lt;p&gt;不过，愿望、方法、行动三者加起来并不一定等于成功，不要忽略了 Gabriel 可是花上整整三年才完成小说创作的。你有这份坚持吗？&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;祝你好运！&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="写作" /><category term="snowflake" /><summary type="html">时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。</summary></entry><entry><title type="html">iOS浏览器内核导致 fixed 定位元素可能错位问题</title><link href="http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html" rel="alternate" type="text/html" title="iOS浏览器内核导致 fixed 定位元素可能错位问题" /><published>2016-10-12T05:32:43+08:00</published><updated>2016-10-12T05:32:43+08:00</updated><id>http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser</id><content type="html" xml:base="http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html">&lt;p&gt;在企业号某个列表页面使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;position: fixed;&lt;/code&gt; 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/problem_1.jpg&quot; alt=&quot;在 iOS 输入法未弹出时显示正常 &quot; /&gt;&lt;em&gt;在 iOS 输入法未弹出时显示正常&lt;/em&gt;
-&lt;img src=&quot;http://localhost:4000/assets/problem_2.jpg&quot; alt=&quot;在 iOS 输入法弹出后出现错位 &quot; /&gt;&lt;em&gt;在 iOS 输入法弹出后出现错位&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;出问题的页面结构大致如下，完整的代码见&lt;a href=&quot;https://gist.github.com/zymiboxpay/1e0a620284d1cf320f5f9603779a728d&quot;&gt;这里&lt;/a&gt;：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;div class=&quot;container&quot;&amp;gt;
-  &amp;lt;div class=&quot;fixed_part&quot;&amp;gt;
-    &amp;lt;input type=&quot;text&quot; placeholder=&quot;输入文字&quot;&amp;gt;
-  &amp;lt;/div&amp;gt;
-  &amp;lt;div class=&quot;overflow_part&quot;&amp;gt;
-    &amp;lt;!--items--&amp;gt;
-  &amp;lt;/div&amp;gt;
-&amp;lt;/div&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;相应的样式如下：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;.container {
-  position: relative;
-}
-.fixed_part {
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-.fixed_part &amp;gt; input {
-  width: 100%;
-  padding: 5%;
-  border: none;
-  border-bottom: 1px solid #eee;
-}
-.overflow_part .item {
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;最初遇到这个问题时，当作没看见（一，这是兼容性问题，手尾长；二，复现条件比较苛刻；三，产品经理没发现；四，手头上事情很多；五，不想做的理由总是很多），这事就过去了。&lt;/p&gt;
-
-&lt;p&gt;后来又再次遇到，一时兴起想解决它。很快找到原因（ iOS 原生浏览器内核对 fixed 定位元素渲染有 bug ），还看到有文章给出了&lt;a href=&quot;http://efe.baidu.com/blog/mobile-fixed-layout/&quot;&gt;解决方案&lt;/a&gt;。借鉴文中的思路——放弃使用 fixed 定位，同时缩窄滚动区域——给出了自己的解决方案，完整的代码见&lt;a href=&quot;https://gist.github.com/zymiboxpay/de6885576848a072b776c51acc556737&quot;&gt;这里&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;页面结构没有改变。&lt;/p&gt;
-
-&lt;p&gt;样式有大改变：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;.container {
-  /* 让容器计算出自身高度 */
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  /* 让子元素处理自身高度 */
-  display: flex;
-}
-.fixed_part {
-  /* 用 absolute 代替 fixed */
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-.fixed_part &amp;gt; input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 5%;
-  border: none;
-  border-bottom: 1px solid #eee;
-}
-.overflow_part {
-  width: 100%;
-  /* 让滚动条出现在高度超过一屏的元素上面 */
-  overflow-y: auto;
-}
-.overflow_part .item {
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这个方案的好处是不需要写死——你要这样做也是可以的——任何一个元素的高度。&lt;/p&gt;
-
-&lt;p&gt;完成后的效果图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://localhost:4000/assets/solution_1.jpg&quot; alt=&quot;在 iOS 输入法未弹出时显示正常 &quot; /&gt;&lt;em&gt;在 iOS 输入法未弹出时显示正常&lt;/em&gt;
-&lt;img src=&quot;http://localhost:4000/assets/solution_2.jpg&quot; alt=&quot;在 iOS 输入法弹出后显示正常 &quot; /&gt;&lt;em&gt;在 iOS 输入法弹出后显示正常&lt;/em&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="浏览器" /><category term="wechat" /><summary type="html">在企业号某个列表页面使用 position: fixed; 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。</summary></entry></feed>
+&lt;p&gt;&lt;strong&gt;祝你好运！&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="写作" /><category term="snowflake" /><summary type="html">时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。</summary></entry></feed>

@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>微信浏览器 location reload 失效解决办法</title>
-  <meta name="description" content="公司在微信企业号上开发了一个功能，用户通过这个功能完成一个个任务后可以获取奖励：">
+  <title>微信小程序组件开发示例</title>
+  <meta name="description" content="本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 github 源码">
   <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="http://localhost:4000/frontend/2016/07/03/wechat-reload.html">
+  <link rel="canonical" href="http://localhost:4000/tech/2017/02/11/wechat_app.html">
   <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
   
   
@@ -75,75 +75,102 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">微信浏览器 location reload 失效解决办法</h1>
-    <p class="post-meta"><time datetime="2016-07-03T06:45:16+08:00" itemprop="datePublished">Jul 3, 2016</time></p>
+    <h1 class="post-title" itemprop="name headline">微信小程序组件开发示例</h1>
+    <p class="post-meta"><time datetime="2017-02-11T11:09:57+08:00" itemprop="datePublished">Feb 11, 2017</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p>公司在微信企业号上开发了一个功能，用户通过这个功能完成一个个任务后可以获取奖励：</p>
+    <p><strong>本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 <a href="https://github.com/yiyizym/wechat_mini_program_upload_img_module" target="_blank">github 源码</a></strong></p>
 
-<ul>
-  <li>用户首先进入页面 A 查看任务列表，列表中每一个任务都有各自的状态，一共有 5 个： 从状态 1 到状态 5 ；</li>
-  <li>用户点击页面 A 中的某个条目进入页面 B 查看任务详情，用户需要在 B 页面先后进行 5 个操作更新任务状态，每个操作都会刷新页面 B 。</li>
-</ul>
+<h2 id="缘由">缘由</h2>
 
-<p>在微信开发者工具上测试一切正常。但测试 Android ——苹果上没有问题—— 真机就发现一个很严重的 BUG ：每个操作成功后页面 B 并不刷新。</p>
+<p>最近在微信小程序上要实现上传图片的功能，因为多个页面都会用到这个功能，我试着就像网页开发一样，写一个能复用的组件。</p>
 
-<p>刷新用的方法是简单的 <code class="highlighter-rouge">location.reload()</code> ，据网友反馈，失败的原因是微信浏览器缓存了 reload 请求。</p>
+<p>上传图片的功能，微信小程序已经提供了相应的组件和API，结合 weui 样式，如果不考虑复用的话，很容易实现（官方 demo 就可以拿来用 ^_^ ）。</p>
 
-<p>一提到解决浏览器缓存问题，自然会想到给资源加上指纹。</p>
+<p>如果要复用，可以利用模板，但是会面临微信小程序的很多限制。</p>
 
-<p>这能解决问题，不过不管怎么说都是特殊处理，最好只针对 Android 微信浏览器使用，所以：</p>
+<h2 id="限制">限制</h2>
 
-<p>首先判断请求是否来自 Android 微信浏览器：</p>
+<p>举个例子，下面是一个模板文件 customer.wxml （ 注意模板文件里绑定了一个回调函数 sayHello ）</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>var isAndroidWechat = function(){
-  return (/android/i).test(window.navigator.userAgent) &amp;&amp; (/micromessenger/i).test(window.navigator.userAgent)
-};
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;template name="customer" data-customerid="" bindtap="sayHello"&gt;
+  &lt;text&gt;{{ name }}&lt;/text&gt;
+  &lt;text&gt;{{ gender }}&lt;/text&gt;
+  &lt;text&gt;{{ age }}&lt;/text&gt;
+  &lt;block wx:for="orders" wx:for-item="order"&gt;
+    &lt;view&gt;{{order.id}}&lt;/view&gt;
+    &lt;view&gt;{{order.detail}}&lt;/view&gt;
+  &lt;/block&gt;
+&lt;/template&gt;
 </code></pre>
 </div>
 
-<p>如果 isAndroidWechat 为 true ，则在 url 上加上指纹：</p>
+<p>页面 A.wxml 引用了这个模板文件 :</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>var reload = function(){
-  var hash = +(new Date());
-  var new_search = (/wechat_hash/).test(location.search) ? 
-    // 如果之前有添加过指纹，就更新它
-    location.search.replace(/wechat_hash=\d+(&amp;?)/,'wechat_hash=' + hash + '$1') :
-    // 如果 search 为空
-    location.search == "" ?
-    '?wechat_hash=' + hash :
-    // 如果 search 不为空
-    location.search + '&amp;wechat_hash=' + hash;
-  // 重新加载页面
-  location.reload(true);
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;import src="path/to/customer.wxml"&gt;
+&lt;template is="customer" data="{{...customer}}"&gt;&lt;/template&gt;
+</code></pre>
+</div>
+
+<p>如果要显示模板里的 <code class="highlighter-rouge">orders</code> 部分，页面 A 的 js 文件里 data 必须有一个名为 <code class="highlighter-rouge">customer</code> 的 key （否则会报错： <code class="highlighter-rouge">firstRender not the data from Page.data</code> ，应该是因为 <code class="highlighter-rouge">setData</code> 在模板解析之后执行），如果要调用模板里的回调函数 <code class="highlighter-rouge">sayHello</code> ，同样必须在页面 A 的 js 文件里先定义它：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// A.js
+Page({
+  data: {
+    customer: {} // 可以先写成空 hash ，稍后更新，但 key 必须先存在
+  },
+  sayHello: function(e){
+    // say hello
+    // e.target.dataset.customerid
+  }
+})
+</code></pre>
+</div>
+
+<h2 id="解决办法">解决办法</h2>
+
+<p>因为这两个限制，必须找出一个办法让模板文件能动态改变引用它的文件（以下称为宿主）的作用域下的一些变量和方法，如下：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// A.js
+require('path/to/customer.js');
+
+Page({
+  data: {
+    customer: {}
+  }
+  onLoad: function(){
+    // this 是宿主的执行上下文环境
+    // this.data 可以访问 data
+    // this.setData 可以更新 data
+    // this.func = function() {} 可以往宿主增加新方法
+    new Customer(this);
+  }
+})
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// customer.js
+// 这里用到 es6 的类定义语法
+
+class Customer {
+  constructor(pageContext){
+    this.page = pageContext
+    this.page.sayHello = this.sayHello
+  }
+
+  sayHello(e){
+    // say hello
+    // e.target.dataset.customerid
+  }
 }
+
+module.exports = Customer
+
 </code></pre>
 </div>
 
-<p>这样看着还不错，不过很快就遇到新问题：如果在页面 B 先后进行了 4 次操作，这时点击后退按钮 ，还是会停留在页面 B ，要点击 4 次才能回到页面 A 。浏览器历史忠实地记录了我们先后 4 次更改 location.search 的操作。要立即返回页面 A ，我们还得更改历史：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>var reload = function(){
-  var hash = +(new Date());
-  var new_search = (/wechat_hash/).test(location.search) ? 
-    // 如果之前有添加过指纹，就更新它
-    location.search.replace(/wechat_hash=\d+(&amp;?)/,'wechat_hash=' + hash + '$1') :
-    location.search == "" ?
-    // 如果 search 为空
-    '?wechat_hash=' + hash :
-    // 如果 search 不为空
-    location.search + '&amp;wechat_hash=' + hash;
-  // 修改浏览器历史
-  var current_title = document.title;
-  var new_uri = location.origin + location.pathname + new_search;
-  history.replaceState(null, current_title, new_uri);
-  // 重新加载页面
-  location.reload(true);
-};
-</code></pre>
-</div>
-
-<p>最后，完成的代码及测试例子已上传到 <a href="https://github.com/yiyizym/wechat_reload">github</a> 。</p>
+<p>本文关于微信小程序的组件开发关键点介绍完毕，<a href="https://github.com/yiyizym/wechat_mini_program_upload_img_module" target="_blank">源码</a> 还展示了如何 设置组件的默认配置以及更改组件的回调方法。</p>
 
   </div>
 

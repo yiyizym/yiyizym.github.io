@@ -94,7 +94,7 @@
 
 <p>举个例子，下面是一个模板文件 customer.wxml （ 注意模板文件里绑定了一个回调函数 sayHello ）</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>&lt;template name="customer" data-customerid="" bindtap="sayHello"&gt;
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;template name="customer" data-customerid="{{ id }}" bindtap="sayHello"&gt;
   &lt;text&gt;{{ name }}&lt;/text&gt;
   &lt;text&gt;{{ gender }}&lt;/text&gt;
   &lt;text&gt;{{ age }}&lt;/text&gt;
@@ -113,7 +113,7 @@
 </code></pre>
 </div>
 
-<p>如果要显示模板里的 <code class="highlighter-rouge">orders</code> 部分，页面 A 的 js 文件里 data 必须有一个名为 <code class="highlighter-rouge">customer</code> 的 key （否则会报错： <code class="highlighter-rouge">firstRender not the data from Page.data</code> ，应该是因为 <code class="highlighter-rouge">setData</code> 在模板解析之后执行），如果要调用模板里的回调函数 <code class="highlighter-rouge">sayHello</code> ，同样必须在页面 A 的 js 文件里先定义它：</p>
+<p>如果要显示模板里的 <code class="highlighter-rouge">orders</code> 部分，页面 A 的 js 文件里 data 必须有一个名为 <code class="highlighter-rouge">customer</code> 的 key （可以通过 setData 设置 name/gender/age ，但不能通过 setData 设置 orders ，这样会报错。猜测是因为 <code class="highlighter-rouge">setData</code> 在模板解析之后执行，解析模板时 name/gender/age/orders 都为 undefined ，name/gender/age 为 undefined 时不显示就行，但 wx:for 会遍历 orders ，遍历时调用 hasOwnProperty 方法，这时就报错了。），如果要调用模板里的回调函数 <code class="highlighter-rouge">sayHello</code> ，同样必须在页面 A 的 js 文件里先定义它：</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code>// A.js
 Page({

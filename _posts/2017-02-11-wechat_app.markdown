@@ -42,7 +42,7 @@ tags:
 <template is="customer" data="{% raw  %}{{...customer}}{% endraw %}"></template>
 ```
 
-如果要显示模板里的 `orders` 部分，页面 A 的 js 文件里 data 必须有一个名为 `customer` 的 key （否则会报错： `firstRender not the data from Page.data` ，应该是因为 `setData` 在模板解析之后执行），如果要调用模板里的回调函数 `sayHello` ，同样必须在页面 A 的 js 文件里先定义它：
+如果要显示模板里的 `orders` 部分，页面 A 的 js 文件里 data 必须有一个名为 `customer` 的 key （可以通过 setData 设置 name/gender/age ，但不能通过 setData 设置 orders ，这样会报错。猜测是因为 `setData` 在模板解析之后执行，解析模板时 name/gender/age/orders 都为 undefined ，name/gender/age 为 undefined 时不显示就行，但 wx:for 会遍历 orders ，遍历时调用 hasOwnProperty 方法，这时就报错了。），如果要调用模板里的回调函数 `sayHello` ，同样必须在页面 A 的 js 文件里先定义它：
 
 ```
 // A.js

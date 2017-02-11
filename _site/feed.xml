@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-11T14:12:57+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-02-12T00:04:21+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">微信小程序组件开发示例</title><link href="http://localhost:4000/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>http://localhost:4000/tech/2017/02/11/wechat_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;缘由&quot;&gt;缘由&lt;/h2&gt;
@@ -13,7 +13,7 @@
 
 &lt;p&gt;举个例子，下面是一个模板文件 customer.wxml （ 注意模板文件里绑定了一个回调函数 sayHello ）&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;template name=&quot;customer&quot; data-customerid=&quot;&quot; bindtap=&quot;sayHello&quot;&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;template name=&quot;customer&quot; data-customerid=&quot;{{ id }}&quot; bindtap=&quot;sayHello&quot;&amp;gt;
   &amp;lt;text&amp;gt;{{ name }}&amp;lt;/text&amp;gt;
   &amp;lt;text&amp;gt;{{ gender }}&amp;lt;/text&amp;gt;
   &amp;lt;text&amp;gt;{{ age }}&amp;lt;/text&amp;gt;
@@ -32,7 +32,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;如果要显示模板里的 &lt;code class=&quot;highlighter-rouge&quot;&gt;orders&lt;/code&gt; 部分，页面 A 的 js 文件里 data 必须有一个名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;customer&lt;/code&gt; 的 key （否则会报错： &lt;code class=&quot;highlighter-rouge&quot;&gt;firstRender not the data from Page.data&lt;/code&gt; ，应该是因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;setData&lt;/code&gt; 在模板解析之后执行），如果要调用模板里的回调函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;sayHello&lt;/code&gt; ，同样必须在页面 A 的 js 文件里先定义它：&lt;/p&gt;
+&lt;p&gt;如果要显示模板里的 &lt;code class=&quot;highlighter-rouge&quot;&gt;orders&lt;/code&gt; 部分，页面 A 的 js 文件里 data 必须有一个名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;customer&lt;/code&gt; 的 key （可以通过 setData 设置 name/gender/age ，但不能通过 setData 设置 orders ，这样会报错。猜测是因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;setData&lt;/code&gt; 在模板解析之后执行，解析模板时 name/gender/age/orders 都为 undefined ，name/gender/age 为 undefined 时不显示就行，但 wx:for 会遍历 orders ，遍历时调用 hasOwnProperty 方法，这时就报错了。），如果要调用模板里的回调函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;sayHello&lt;/code&gt; ，同样必须在页面 A 的 js 文件里先定义它：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// A.js
 Page({

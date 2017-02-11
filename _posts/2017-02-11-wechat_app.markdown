@@ -24,7 +24,7 @@ tags:
 举个例子，下面是一个模板文件 customer.wxml （ 注意模板文件里绑定了一个回调函数 sayHello ）
 
 ```
-<template name="customer" data-customerid="{{id}}" bindtap="sayHello">
+<template name="customer" data-customerid="{% raw  %}{{ id }}{% endraw %}" bindtap="sayHello">
   <text>{% raw  %}{{ name }}{% endraw %}</text>
   <text>{% raw  %}{{ gender }}{% endraw %}</text>
   <text>{% raw  %}{{ age }}{% endraw %}</text>

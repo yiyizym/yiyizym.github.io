@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>vim 使用指南</title>
-  <meta name="description" content="想起一个笑话： 问：要怎样才能生成一个随机字符串呢？ 答：让一个新手退出 vim">
+  <meta name="description" content="想起一个笑话：">
   <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
   <link rel="stylesheet" href="/assets/main.css">
   <link rel="canonical" href="http://localhost:4000/tech/2016/03/26/how-to-vim.html">
@@ -81,6 +81,7 @@
 
   <div class="post-content" itemprop="articleBody">
     <p>想起一个笑话：</p>
+
 <ul>
   <li>问：要怎样才能生成一个随机字符串呢？</li>
   <li>答：让一个新手退出 vim</li>
@@ -98,11 +99,14 @@
 
 <p>不知道你有没有发觉，入门教程以及网上其他一些教程只会教你删除一个单词或者删除一行，并没有教你删除从光标所在位置到同一行指定位置之间的单词，例如要删除下面这行文字中从 happens 到 till 之间的所有文字：</p>
 
-<p>Magic happens when you combine the motions find and till with operators</p>
+<blockquote>
+  <p>Magic happens when you combine the motions find and till with operators</p>
+</blockquote>
 
 <p>你大概会图省事一直按<code class="highlighter-rouge">x</code>，或者先按<code class="highlighter-rouge">dw</code>，再一直按<code class="highlighter-rouge">.</code>，直到删光till前面的单词；这里介绍另外一种方法：<code class="highlighter-rouge">dtt</code>命令。</p>
 
 <p><code class="highlighter-rouge">dtt</code>命令由三个字母组成，每个字母都有其意义：</p>
+
 <ul>
   <li><code class="highlighter-rouge">d</code> 代表一种操作，这里是删除，还可以是<code class="highlighter-rouge">yfcv</code>中的任意一个</li>
   <li><code class="highlighter-rouge">t</code> 代表一种匹配范围，这里是‘直到’，还可以是<code class="highlighter-rouge">fia</code>中的任意一个。举例解释比较好：

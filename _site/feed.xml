@@ -1,5 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-02-21T21:51:50+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">微信小程序组件开发示例</title><link href="https://judes.me/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>https://judes.me/tech/2017/02/11/wechat_app</id><content type="html" xml:base="https://judes.me/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-02-25T15:22:17+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">《人类简史》感想</title><link href="https://judes.me/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>https://judes.me/reading/2017/02/25/history_of_human</id><content type="html" xml:base="https://judes.me/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;人类（智人）为什么能在漫长的物种演化中胜出？&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;不少书中都回答过类似的问题，答案五花八门，有：直立行走解放了双手,能使用工具;使用火来烤熟食物,减少消化时间和疾病;汗腺发达,在白天也能觅食;会使用语言等等。《人类简史》这本书给出了另外一种可能性:人类会讲虚构故事。&lt;/p&gt;
+
+&lt;p&gt;人除了像某些动物一样会使用语言发出“狮子来了”的警告信号，还能说些虚构故事：包括种族成员之间的八卦故事,以及不存在的神话故事。虚构故事能组织、维系大规模的群体共同协作、抵抗其他物种。&lt;/p&gt;
+
+&lt;p&gt;譬如体力（甚至智力）比智人要好的尼安德特人，最终在与智人的竞争中落败，书中相信原因就在于尼安德特人没能用虚构故事组织起群体对抗智人的入侵。&lt;/p&gt;
+
+&lt;p&gt;人类用虚构故事组织起帝国、宗教、贸易；就算在科技高度发展的今天，仍然用虚构故事来建立让社会稳定运行的秩序。&lt;/p&gt;
+
+&lt;p&gt;作为个体，人无时无刻不活在被广泛接受的共同虚构故事当中：&lt;/p&gt;
+
+&lt;p&gt;“人人生而平等”实际上是一个虚构故事，至少在人文主义兴起之前，这个想法并没有存在于人的脑袋里头。&lt;/p&gt;
+
+&lt;p&gt;又有，当下流行的一句话：来一场说走就走的旅行。旅行是从什么时候开始让人向往的呢？是不是因为有了浪漫主义和消费主义才让人产生这种想法呢？&lt;/p&gt;
+
+&lt;p&gt;因为人与虚构故事的这一层关系，人是不是变得比从前更快乐、人活着的是不是有意义等等都成了问题。&lt;/p&gt;
+
+&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="https://judes.me/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>https://judes.me/tech/2017/02/11/wechat_app</id><content type="html" xml:base="https://judes.me/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;缘由&quot;&gt;缘由&lt;/h2&gt;
 
@@ -601,90 +623,4 @@ protect_from_forgery with: :exception
 
 &lt;p&gt;&lt;strong&gt;总结&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="rails" /><category term="frontend" /><category term="CSRF" /><summary type="html">最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</summary></entry><entry><title type="html">雪花分形</title><link href="https://judes.me/life/2016/11/08/snowflake-method.html" rel="alternate" type="text/html" title="雪花分形" /><published>2016-11-08T06:04:44+08:00</published><updated>2016-11-08T06:04:44+08:00</updated><id>https://judes.me/life/2016/11/08/snowflake-method</id><content type="html" xml:base="https://judes.me/life/2016/11/08/snowflake-method.html">&lt;p&gt;时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。&lt;/p&gt;
-
-&lt;p&gt;被各种文章鼓舞，每天动手写一百几十字，几十天之后，发觉自己写的简直就是一页页垃圾。&lt;/p&gt;
-
-&lt;p&gt;没错，上面说的就是我。&lt;/p&gt;
-
-&lt;p&gt;我深受打击，再也不相信那些所谓的“写作训练”，还有那些教你“成为作家”的空话。&lt;/p&gt;
-
-&lt;p&gt;但我一直坚信：伟大的作品，倚仗超群的天赋，可望而不可及；但优秀的作品完全可以用规律、技巧写就，再精心打磨而成。&lt;/p&gt;
-
-&lt;p&gt;就这样过了很久，一天在看湾区日报的&lt;a href=&quot;https://medium.com/@gabrielgambetta/how-i-wrote-my-first-novel-during-my-daily-commute-e1d02c9447b9&quot;&gt;这篇文章&lt;/a&gt;时，找到共鸣了。&lt;/p&gt;
-
-&lt;p&gt;文章的作者是一个程序员，叫 Gabriel Gambetta ，他利用每天上下班的通勤时间写成一本小说。光成写好一本几百页的小说没什么值得关注的，有意思的是他在文章中分享了写小说的具体策略：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;找一个模仿对象。他喜欢丹布朗，就把丹布朗的几本小说细读一遍，用 excel 表格列出它们的每一章的故事情节或者人物关系。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;阅读大量关于写作的书籍，学习写作原理、技巧。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;按照 &lt;a href=&quot;http://www.advancedfictionwriting.com/articles/snowflake-method/&quot;&gt;Snowflake method&lt;/a&gt; ，把自己的小说逐渐由一句话扩展为一段话，再到几句纸、一本小说。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;整个过程持续三年。&lt;/p&gt;
-
-&lt;p&gt;我想觉得每一步都走得十分好：&lt;/p&gt;
-
-&lt;p&gt;每个人都有自己欣赏的作家，模仿他的技法不失为好开始。&lt;/p&gt;
-
-&lt;p&gt;模仿能得到相似的套路，却没有看到背后的原理、规律，很难在日后运用自如，因此学习写作原理、技巧必不可少。（这方面的中文书籍，有《经典人物原型45种》、《小说写作教程》、《有效写作13篇》等等）&lt;/p&gt;
-
-&lt;p&gt;最后，写小说是一个大型、复杂的工程项目，得找一套能保证项目质量稳定、进展顺利的方法。这个方法就是接下来要说的 Snowflake method （下称雪花分形方法）。&lt;/p&gt;
-
-&lt;p&gt;雪花分形方法是一套完整的小说创作方法，名字来源于计算机画雪花的几个步骤：从粗略大致到具体细致。适合那些习惯做事前先从整体规划，再逐渐细化执行的人。（如果你偏好斯蒂芬·金信马由缰式的创作手法，这种方法就不适合你了。）&lt;/p&gt;
-
-&lt;p&gt;雪花分形方法大致有以下几个步骤：&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;用一句话总结小说的内容&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;把这句话扩写成一段话（包含 5 个句子），要有故事开头（1句）、主角经受的主要磨难（3句）以及结尾（1句）&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;塑造主要人物。每个主要人物都要用一页篇幅讲述他的以下特征：
-    &lt;ol&gt;
-      &lt;li&gt;姓名&lt;/li&gt;
-      &lt;li&gt;一句话总结的角色故事情节&lt;/li&gt;
-      &lt;li&gt;角色的动机（偏向于抽象的）&lt;/li&gt;
-      &lt;li&gt;角色的目标（偏向于具体的）&lt;/li&gt;
-      &lt;li&gt;阻碍角色达到目标的事物&lt;/li&gt;
-      &lt;li&gt;角色最终的感悟&lt;/li&gt;
-      &lt;li&gt;一段话总结的角色故事情节&lt;/li&gt;
-    &lt;/ol&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;扩写之前的（即第 2 步完成的）那段故事梗概，将一段扩充成一页&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;为每个主要角色写上一页纸的描述，为其他重要角色也写上半页描述。主要是从每个角色的角度去描述整个故事&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;把在第 4 步中完成的一页纸的故事概述，扩写成四页&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;把每个角色的所有资料都完善好。最重要的是要写清楚：在故事的末尾，角色有了什么样的转变、收获&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;把在第 6 步中完成的四页纸中出现的故事场景，用 excel 一条一条记下来。一行一个场景，一行有多列，一列是故事情节，一列是出场人物，一列是大约写多少页&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;把第 8 步中完成的每一条场景扩写成一段，要在每一段中出现冲突，如果很难做到，就可以把它从 excel 中去掉&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;开始写初稿&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;不断地打磨作品&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;看到这里，是不是变得自信满满跃跃欲试了？&lt;/p&gt;
-
-&lt;p&gt;不过，愿望、方法、行动三者加起来并不一定等于成功，不要忽略了 Gabriel 可是花上整整三年才完成小说创作的。你有这份坚持吗？&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;祝你好运！&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="写作" /><category term="snowflake" /><summary type="html">时常在看完一本精彩小说后，冒出什么时候自己也写一本的念头。</summary></entry></feed>
+&lt;p&gt;Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="rails" /><category term="frontend" /><category term="CSRF" /><summary type="html">最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</summary></entry></feed>

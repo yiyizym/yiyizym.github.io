@@ -9,7 +9,9 @@ tags:
 - 插件
 ---
 
-**本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 [github 源码](https://github.com/yiyizym/wechat_mini_program_upload_img_module){:target="_blank"}**
+**2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例**
+
+本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 [github 源码](https://github.com/yiyizym/wechat_mini_program_upload_img_module){:target="_blank"}
 
 ## 缘由 
 
@@ -86,7 +88,7 @@ Page({
 class Customer {
   constructor(pageContext){
     this.page = pageContext
-    this.page.sayHello = this.sayHello
+    this.page.sayHello = this.sayHello.bind(this)
   }
 
   sayHello(e){

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-02-25T15:22:17+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-02-26T12:15:50+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">《人类简史》感想</title><link href="https://judes.me/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>https://judes.me/reading/2017/02/25/history_of_human</id><content type="html" xml:base="https://judes.me/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
 
 &lt;blockquote&gt;
@@ -21,7 +21,9 @@
 
 &lt;p&gt;因为人与虚构故事的这一层关系，人是不是变得比从前更快乐、人活着的是不是有意义等等都成了问题。&lt;/p&gt;
 
-&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="https://judes.me/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>https://judes.me/tech/2017/02/11/wechat_app</id><content type="html" xml:base="https://judes.me/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="https://judes.me/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>https://judes.me/tech/2017/02/11/wechat_app</id><content type="html" xml:base="https://judes.me/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;缘由&quot;&gt;缘由&lt;/h2&gt;
 
@@ -97,7 +99,7 @@ Page({
 class Customer {
   constructor(pageContext){
     this.page = pageContext
-    this.page.sayHello = this.sayHello
+    this.page.sayHello = this.sayHello.bind(this)
   }
 
   sayHello(e){
@@ -111,7 +113,7 @@ module.exports = Customer
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 github 源码</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="https://judes.me/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>https://judes.me/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="https://judes.me/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
+&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="https://judes.me/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>https://judes.me/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="https://judes.me/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
 
 &lt;p&gt;老司机最怕的就是在新手面前装逼失败,比如说我刚刚向新人传授一系列确保不覆盖别人的代码的方法,转过头就有新人(将他称为 A)反映我覆盖了他的代码。&lt;/p&gt;
 

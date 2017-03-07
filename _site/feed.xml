@@ -1,5 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-02-26T12:15:50+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">《人类简史》感想</title><link href="https://judes.me/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>https://judes.me/reading/2017/02/25/history_of_human</id><content type="html" xml:base="https://judes.me/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-07T08:40:45+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章，在那之后，我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;选型&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;一个刚启动的项目，做成网页的形式最快收获用户。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;我打算先做一个原型。原型的话，网页是最容易做的。在技术选型时我不想依靠思维惯性，抓起身边的 Bootstrap 和 jQuery 撸起袖子就是干，这样多没意思啊。&lt;/p&gt;
+
+&lt;p&gt;这时听说 vuejs 出 2.0 ，虽然没怎么用过 vuejs ，要不试着用一用？将来也好说自己用过 vue 2.0 嘛 =w= 于是，开始一边看着文档，一边敲代码。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;在工作中，这样的选型思路非常危险哦，除非是玩票项目且完全不在乎成败，又想任性一把&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;踩坑&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;加个后台吧&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;后记&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">缘起</summary></entry><entry><title type="html">《人类简史》感想</title><link href="http://localhost:4000/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>http://localhost:4000/reading/2017/02/25/history_of_human</id><content type="html" xml:base="http://localhost:4000/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;人类（智人）为什么能在漫长的物种演化中胜出？&lt;/p&gt;
@@ -21,7 +41,7 @@
 
 &lt;p&gt;因为人与虚构故事的这一层关系，人是不是变得比从前更快乐、人活着的是不是有意义等等都成了问题。&lt;/p&gt;
 
-&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="https://judes.me/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>https://judes.me/tech/2017/02/11/wechat_app</id><content type="html" xml:base="https://judes.me/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="http://localhost:4000/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>http://localhost:4000/tech/2017/02/11/wechat_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/p&gt;
 
@@ -113,7 +133,7 @@ module.exports = Customer
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="https://judes.me/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>https://judes.me/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="https://judes.me/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
+&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
 
 &lt;p&gt;老司机最怕的就是在新手面前装逼失败,比如说我刚刚向新人传授一系列确保不覆盖别人的代码的方法,转过头就有新人(将他称为 A)反映我覆盖了他的代码。&lt;/p&gt;
 
@@ -213,7 +233,7 @@ e6d934b I
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;最后，这个例子的&lt;a href=&quot;https://github.com/zymiboxpay/git_log_full_history&quot;&gt;源码&lt;/a&gt;已经上传到 github ，建议仔细看文档之余亲自动手试试。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="https://judes.me/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>https://judes.me/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="https://judes.me/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;最后，这个例子的&lt;a href=&quot;https://github.com/zymiboxpay/git_log_full_history&quot;&gt;源码&lt;/a&gt;已经上传到 github ，建议仔细看文档之余亲自动手试试。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
 
@@ -251,7 +271,7 @@ e6d934b I
 
 &lt;p&gt;回顾近两年所经历的敏捷开发,我总结出敏捷开发是一整套对所有参与其中的人员有着高要求的规范:他要求所有人主动承担整个产品的责任,人与人之间要密切沟通交流,最重要的是要求尽早的交付给客户有价值的能满足用户需要的产品。&lt;/p&gt;
 
-&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="https://judes.me/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>https://judes.me/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="https://judes.me/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
+&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>http://localhost:4000/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
 
 &lt;p&gt;我知道方法越短越好，但一旦自己写起短代码来，就导致一个简单的功能，实现代码会嵌套四/五层，曾经因此被人说过“代码分得太细”，我自己读着的感觉也不好：虽然方法都短小，但不易懂。&lt;/p&gt;
 
@@ -302,7 +322,7 @@ end
 
 &lt;p&gt;“方法只做一件事”，出自「clean code」。如果在我刚当程序员的时候看这本书，或许不会像如今有这么大收获，那时写过的代码少，遇到的问题也少，有过困惑和思考的就更少了；现在的我，看书的每一节都能联系到自己一直以来遇到过的、思考过的问题，这些问题有的已经有了模糊答案，有的想不明白，不论怎样书中的解释总能带给我新的启发。&lt;/p&gt;
 
-&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="https://judes.me/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>https://judes.me/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="https://judes.me/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
+&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
 
 &lt;p&gt;之所以要自己读一读，是因为觉得看这种被人消化过的二手知识不好：一是会被他人的偏见带跑，二是理解不深刻，三是没有学到书本作者得出结论的具体方法。&lt;/p&gt;
 
@@ -334,7 +354,7 @@ end
 
 &lt;p&gt;除了背单词，看完一篇文章、学到一个暂时用不到的知识，受这本书的影响，我都用 xmind 整理一下。读懂作者所说，只是在被动接受，注意力集中在细节上面；而把它们整理一下，就是从整体层面上，用自己的理解重新组织知识、取重点、舍弃细节。这其实就是另一种的“建立心理表征”。&lt;/p&gt;
 
-&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry><entry><title type="html">逝去的 2016</title><link href="https://judes.me/life/2016/12/18/my-2016.html" rel="alternate" type="text/html" title="逝去的 2016" /><published>2016-12-18T05:12:06+08:00</published><updated>2016-12-18T05:12:06+08:00</updated><id>https://judes.me/life/2016/12/18/my-2016</id><content type="html" xml:base="https://judes.me/life/2016/12/18/my-2016.html">&lt;p&gt;下面用一句话来描述今年作为程序员的我：&lt;/p&gt;
+&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry><entry><title type="html">逝去的 2016</title><link href="http://localhost:4000/life/2016/12/18/my-2016.html" rel="alternate" type="text/html" title="逝去的 2016" /><published>2016-12-18T05:12:06+08:00</published><updated>2016-12-18T05:12:06+08:00</updated><id>http://localhost:4000/life/2016/12/18/my-2016</id><content type="html" xml:base="http://localhost:4000/life/2016/12/18/my-2016.html">&lt;p&gt;下面用一句话来描述今年作为程序员的我：&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;我享受编程的乐趣，也想用自身所学，做个有一点受众的产品。&lt;/p&gt;
@@ -368,7 +388,7 @@ end
   &lt;p&gt;要得到自己所想的，就先设立最终目标，然后把最终目标分解成大中小目标，努力去完成一个个小目标，定期检查付出的努力是不是达到既定目标，如果没有，就改变努力的方式，甚至改变自己一直改不了的性格、做事方式、缺点，反复检查改变后的成效，如果某个目标最终完成不了，就根据实际调整目标。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry><entry><title type="html">模糊的正确</title><link href="https://judes.me/life/2016/12/05/simplify-bayes-theorem.html" rel="alternate" type="text/html" title="模糊的正确" /><published>2016-12-05T05:30:28+08:00</published><updated>2016-12-05T05:30:28+08:00</updated><id>https://judes.me/life/2016/12/05/simplify-bayes-theorem</id><content type="html" xml:base="https://judes.me/life/2016/12/05/simplify-bayes-theorem.html">&lt;p&gt;在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：&lt;/p&gt;
+&lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry><entry><title type="html">模糊的正确</title><link href="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html" rel="alternate" type="text/html" title="模糊的正确" /><published>2016-12-05T05:30:28+08:00</published><updated>2016-12-05T05:30:28+08:00</updated><id>http://localhost:4000/life/2016/12/05/simplify-bayes-theorem</id><content type="html" xml:base="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html">&lt;p&gt;在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;如果在每 1000 人中有 1 个人携带艾滋病的病毒(HIV)， 
@@ -467,11 +487,11 @@ P(H|+) = P(+,H) / P(+) = P(+|H) * P(H) / P(+)
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/zh-cn/条件概率&quot;&gt;条件概率&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/贝叶斯定理&quot;&gt;贝叶斯定理&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：</summary></entry><entry><title type="html">web 版微信通讯录</title><link href="https://judes.me/frontend/2016/11/27/wx-contacts.html" rel="alternate" type="text/html" title="web 版微信通讯录" /><published>2016-11-27T01:54:03+08:00</published><updated>2016-11-27T01:54:03+08:00</updated><id>https://judes.me/frontend/2016/11/27/wx-contacts</id><content type="html" xml:base="https://judes.me/frontend/2016/11/27/wx-contacts.html">&lt;p&gt;这个通讯录现在长这个样子：
+&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：</summary></entry><entry><title type="html">web 版微信通讯录</title><link href="http://localhost:4000/frontend/2016/11/27/wx-contacts.html" rel="alternate" type="text/html" title="web 版微信通讯录" /><published>2016-11-27T01:54:03+08:00</published><updated>2016-11-27T01:54:03+08:00</updated><id>http://localhost:4000/frontend/2016/11/27/wx-contacts</id><content type="html" xml:base="http://localhost:4000/frontend/2016/11/27/wx-contacts.html">&lt;p&gt;这个通讯录现在长这个样子：
 &lt;img src=&quot;http://ww4.sinaimg.cn/large/60cdc5a5gw1fa5mumuv6sg20aw0j0kjm.gif&quot; alt=&quot;幼年期&quot; /&gt;&lt;em&gt;幼年期&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;以后可能就是这个样子了（我不保证）：
-&lt;img src=&quot;https://judes.me/assets/will_be.jpg&quot; alt=&quot;完全体&quot; /&gt;&lt;em&gt;完全体&lt;/em&gt;&lt;/p&gt;
+&lt;img src=&quot;http://localhost:4000/assets/will_be.jpg&quot; alt=&quot;完全体&quot; /&gt;&lt;em&gt;完全体&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;如果我最后放弃改进它，你可以在&lt;a href=&quot;https://github.com/yiyizym/contacts&quot; target=&quot;_blank&quot;&gt;这里&lt;/a&gt;找到源码，然后自己作修改。&lt;/p&gt;
 
@@ -538,91 +558,4 @@ P(H|+) = P(+,H) / P(+) = P(+|H) * P(H) / P(+)
 &lt;p&gt;然后对同属一个类别下的联系人排序。排序是个有意思的工作，要选那些可以实现快速插入新元素的算法。&lt;/p&gt;
 
 &lt;p&gt;不过在此之前，得先写一篇介绍这个插件的文章，宣传一下这个好东西。我现在很想在付出更大努力前，想办法知道值不值得。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="wechat" /><category term="微信" /><category term="frontend" /><summary type="html">这个通讯录现在长这个样子：
-幼年期</summary></entry><entry><title type="html">Rails 的 CSRF 对策</title><link href="https://judes.me/tech/2016/11/13/csrf-protect-from-forgery.html" rel="alternate" type="text/html" title="Rails 的 CSRF 对策" /><published>2016-11-13T06:33:28+08:00</published><updated>2016-11-13T06:33:28+08:00</updated><id>https://judes.me/tech/2016/11/13/csrf-protect-from-forgery</id><content type="html" xml:base="https://judes.me/tech/2016/11/13/csrf-protect-from-forgery.html">&lt;p&gt;最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。&lt;/p&gt;
-
-&lt;p&gt;原有的流程十分复杂，移植时想着后台代码能不改就不改，前端代码能重用的就重用。&lt;/p&gt;
-
-&lt;p&gt;其中有一步是前端提交一个表单，后台根据处理结果，分别重定向到成功和失败页面。&lt;/p&gt;
-
-&lt;p&gt;在 AJAX 流行之前，这是标准的做法（简单且重定向有效防止重复提交表单）。&lt;/p&gt;
-
-&lt;p&gt;如今要用 AJAX 模拟表单提交很容易，但接下来要重定向页面就有点困难了。简单的做法就是创建一个表单元素，然后塞一些 input 元素进去，再调用表单元素的 submit 方法：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var form = document.createElement('form');
-form.method = 'post'
-form.action = '/where/to/post'
-var input_1 = document.createElement('input');
-input_1.name = 'name_1';
-input_1.type = 'hidden';
-input_1.val = 'val_1';
-
-form.appendChild(input_1);
-document.body.appendChild(form);
-
-form.submit();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;(想来想去，与其写这么多 javascript ，还不如直接在 html 里放一个隐藏的表单元素。自己纯粹就是闲的)&lt;/p&gt;
-
-&lt;p&gt;单看上面这段代码应该没问题，但实际上有很大的安全隐患，在 Rails 中会提交失败。&lt;/p&gt;
-
-&lt;p&gt;这个安全隐患就是提交到这个路径 ‘/where/to/post’ 的表单很容易被伪造，后台没办法区分伪造的表单和正常的表单。这就是 cross site request forgery, &lt;a href=&quot;https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29&quot;&gt;CSRF&lt;/a&gt; 。&lt;/p&gt;
-
-&lt;p&gt;事情得从头说起。&lt;/p&gt;
-
-&lt;p&gt;后台为识别用户的操作，可以在每个操作前都要求用户输入用户名和密码，这样做太麻烦了，为方便用户，后台和浏览器共同发展出一套只需输入一次用户名密码就能在一段时间内记住用户身份的 session 机制。这套机制依赖于保存在浏览器里的 cookie 。&lt;/p&gt;
-
-&lt;p&gt;因此如果 cookie 漏泄了，被用来伪造用户身份的话，后台没有办法区分哪些是假冒操作，哪些正常操作。&lt;/p&gt;
-
-&lt;p&gt;CSRF 正是利用了这个弱点。&lt;/p&gt;
-
-&lt;p&gt;Rails 为防止 CSRF ，默认会检查除 GET 、 HEAD 之外的其他请求当中的请求头或请求正文，看里面有没有一个 token 字段，如果没有或者跟 session 中保存的值不一致，就判定为非法请求。&lt;/p&gt;
-
-&lt;p&gt;Rails 的这一套机制覆盖了多种发出请求的方式：&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;在前端&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;jQuery&lt;/p&gt;
-
-    &lt;p&gt;如果使用 jQuery 的 ajax 方法，那么需要引入 jquery-ujs.js 。这个文件调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;jQuery.ajaxPrefilter&lt;/code&gt; 方法，为所有非跨域的请求（跨域的请求，后台通过 CORS ，检查 Origin 字段避免非法请求来源），在其请求头中加入一个 X-CSRF-Token 字段。&lt;/p&gt;
-
-    &lt;p&gt;X-CSRF-Token 的值来自页面中的一个 meta 标签，这个标签在 layout 中通过设置：&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;%= csrf_meta_tags %&amp;gt;&lt;/code&gt; 生成。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;表单提交&lt;/p&gt;
-
-    &lt;p&gt;如果引入了 jQuery 和 jquery-ujs.js ，所有的 form 元素会在页面初始化时被塞进一个隐藏的 token 字段，它的值同样来自 meta 标签。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;form_tag&lt;/p&gt;
-
-    &lt;p&gt;如果没有引入 jquery-ujs.js 或不能用 javascript ，也可以使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;form_tag&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;form_for&lt;/code&gt; helper 方法，它们也会根据上述情况加入 token 字段。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;在后台&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;ActionPack 提供一个 &lt;strong&gt;protect_from_forgery&lt;/strong&gt; 方法，用脚手架生成的 Rails 应用，会在 ApplicationController 调用这个方法：&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#Prevent CSRF attacks by raising an exception.
-protect_from_forgery with: :exception
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;它做两件事情：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;在处理请求前，检验请求是不是 GET 或 HEAD 请求，是不是关闭了 protect_from_forgery ，请求头中的 X-CSRF-Token 字段是否正确， 请求正文中的 authenticity_token 字段是否正确，只要满足以上四个条件的一个，校验就算通过，可以处理请求；一个都不满足的话，就抛出异常。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;在处理完请求，返回数据前，如果是 GET 请求并且不是 xhr 请求，抛出异常，不返回数据。这样做是为了防止有人使用 script 标签加载内容，并盗窃其中敏感的信息（因为 script 加载完成后会执行）。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;总结&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="rails" /><category term="frontend" /><category term="CSRF" /><summary type="html">最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</summary></entry></feed>
+幼年期</summary></entry></feed>

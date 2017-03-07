@@ -10,7 +10,7 @@
   <meta name="description" content="在企业号某个列表页面使用 position: fixed; 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。">
   <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://judes.me/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html">
+  <link rel="canonical" href="http://localhost:4000/frontend/2016/10/12/fixed-pos-problem-in-ios-wechat-browser.html">
   <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
   
   
@@ -82,8 +82,8 @@
   <div class="post-content" itemprop="articleBody">
     <p>在企业号某个列表页面使用 <code class="highlighter-rouge">position: fixed;</code> 置顶搜索输入框时，发现一个诡异的问题：在 iOS 的微信浏览器中点击输入框，弹出输入法时，很有可能会（复现条件：列表长度超过一屏，在点击输入框前往下拖动列表）导致输入框错位下移，在 Android 微信浏览器中却没有问题。</p>
 
-<p><img src="https://judes.me/assets/problem_1.jpg" alt="在 iOS 输入法未弹出时显示正常 " /><em>在 iOS 输入法未弹出时显示正常</em>
-<img src="https://judes.me/assets/problem_2.jpg" alt="在 iOS 输入法弹出后出现错位 " /><em>在 iOS 输入法弹出后出现错位</em></p>
+<p><img src="http://localhost:4000/assets/problem_1.jpg" alt="在 iOS 输入法未弹出时显示正常 " /><em>在 iOS 输入法未弹出时显示正常</em>
+<img src="http://localhost:4000/assets/problem_2.jpg" alt="在 iOS 输入法弹出后出现错位 " /><em>在 iOS 输入法弹出后出现错位</em></p>
 
 <p>出问题的页面结构大致如下，完整的代码见<a href="https://gist.github.com/zymiboxpay/1e0a620284d1cf320f5f9603779a728d">这里</a>：</p>
 
@@ -172,8 +172,8 @@
 
 <p>完成后的效果图：</p>
 
-<p><img src="https://judes.me/assets/solution_1.jpg" alt="在 iOS 输入法未弹出时显示正常 " /><em>在 iOS 输入法未弹出时显示正常</em>
-<img src="https://judes.me/assets/solution_2.jpg" alt="在 iOS 输入法弹出后显示正常 " /><em>在 iOS 输入法弹出后显示正常</em></p>
+<p><img src="http://localhost:4000/assets/solution_1.jpg" alt="在 iOS 输入法未弹出时显示正常 " /><em>在 iOS 输入法未弹出时显示正常</em>
+<img src="http://localhost:4000/assets/solution_2.jpg" alt="在 iOS 输入法弹出后显示正常 " /><em>在 iOS 输入法弹出后显示正常</em></p>
 
   </div>
 

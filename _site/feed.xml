@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-07T08:40:45+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-07T22:37:42+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章，在那之后，我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
@@ -11,11 +11,46 @@
 
 &lt;p&gt;我打算先做一个原型。原型的话，网页是最容易做的。在技术选型时我不想依靠思维惯性，抓起身边的 Bootstrap 和 jQuery 撸起袖子就是干，这样多没意思啊。&lt;/p&gt;
 
-&lt;p&gt;这时听说 vuejs 出 2.0 ，虽然没怎么用过 vuejs ，要不试着用一用？将来也好说自己用过 vue 2.0 嘛 =w= 于是，开始一边看着文档，一边敲代码。&lt;/p&gt;
+&lt;p&gt;这时听说 vue 出 2.0 ，虽然没怎么用过 vue ，要不试着用一用？将来也好说自己用过 vue 2.0 嘛 =w= 于是，开始一边看着文档，一边敲代码。&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;在工作中，这样的选型思路非常危险哦，除非是玩票项目且完全不在乎成败，又想任性一把&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;踩坑&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;模块化&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;雪花分形有十一个步骤，大体分为两条线：剧情和人物。随着步骤的进展，剧情和人物都在之前步骤的基础上逐渐清晰丰满。&lt;/p&gt;
+
+&lt;p&gt;用两大类组件来展示这些步骤，可以复用很多代码。话虽如此，作为组件骨架的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; 却没少写。&lt;/p&gt;
+
+&lt;p&gt;vue 文档里的一个坑就是在介绍组件时没同时展示一种很方便的模板语法。文档中一个例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Vue.component('my-component', {
+  template: '&amp;lt;div&amp;gt;A custom component!&amp;lt;/div&amp;gt;'
+  // 这里的 template 很简单，如果 template 是一大堆的 html ，写起来很累，读起来也很累
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我用字符串拼接的形式写了两个组件的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; 之后，太难受，终于忍不住要找点别的写法。但不想引入 es6 的语法（要搭环境、配置、预先编译一道什么的太麻烦）。最理想的是 vue 原生支持的语法，还真找到了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;script type=&quot;text/x-template&quot; id=&quot;component-id&quot;&amp;gt;
+  &amp;lt;div&amp;gt;A custom component!&amp;lt;/div&amp;gt;
+&amp;lt;/script&amp;gt;
+
+&amp;lt;script&amp;gt;
+  Vue.component('my-component', {
+    template: '#component-id'
+  })
+&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;驼峰与烤串&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;&lt;strong&gt;加个后台吧&lt;/strong&gt;&lt;/p&gt;
 

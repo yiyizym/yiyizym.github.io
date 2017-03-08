@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-08T08:32:54+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-08T21:10:11+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章，在那之后，我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
+&lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章。我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;选型&lt;/strong&gt;&lt;/p&gt;
 
-&lt;blockquote&gt;
-  &lt;p&gt;一个刚启动的项目，做成网页的形式最快收获用户。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;我打算先做一个原型。原型的话，网页最容易做。在技术选型时原本可以抓起身边的 Bootstrap 和 jQuery 撸起袖子就是干的，但我不想依靠思维惯性写代码，这样很没意思。&lt;/p&gt;
 
-&lt;p&gt;我打算先做一个原型。原型的话，网页是最容易做的。在技术选型时我不想依靠思维惯性，抓起身边的 Bootstrap 和 jQuery 撸起袖子就是干，这样多没意思啊。&lt;/p&gt;
+&lt;p&gt;刚好听说 vue 出 2.0 ，要不试着用一用？将来也好说自己用过 vue 2.0 嘛 =w= 于是，开始一边看着文档，一边敲代码，开启了踩坑之旅。&lt;/p&gt;
 
-&lt;p&gt;这时听说 vue 出 2.0 ，虽然没怎么用过 vue ，要不试着用一用？将来也好说自己用过 vue 2.0 嘛 =w= 于是，开始一边看着文档，一边敲代码。&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;在工作中，这样的选型思路非常危险哦，除非是玩票项目且完全不在乎成败，又想任性一把&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;顺带说一句，在工作中，这样的选型思路非常危险哦，除非是玩票项目且完全不在乎成败，又想任性一把&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;踩坑&lt;/strong&gt;&lt;/p&gt;
 
@@ -23,9 +19,11 @@
 
 &lt;p&gt;雪花分形有十一个步骤，大体分为两条线：剧情和人物。随着步骤的进展，剧情和人物都在之前步骤的基础上逐渐清晰丰满。&lt;/p&gt;
 
-&lt;p&gt;用两大类组件来展示这些步骤，可以复用很多代码。话虽如此，作为组件骨架的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; 却没少写。&lt;/p&gt;
+&lt;p&gt;因此可以用两大类组件来展示这些步骤。&lt;/p&gt;
 
-&lt;p&gt;vue 文档里的一个坑就是在介绍组件时没同时展示一种很方便的模板语法。文档中一个例子：&lt;/p&gt;
+&lt;p&gt;刚开始用字符串拼接的形式写组件 &lt;code class=&quot;highlighter-rouge&quot;&gt;template&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; ，拼接了十几行，相当痛苦。&lt;/p&gt;
+
+&lt;p&gt;我觉得 vue 文档里的一个坑就是在介绍组件时没同时展示一种很方便的模板语法。文档中一个例子：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Vue.component('my-component', {
   template: '&amp;lt;div&amp;gt;A custom component!&amp;lt;/div&amp;gt;'
@@ -34,7 +32,7 @@
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;我用字符串拼接的形式写了两个组件的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; 之后，太难受，终于忍不住要找点别的写法。但不想引入 es6 的语法（要搭环境、配置、预先编译一道什么的太麻烦）。最理想的是 vue 原生支持的语法，还真找到了：&lt;/p&gt;
+&lt;p&gt;我用字符串拼接的形式写了两个组件的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; 之后，太难受，终于忍不住要找点别的写法。虽然 es6 的语法能解决问题，但最理想的是 vue 原生支持的语法。找了一会儿还真找到了：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;!--把模板用 `type` 是 `text/x-template` 的 script 标签包着 --&amp;gt;
 &amp;lt;script type=&quot;text/x-template&quot; id=&quot;component-id&quot;&amp;gt;
@@ -118,7 +116,23 @@ Vue.component('child', {
 
 &lt;p&gt;&lt;strong&gt;加个后台吧&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;后记&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">缘起</summary></entry><entry><title type="html">《人类简史》感想</title><link href="http://localhost:4000/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>http://localhost:4000/reading/2017/02/25/history_of_human</id><content type="html" xml:base="http://localhost:4000/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
+&lt;p&gt;前台页面很快就写好。用到不少 vue 的功能，挺有满足感的。果然编程知识还是动手学得快。&lt;/p&gt;
+
+&lt;p&gt;满足感很快就退却，忽然想到一个问题，这东西没后台，用户一关闭页面，写下的内容不就什么都没有了吗？缺少保存功能，明显违背了做这个应用的初衷啊。这个功能必须有。&lt;/p&gt;
+
+&lt;p&gt;我有阿里云主机资源，也会 Rails ，但要做这个保存功能，就得做一整套的用户系统：注册、验证、登录、保持会话、注销、忘记密码、重置密码等等。一套功能做下来工作量不少；如果只是个原型的话，可不可以直接调用现成的服务呢？&lt;/p&gt;
+
+&lt;p&gt;记得有个叫“后台即服务”(BaaS)的概念，基于这个概念的产品，有 google 的 Firebase ，国内也有个 leancloud 。&lt;/p&gt;
+
+&lt;p&gt;能不能用呢？出于好奇，我注册了个 leancloud 账号，看到它还真有用户系统，而且开发版应用每天有几千次免费的接口调用次数，够用了。&lt;/p&gt;
+
+&lt;p&gt;凭借 leancloud 我很快写好了用户注册、登录、保存、退出的功能。不得不说，在原型开发时借助“后台即服务”真会大大提高效率。&lt;/p&gt;
+
+&lt;p&gt;贴个成品网址： &lt;a href=&quot;https://judes.me/snow_flake/&quot;&gt;snow flake&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;后记&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在快写好这个应用时，不小心把 leancloud 应用的 key/secrect 上传到 github 了。在此之前自己还很有信心不会出这种差错，而把 key/secrect 跟主程序放到一起呢。事实证明，程序员的信心真是不靠谱啊～&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">缘起</summary></entry><entry><title type="html">《人类简史》感想</title><link href="http://localhost:4000/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>http://localhost:4000/reading/2017/02/25/history_of_human</id><content type="html" xml:base="http://localhost:4000/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;人类（智人）为什么能在漫长的物种演化中胜出？&lt;/p&gt;

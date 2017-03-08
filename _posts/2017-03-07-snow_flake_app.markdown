@@ -40,6 +40,7 @@ Vue.component('my-component', {
 我用字符串拼接的形式写了两个组件的 `html` 之后，太难受，终于忍不住要找点别的写法。但不想引入 es6 的语法（要搭环境、配置、预先编译一道什么的太麻烦）。最理想的是 vue 原生支持的语法，还真找到了：
 
 ```
+<!--把模板用 `type` 是 `text/x-template` 的 script 标签包着 -->
 <script type="text/x-template" id="component-id">
   <div>A custom component!</div>
 </script>
@@ -52,6 +53,71 @@ Vue.component('my-component', {
 ```
 
 - 驼峰与烤串
+
+在书写组合词时，不同语言有各自约定俗成的习惯，因此有不同的写法，如“组件ID”这个词，在 html/css 中，会写成 `component-id` (kebab-case/烤串形)，在 javascript 中，会写成 `componentId` (camelCase/驼峰形)，在 ruby 中，会写成 `component_id` (snake_case/蛇形)。原本这些只是约定，就算不遵守也不会出问题，但在使用 vue 时，不遵守就会出问题。比如把“组件ID”这个词一律写成 `componentId` ，程序不会正常运行，但也不报错。这是个大坑。
+
+避开这个坑的要点是，时刻注意代码身处的语境，在 html/css 语境中用 kebab-case ，在 javascript 语境中就用 camelCase 。举[文档](https://vuejs.org/v2/guide/components.html#camelCase-vs-kebab-case)中的例子说明语境问题：
+
+```
+<script>
+Vue.component('child', {
+  // myMessage 在 JavaScript 中，所以用 camelCase
+  props: ['myMessage'],
+  template: '<span>{{ myMessage }}</span>'
+}) 
+</script>
+
+<div>
+  <input v-model="parentMsg">
+  <br>
+  <!-- my-message 在 HTML 中，用 kebab-case  -->
+  <!-- parentMsg 在 JavaScript 中，用 camelCase  -->
+  <child :my-message="parentMsg"></child>
+</div>
+```
+
+事件绑定、触发也是类似的写法，但是有一个例外：
+
+```
+<div id="app">
+  <!-- select-item 在 HTML 中，用 kebab-case  -->
+  <!-- alertItem 在 HTML 中，用 camelCase  -->
+  <list :list="list" @select-item="alertItem"></list>
+</div>
+
+<script type="text/x-template" id="list">
+  <ul>
+      <!-- 例外！！ select-item 在 JavaScript 中，但在 $emit 时，要跟在上面声明时的保持一样  -->
+    <li
+      v-for="(item, index) in list"
+      @click="$emit('select-item', item)"
+    >{{ item }}</li>
+  </ul>
+</script>
+
+<script>
+  Vue.component('list', {
+    props: ['list'],
+    template: '#list'
+  })
+  new Vue({
+    el: '#app',
+    data: {
+      list: [1,2,3,4]
+    },
+    methods: {
+      // alertItem 在 HTML 中，用 camelCase
+      alertItem: function(item){
+        window.alert(item);
+      }
+    }
+  })
+</script>
+```
+
+使用 vue 时，要经常切换语境，所以很容易搞错。我在写这个应用时，偷了个懒，既不用驼峰，也不用烤串，更不用蛇形，组合词一律小写，比如: `togglemenu` 。工作中千万别这样写。
+
+
 
 
 **加个后台吧**

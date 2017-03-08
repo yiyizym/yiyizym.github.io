@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-07T22:37:42+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-08T08:32:54+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
 </subtitle><author><name>jude zhu</name></author><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章，在那之后，我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
@@ -36,7 +36,8 @@
 
 &lt;p&gt;我用字符串拼接的形式写了两个组件的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; 之后，太难受，终于忍不住要找点别的写法。但不想引入 es6 的语法（要搭环境、配置、预先编译一道什么的太麻烦）。最理想的是 vue 原生支持的语法，还真找到了：&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;script type=&quot;text/x-template&quot; id=&quot;component-id&quot;&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;!--把模板用 `type` 是 `text/x-template` 的 script 标签包着 --&amp;gt;
+&amp;lt;script type=&quot;text/x-template&quot; id=&quot;component-id&quot;&amp;gt;
   &amp;lt;div&amp;gt;A custom component!&amp;lt;/div&amp;gt;
 &amp;lt;/script&amp;gt;
 
@@ -51,6 +52,69 @@
 &lt;ul&gt;
   &lt;li&gt;驼峰与烤串&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;在书写组合词时，不同语言有各自约定俗成的习惯，因此有不同的写法，如“组件ID”这个词，在 html/css 中，会写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;component-id&lt;/code&gt; (kebab-case/烤串形)，在 javascript 中，会写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;componentId&lt;/code&gt; (camelCase/驼峰形)，在 ruby 中，会写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;component_id&lt;/code&gt; (snake_case/蛇形)。原本这些只是约定，就算不遵守也不会出问题，但在使用 vue 时，不遵守就会出问题。比如把“组件ID”这个词一律写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;componentId&lt;/code&gt; ，程序不会正常运行，但也不报错。这是个大坑。&lt;/p&gt;
+
+&lt;p&gt;避开这个坑的要点是，时刻注意代码身处的语境，在 html/css 语境中用 kebab-case ，在 javascript 语境中就用 camelCase 。举&lt;a href=&quot;https://vuejs.org/v2/guide/components.html#camelCase-vs-kebab-case&quot;&gt;文档&lt;/a&gt;中的例子说明语境问题：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;script&amp;gt;
+Vue.component('child', {
+  // myMessage 在 JavaScript 中，所以用 camelCase
+  props: ['myMessage'],
+  template: '&amp;lt;span&amp;gt;&amp;lt;/span&amp;gt;'
+}) 
+&amp;lt;/script&amp;gt;
+
+&amp;lt;div&amp;gt;
+  &amp;lt;input v-model=&quot;parentMsg&quot;&amp;gt;
+  &amp;lt;br&amp;gt;
+  &amp;lt;!-- my-message 在 HTML 中，用 kebab-case  --&amp;gt;
+  &amp;lt;!-- parentMsg 在 JavaScript 中，用 camelCase  --&amp;gt;
+  &amp;lt;child :my-message=&quot;parentMsg&quot;&amp;gt;&amp;lt;/child&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;事件绑定、触发也是类似的写法，但是有一个例外：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;div id=&quot;app&quot;&amp;gt;
+  &amp;lt;!-- select-item 在 HTML 中，用 kebab-case  --&amp;gt;
+  &amp;lt;!-- alertItem 在 HTML 中，用 camelCase  --&amp;gt;
+  &amp;lt;list :list=&quot;list&quot; @select-item=&quot;alertItem&quot;&amp;gt;&amp;lt;/list&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;script type=&quot;text/x-template&quot; id=&quot;list&quot;&amp;gt;
+  &amp;lt;ul&amp;gt;
+      &amp;lt;!-- 例外！！ select-item 在 JavaScript 中，但在 $emit 时，要跟在上面声明时的保持一样  --&amp;gt;
+    &amp;lt;li
+      v-for=&quot;(item, index) in list&quot;
+      @click=&quot;$emit('select-item', item)&quot;
+    &amp;gt;&amp;lt;/li&amp;gt;
+  &amp;lt;/ul&amp;gt;
+&amp;lt;/script&amp;gt;
+
+&amp;lt;script&amp;gt;
+  Vue.component('list', {
+    props: ['list'],
+    template: '#list'
+  })
+  new Vue({
+    el: '#app',
+    data: {
+      list: [1,2,3,4]
+    },
+    methods: {
+      // alertItem 在 HTML 中，用 camelCase
+      alertItem: function(item){
+        window.alert(item);
+      }
+    }
+  })
+&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;使用 vue 时，要经常切换语境，所以很容易搞错。我在写这个应用时，偷了个懒，既不用驼峰，也不用烤串，更不用蛇形，组合词一律小写，比如: &lt;code class=&quot;highlighter-rouge&quot;&gt;togglemenu&lt;/code&gt; 。工作中千万别这样写。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;加个后台吧&lt;/strong&gt;&lt;/p&gt;
 

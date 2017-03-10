@@ -1,5 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-08T21:10:11+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-10T08:14:26+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">人类砍头的花边历史</title><link href="http://localhost:4000/reading/2017/03/10/history_of_human_beheaded.html" rel="alternate" type="text/html" title="人类砍头的花边历史" /><published>2017-03-10T07:48:07+08:00</published><updated>2017-03-10T07:48:07+08:00</updated><id>http://localhost:4000/reading/2017/03/10/history_of_human_beheaded</id><content type="html" xml:base="http://localhost:4000/reading/2017/03/10/history_of_human_beheaded.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;一些新鲜的花边历史&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;变质的干缩人头：从有利可图到滥竽充数&lt;/li&gt;
+  &lt;li&gt;战场上的无头亡者：宣示征服与制造冷血杀手&lt;/li&gt;
+  &lt;li&gt;不只是 ISIS 的最爱，人血馒头也不止 MADE IN CHINA&lt;/li&gt;
+  &lt;li&gt;令人无语的基督教封圣&lt;/li&gt;
+  &lt;li&gt;人一出名，这头就丢了&lt;/li&gt;
+&lt;/ul&gt;</content><author><name>jude zhu</name></author><summary type="html">缘起</summary></entry><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章。我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
 
@@ -600,75 +610,4 @@ P(H|+) = P(+,H) / P(+) = P(+|H) * P(H) / P(+)
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/zh-cn/条件概率&quot;&gt;条件概率&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/贝叶斯定理&quot;&gt;贝叶斯定理&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：</summary></entry><entry><title type="html">web 版微信通讯录</title><link href="http://localhost:4000/frontend/2016/11/27/wx-contacts.html" rel="alternate" type="text/html" title="web 版微信通讯录" /><published>2016-11-27T01:54:03+08:00</published><updated>2016-11-27T01:54:03+08:00</updated><id>http://localhost:4000/frontend/2016/11/27/wx-contacts</id><content type="html" xml:base="http://localhost:4000/frontend/2016/11/27/wx-contacts.html">&lt;p&gt;这个通讯录现在长这个样子：
-&lt;img src=&quot;http://ww4.sinaimg.cn/large/60cdc5a5gw1fa5mumuv6sg20aw0j0kjm.gif&quot; alt=&quot;幼年期&quot; /&gt;&lt;em&gt;幼年期&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;以后可能就是这个样子了（我不保证）：
-&lt;img src=&quot;http://localhost:4000/assets/will_be.jpg&quot; alt=&quot;完全体&quot; /&gt;&lt;em&gt;完全体&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;如果我最后放弃改进它，你可以在&lt;a href=&quot;https://github.com/yiyizym/contacts&quot; target=&quot;_blank&quot;&gt;这里&lt;/a&gt;找到源码，然后自己作修改。&lt;/p&gt;
-
-&lt;p&gt;这件事情的由来是，公司的设计师在之前的项目里想实现一个跟微信通讯录一样的页面。我没多少把握能在 web 端实现跟微信原生一样的功能效果：可以想象东西做出来能覆盖微信原生 80% 的功能，但剩下的 20% 会被设计师挑刺当成是 bug ，（比如姓氏的正确分类，比如多个同姓的人的先后排序，比如多音字的处理，比如姓氏首字母切换的效果），要实现这 20% 的功能效果很费力气。所以当时就明说要做到一模一样有困难，要么多给我点时间做，要么做一个十分简单的带个搜索功能的列表。最终选了后者。&lt;/p&gt;
-
-&lt;p&gt;这周处于迭代中间，有点空闲时间，回想这个通讯录功能，感觉可以做做。于是先到网上搜搜有没有现成可靠的插件，发现竟然没有。&lt;/p&gt;
-
-&lt;p&gt;为什么这个功能会没有人做呢？忽然就产生自己来做一个的想法。要是做出来能用，也是挺好的。&lt;/p&gt;
-
-&lt;p&gt;这个功能（或者说是前端插件），首先是要方便 Rails 用户使用，假设有一个不怎么懂前端的后端工程师，他只需要做一件事：提供一个联系人数组，每个元素有 id/name/url 等等属性就行。其余的事情交给这个插件。&lt;/p&gt;
-
-&lt;p&gt;然后我打算只用原生 javascript 实现所有的功能。这样可以练习一下在没有 jQuery/underscore 的情况下写代码。&lt;/p&gt;
-
-&lt;p&gt;然后是把这个功能做正确：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;联系人按姓名正确分类&lt;/li&gt;
-  &lt;li&gt;点索引要跳转到正确的分类&lt;/li&gt;
-  &lt;li&gt;当前类别要在顶栏显示&lt;/li&gt;
-  &lt;li&gt;要有检索过滤功能&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;以上目标在动手前先写下来，然后一个个地实现，这样在断断续续的开发中也不会乱了优先级。&lt;/p&gt;
-
-&lt;p&gt;真正动手时遇到几个问题：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;把中文姓氏正确分类
- 最初想法是找一个常用汉字与拼音一一对应的哈希表，遇到中文只需要查查表就行，虽然要引入大约十几KB的数据，但查表时间复杂度低。可惜找了一圈没找到合适的。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;后来在 ruby-china 论坛找到一个聪明的方法，用几行代码就可以找到中文字的拼音首字母。我在以下几个环境测试了下都没有问题：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;iOS 10 的 safari&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;iOS 10 的微信，版本 6.3.30&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;android 5.0 的 chrome ， 版本 51&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;android 5.0 的微信，版本 6.3.30&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;点击索引跳转到相应类别
- 这个用 html 原生的 anchor 实现，灵感来自 MDN 。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;实时更新当前类别
- 要随着页面滚动更新顶栏的当前类别，不可避免要监听页面的 scroll 事件。 scroll 事件会在页面滚动过程中被频繁触发，可以用 underscore 的 throttle 来限制因事件触发而调用其他方法的频率，但我不想引入 underscore 。
- 在 MDN 上看到优化后的监听 scroll 事件的方式，思路是利用 requestAnimationFrame 方法设置开关，这个方法会在浏览器渲染下一帧前调用。也就是说可以利用它使得由 scroll 事件触发执行的事件在每一帧都只被执行一次。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;图标
- 实现搜索功能才发现没有搜索常用的“放大镜”图标，无论是使用字体图标还是 svg/png 图标，都意味着又得引入别的资源。看样子这个图标不就是个圆圈加根棍子么？自己动手用CSS画。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;我大致想了下未来这个插件会变成怎样，一是要把UI做得跟微信差不多，现在的太朴素了点。&lt;/p&gt;
-
-&lt;p&gt;然后对同属一个类别下的联系人排序。排序是个有意思的工作，要选那些可以实现快速插入新元素的算法。&lt;/p&gt;
-
-&lt;p&gt;不过在此之前，得先写一篇介绍这个插件的文章，宣传一下这个好东西。我现在很想在付出更大努力前，想办法知道值不值得。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="wechat" /><category term="微信" /><category term="frontend" /><summary type="html">这个通讯录现在长这个样子：
-幼年期</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：</summary></entry></feed>

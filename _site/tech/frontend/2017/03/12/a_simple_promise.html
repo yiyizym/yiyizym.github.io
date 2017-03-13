@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>微信小程序组件开发示例</title>
-  <meta name="description" content="2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例">
+  <title>一个简单的 Promise 实现</title>
+  <meta name="description" content="介绍 Promise 实现的文章早已烂大街了，但大多数文章都是先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。">
   <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
   <link rel="stylesheet" href="/assets/main.css">
-  <link rel="canonical" href="https://judes.me/tech/2017/02/11/wechat_app.html">
+  <link rel="canonical" href="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html">
   <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
   
   
@@ -75,104 +75,157 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">微信小程序组件开发示例</h1>
-    <p class="post-meta"><time datetime="2017-02-11T11:09:57+08:00" itemprop="datePublished">Feb 11, 2017</time></p>
+    <h1 class="post-title" itemprop="name headline">一个简单的 Promise 实现</h1>
+    <p class="post-meta"><time datetime="2017-03-12T10:50:26+08:00" itemprop="datePublished">Mar 12, 2017</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p><strong>2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例</strong></p>
+    <p>介绍 Promise 实现的文章早已烂大街了，但大多数文章都是先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。</p>
 
-<p>本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 <a href="https://github.com/yiyizym/wechat_mini_program_upload_img_module" target="_blank">github 源码</a></p>
+<p>既然读者要看实现，那就可以假设他们都已熟悉 Promise 的使用方法。能不能换个角度，从使用出发，逐步实现一个简单可用的 Promise 呢？</p>
 
-<h2 id="缘由">缘由</h2>
+<p>最近我就看到一篇这样的<a href="http://tech.meituan.com/promise-insight.html">文章</a>，以及它的<a href="http://www.mattgreer.org/articles/promises-in-wicked-detail/">参考文章</a>。下面，我就试着整合两篇文章，聊聊一个简单的 Promise 实现。</p>
 
-<p>最近在微信小程序上要实现上传图片的功能，因为多个页面都会用到这个功能，我试着就像网页开发一样，写一个能复用的组件。</p>
+<p><em>简单的使用方法</em></p>
 
-<p>上传图片的功能，微信小程序已经提供了相应的组件和API，结合 weui 样式，如果不考虑复用的话，很容易实现（官方 demo 就可以拿来用 ^_^ ）。</p>
+<p>先来看一个简单的 Promise 使用例子，暂时不考虑 reject 和异常的情况。</p>
 
-<p>如果要复用，可以利用模板，但是会面临微信小程序的很多限制。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>getUserId().then(showUserId)
 
-<h2 id="限制">限制</h2>
-
-<p>举个例子，下面是一个模板文件 customer.wxml （ 注意模板文件里绑定了一个回调函数 sayHello ）</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>&lt;template name="customer" data-customerid="{{ id }}" bindtap="sayHello"&gt;
-  &lt;text&gt;{{ name }}&lt;/text&gt;
-  &lt;text&gt;{{ gender }}&lt;/text&gt;
-  &lt;text&gt;{{ age }}&lt;/text&gt;
-  &lt;block wx:for="orders" wx:for-item="order"&gt;
-    &lt;view&gt;{{order.id}}&lt;/view&gt;
-    &lt;view&gt;{{order.detail}}&lt;/view&gt;
-  &lt;/block&gt;
-&lt;/template&gt;
-</code></pre>
-</div>
-
-<p>页面 A.wxml 引用了这个模板文件 :</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>&lt;import src="path/to/customer.wxml"&gt;
-&lt;template is="customer" data="{{...customer}}"&gt;&lt;/template&gt;
-</code></pre>
-</div>
-
-<p>如果要显示模板里的 <code class="highlighter-rouge">orders</code> 部分，页面 A 的 js 文件里 data 必须有一个名为 <code class="highlighter-rouge">customer</code> 的 key （可以通过 setData 设置 name/gender/age ，但不能通过 setData 设置 orders ，这样会报错。猜测是因为 <code class="highlighter-rouge">setData</code> 在模板解析之后执行，解析模板时 name/gender/age/orders 都为 undefined ，name/gender/age 为 undefined 时不显示就行，但 wx:for 会遍历 orders ，遍历时调用 hasOwnProperty 方法，这时就报错了。），如果要调用模板里的回调函数 <code class="highlighter-rouge">sayHello</code> ，同样必须在页面 A 的 js 文件里先定义它：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>// A.js
-Page({
-  data: {
-    customer: {} // 可以先写成空 hash ，稍后更新，但 key 必须先存在
-  },
-  sayHello: function(e){
-    // say hello
-    // e.target.dataset.customerid
-  }
-})
-</code></pre>
-</div>
-
-<h2 id="解决办法">解决办法</h2>
-
-<p>因为这两个限制，必须找出一个办法让模板文件能动态改变引用它的文件（以下称为宿主）的作用域下的一些变量和方法，如下：</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>// A.js
-require('path/to/customer.js');
-
-Page({
-  data: {
-    customer: {}
-  }
-  onLoad: function(){
-    // this 是宿主的执行上下文环境
-    // this.data 可以访问 data
-    // this.setData 可以更新 data
-    // this.func = function() {} 可以往宿主增加新方法
-    new Customer(this);
-  }
-})
-</code></pre>
-</div>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>// customer.js
-// 这里用到 es6 的类定义语法
-
-class Customer {
-  constructor(pageContext){
-    this.page = pageContext
-    this.page.sayHello = this.sayHello.bind(this)
-  }
-
-  sayHello(e){
-    // say hello
-    // e.target.dataset.customerid
-  }
+function getUserId(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve(1)
+    }, 2000)
+  })
 }
 
-module.exports = Customer
+function showUserId(id){
+  console.log(id)
+}
+</code></pre>
+</div>
+
+<p>可以看到 Promise 实例化时需要传入一个函数（fn）， Promise 在实例化时会调用 fn ；Promise 有一个实例方法 then ，以及一个私有方法 resolve 。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>function Promise(fn){
+  var callback = null
+  this.then = function(cb){
+    callback = cb
+  }
+  function resolve(value){
+    callback(value)
+  }
+  fn(resolve)
+}
+</code></pre>
+</div>
+
+<p><em>then 与 resolve 的调用顺序</em></p>
+
+<p>运行上面这段代码会报错，因为在执行 fn(resolve) 时， Promise 实例化还没完成， this.then 没有执行，callback 是 null 。用 setTimeout 把 callback 的执行时间推迟到下一个事件循环里来解决这个问题：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>function Promise(fn){
+  var callback = null
+  this.then = function(cb){
+    callback = cb
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callback(value)
+    }, 0)
+  }
+  fn(resolve)
+}
+</code></pre>
+</div>
+<p>用上 setTimeout 后，还支持先生成 Promise 实例，在后面再调用 then ：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var promise = getUserId()
+
+promise.then(showUserId)
 
 </code></pre>
 </div>
 
-<p>本文关于微信小程序的组件开发关键点介绍完毕，<a href="https://github.com/yiyizym/wechat_mini_program_upload_img_module" target="_blank">源码</a> 还展示了如何 设置组件的默认配置以及更改组件的回调方法。</p>
+<p><em>多次调用 then</em></p>
+
+<p>我们经常会给 Promise 实例添加多个回调，举个例子：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var promise = getUserId()
+
+promise.then(showUserId)
+promise.then(showUserIdAgain)
+
+function showUserIdAgain(id){
+  console.log('again ! ', id)
+}
+
+</code></pre>
+</div>
+
+<p>用一个数组记下用 then 添加的回调，在 resolve 时遍历调用数组中的回调：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>function Promise(fn){
+  var callbacks = []
+  this.then = function(cb){
+    callbacks.push(cb)
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callbacks.forEach(function(callback){
+        callback(value)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+
+</code></pre>
+</div>
+
+<p><em>链式调用 then</em></p>
+
+<p>我们经常会像下面这样链式调用 then :</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var promise = getUserId()
+
+promise
+  .then(showUserId)
+  .then(showUserIdAgain)
+
+</code></pre>
+</div>
+
+<p>只要在调用 then 时，返回 Promise 实例的引用就能满足这点：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>function Promise(fn){
+  var callbacks = []
+  this.then = function(cb){
+    callbacks.push(cb)
+    return this
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callbacks.forEach(function(callback){
+        callback(value)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+</code></pre>
+</div>
+
+<p>** TODO **</p>
+
+<p><em>异步调用 then</em></p>
+
+<p>一般情况下，我们用同步的方式调用 then ，但有时候我们也会异步调用 then ：</p>
+
+<p><em>then 返回 Promise 实例</em></p>
+
+<p><em>处理失败与异常</em></p>
 
   </div>
 

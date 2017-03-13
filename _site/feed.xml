@@ -1,9 +1,154 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-03-11T16:01:31+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">人类砍头的花边历史</title><link href="http://localhost:4000/reading/2017/03/10/history_of_human_beheaded.html" rel="alternate" type="text/html" title="人类砍头的花边历史" /><published>2017-03-10T07:48:07+08:00</published><updated>2017-03-10T07:48:07+08:00</updated><id>http://localhost:4000/reading/2017/03/10/history_of_human_beheaded</id><content type="html" xml:base="http://localhost:4000/reading/2017/03/10/history_of_human_beheaded.html">&lt;p&gt;说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-03-13T08:32:18+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">一个简单的 Promise 实现</title><link href="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html" rel="alternate" type="text/html" title="一个简单的 Promise 实现" /><published>2017-03-12T10:50:26+08:00</published><updated>2017-03-12T10:50:26+08:00</updated><id>https://judes.me/tech/frontend/2017/03/12/a_simple_promise</id><content type="html" xml:base="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html">&lt;p&gt;介绍 Promise 实现的文章早已烂大街了，但大多数文章都是先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。&lt;/p&gt;
+
+&lt;p&gt;既然读者要看实现，那就可以假设他们都已熟悉 Promise 的使用方法。能不能换个角度，从使用出发，逐步实现一个简单可用的 Promise 呢？&lt;/p&gt;
+
+&lt;p&gt;最近我就看到一篇这样的&lt;a href=&quot;http://tech.meituan.com/promise-insight.html&quot;&gt;文章&lt;/a&gt;，以及它的&lt;a href=&quot;http://www.mattgreer.org/articles/promises-in-wicked-detail/&quot;&gt;参考文章&lt;/a&gt;。下面，我就试着整合两篇文章，聊聊一个简单的 Promise 实现。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;简单的使用方法&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;先来看一个简单的 Promise 使用例子，暂时不考虑 reject 和异常的情况。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;getUserId().then(showUserId)
+
+function getUserId(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve(1)
+    }, 2000)
+  })
+}
+
+function showUserId(id){
+  console.log(id)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;可以看到 Promise 实例化时需要传入一个函数（fn）， Promise 在实例化时会调用 fn ；Promise 有一个实例方法 then ，以及一个私有方法 resolve 。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callback = null
+  this.then = function(cb){
+    callback = cb
+  }
+  function resolve(value){
+    callback(value)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;then 与 resolve 的调用顺序&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;运行上面这段代码会报错，因为在执行 fn(resolve) 时， Promise 实例化还没完成， this.then 没有执行，callback 是 null 。用 setTimeout 把 callback 的执行时间推迟到下一个事件循环里来解决这个问题：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callback = null
+  this.then = function(cb){
+    callback = cb
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callback(value)
+    }, 0)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;用上 setTimeout 后，还支持先生成 Promise 实例，在后面再调用 then ：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promise = getUserId()
+
+promise.then(showUserId)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;多次调用 then&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;我们经常会给 Promise 实例添加多个回调，举个例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promise = getUserId()
+
+promise.then(showUserId)
+promise.then(showUserIdAgain)
+
+function showUserIdAgain(id){
+  console.log('again ! ', id)
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;用一个数组记下用 then 添加的回调，在 resolve 时遍历调用数组中的回调：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callbacks = []
+  this.then = function(cb){
+    callbacks.push(cb)
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callbacks.forEach(function(callback){
+        callback(value)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;链式调用 then&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;我们经常会像下面这样链式调用 then :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promise = getUserId()
+
+promise
+  .then(showUserId)
+  .then(showUserIdAgain)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;只要在调用 then 时，返回 Promise 实例的引用就能满足这点：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callbacks = []
+  this.then = function(cb){
+    callbacks.push(cb)
+    return this
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callbacks.forEach(function(callback){
+        callback(value)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;** TODO **&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;异步调用 then&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;一般情况下，我们用同步的方式调用 then ，但有时候我们也会异步调用 then ：&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;then 返回 Promise 实例&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;处理失败与异常&lt;/em&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">介绍 Promise 实现的文章早已烂大街了，但大多数文章都是先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。</summary></entry><entry><title type="html">人类砍头的花边历史</title><link href="https://judes.me/reading/2017/03/10/history_of_human_beheaded.html" rel="alternate" type="text/html" title="人类砍头的花边历史" /><published>2017-03-10T07:48:07+08:00</published><updated>2017-03-10T07:48:07+08:00</updated><id>https://judes.me/reading/2017/03/10/history_of_human_beheaded</id><content type="html" xml:base="https://judes.me/reading/2017/03/10/history_of_human_beheaded.html">&lt;p&gt;说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。&lt;/p&gt;
 
 &lt;p&gt;砍头往往被影视作品如此刻板描画着，以致刚看到这本《人类砍头小史》时，不敢相信这个动作还可以成书。更意外的是，读者们的评价还很不错。&lt;/p&gt;
 
-&lt;p&gt;也按捺不住好奇心看了下，我承认这种心态，就似 18 世纪时欧洲那些在远处围观斩首的群众，如果可以的话，自己或许会争取再靠近一点的位置看看这段历史。&lt;/p&gt;
+&lt;p&gt;按捺不住好奇心看完了，我承认这种心态，就似 18 世纪时欧洲那些在远处围观斩首的群众，如果可以的话，自己或许会争取再靠近一点的位置看看这段历史。&lt;/p&gt;
 
 &lt;p&gt;下面是一些从书中摘录下来的片段，用现代人的眼光来看，那是一段既熟悉，又陌生的历史。&lt;/p&gt;
 
@@ -17,11 +162,11 @@
   &lt;p&gt;1984年从马里亚纳群岛被送回本国的日本战死者当中，有 60% 的尸体丢失了头颅。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;这些丢失的头颅有不少是被美国大兵砍下来的，此外恐怕就是被炮弹炸飞。&lt;/p&gt;
+&lt;p&gt;这些丢失的头颅有不少是被美国大兵砍下来的，此外恐怕就是被炮弹炸飞了。&lt;/p&gt;
 
-&lt;p&gt;那片战场到处散落半掩着破碎肢体，时刻弥漫着腐败恶臭，人要活着变得变成魔鬼：切下对方头颅宣示自己最后的胜利；把对方头颅制成骷髅，有的被当作玩具、送给女朋友的礼物，还有的最后跟活着的人成了朋友。&lt;/p&gt;
+&lt;p&gt;那片战场到处散落半掩着破碎肢体，时刻弥漫着腐败恶臭，人要活着变得变成魔鬼：切下对方头颅宣示自己最后的胜利；把对方头颅制成骷髅，当作玩具，当作送给女朋友的礼物，还当作朋友。&lt;/p&gt;
 
-&lt;p&gt;不远处的海面上空，蜂蛹而至的神风战斗机在炮火中爆裂，血如雨下，大大小小人体碎块如冰雹弹落在战舰甲板上，铺满一层：手臂、心脏、肠子、脑浆……&lt;/p&gt;
+&lt;p&gt;不远处的海面上空，蜂拥而至的神风战斗机在炮火中爆裂，血如雨下，大大小小人体碎块如冰雹弹落在战舰甲板上，铺满一层：手臂、心脏、肠子、脑浆……&lt;/p&gt;
 
 &lt;p&gt;&lt;em&gt;ISIS 的最爱&lt;/em&gt;&lt;/p&gt;
 
@@ -41,7 +186,7 @@
 
 &lt;p&gt;贝多芬、莫扎特和舒伯特他们的脑袋好歹还能在土里静静待上 10 来年，可怜的海顿刚躺下没几天就被掘坟枭首。&lt;/p&gt;
 
-&lt;p&gt;在 19 世纪，人们对天才的颅骨产生巨大的兴趣，诡异的是，他们只打算把这些颅骨当成某样看不懂的宝物一样收藏展览，而没有去研究天才的颅骨与普通人有何不同。及至开始研究人头，却让“颅相学”风靡一时。人类科学发展史有些片段可谓是很傻很天真呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。</summary></entry><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在 19 世纪，人们对天才的颅骨产生巨大的兴趣，诡异的是，他们只打算把这些颅骨当成某样看不懂的宝物一样收藏展览，而没有去研究天才的颅骨与普通人有何不同。及至开始研究人头，却让“颅相学”风靡一时。人类科学发展史有些片段可谓是很傻很天真呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。</summary></entry><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="https://judes.me/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>https://judes.me/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="https://judes.me/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章。我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
 
@@ -174,7 +319,7 @@ Vue.component('child', {
 
 &lt;p&gt;&lt;strong&gt;后记&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;在快写好这个应用时，不小心把 leancloud 应用的 key/secrect 上传到 github 了。在此之前自己还很有信心不会出这种差错，而把 key/secrect 跟主程序放到一起呢。事实证明，程序员的信心真是不靠谱啊～&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">缘起</summary></entry><entry><title type="html">《人类简史》感想</title><link href="http://localhost:4000/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>http://localhost:4000/reading/2017/02/25/history_of_human</id><content type="html" xml:base="http://localhost:4000/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
+&lt;p&gt;在快写好这个应用时，不小心把 leancloud 应用的 key/secrect 上传到 github 了。在此之前自己还很有信心不会出这种差错，而把 key/secrect 跟主程序放到一起呢。事实证明，程序员的信心真是不靠谱啊～&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">缘起</summary></entry><entry><title type="html">《人类简史》感想</title><link href="https://judes.me/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>https://judes.me/reading/2017/02/25/history_of_human</id><content type="html" xml:base="https://judes.me/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;人类（智人）为什么能在漫长的物种演化中胜出？&lt;/p&gt;
@@ -196,7 +341,7 @@ Vue.component('child', {
 
 &lt;p&gt;因为人与虚构故事的这一层关系，人是不是变得比从前更快乐、人活着的是不是有意义等等都成了问题。&lt;/p&gt;
 
-&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="http://localhost:4000/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>http://localhost:4000/tech/2017/02/11/wechat_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="https://judes.me/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>https://judes.me/tech/2017/02/11/wechat_app</id><content type="html" xml:base="https://judes.me/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/p&gt;
 
@@ -288,7 +433,7 @@ module.exports = Customer
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
+&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="https://judes.me/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>https://judes.me/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="https://judes.me/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
 
 &lt;p&gt;老司机最怕的就是在新手面前装逼失败,比如说我刚刚向新人传授一系列确保不覆盖别人的代码的方法,转过头就有新人(将他称为 A)反映我覆盖了他的代码。&lt;/p&gt;
 
@@ -388,7 +533,7 @@ e6d934b I
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;最后，这个例子的&lt;a href=&quot;https://github.com/zymiboxpay/git_log_full_history&quot;&gt;源码&lt;/a&gt;已经上传到 github ，建议仔细看文档之余亲自动手试试。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;最后，这个例子的&lt;a href=&quot;https://github.com/zymiboxpay/git_log_full_history&quot;&gt;源码&lt;/a&gt;已经上传到 github ，建议仔细看文档之余亲自动手试试。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="https://judes.me/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>https://judes.me/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="https://judes.me/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
 
@@ -426,7 +571,7 @@ e6d934b I
 
 &lt;p&gt;回顾近两年所经历的敏捷开发,我总结出敏捷开发是一整套对所有参与其中的人员有着高要求的规范:他要求所有人主动承担整个产品的责任,人与人之间要密切沟通交流,最重要的是要求尽早的交付给客户有价值的能满足用户需要的产品。&lt;/p&gt;
 
-&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>http://localhost:4000/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="http://localhost:4000/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
+&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry><entry><title type="html">方法只做一件事</title><link href="https://judes.me/tech/2017/01/15/func-do-one-thing.html" rel="alternate" type="text/html" title="方法只做一件事" /><published>2017-01-15T18:31:26+08:00</published><updated>2017-01-15T18:31:26+08:00</updated><id>https://judes.me/tech/2017/01/15/func-do-one-thing</id><content type="html" xml:base="https://judes.me/tech/2017/01/15/func-do-one-thing.html">&lt;p&gt;当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。&lt;/p&gt;
 
 &lt;p&gt;我知道方法越短越好，但一旦自己写起短代码来，就导致一个简单的功能，实现代码会嵌套四/五层，曾经因此被人说过“代码分得太细”，我自己读着的感觉也不好：虽然方法都短小，但不易懂。&lt;/p&gt;
 
@@ -477,7 +622,7 @@ end
 
 &lt;p&gt;“方法只做一件事”，出自「clean code」。如果在我刚当程序员的时候看这本书，或许不会像如今有这么大收获，那时写过的代码少，遇到的问题也少，有过困惑和思考的就更少了；现在的我，看书的每一节都能联系到自己一直以来遇到过的、思考过的问题，这些问题有的已经有了模糊答案，有的想不明白，不论怎样书中的解释总能带给我新的启发。&lt;/p&gt;
 
-&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="http://localhost:4000/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
+&lt;p&gt;“方法只做一件事”就是如此。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="clean code" /><summary type="html">当职业程序员有两年多，算上休息时写的代码，代码量也不算少了，但每次有机会回望自己写的代码，总觉得与别人写得好的那些代码有差距，别人写的读起来短、易懂。</summary></entry><entry><title type="html">从读一本废话连篇的书说起</title><link href="https://judes.me/reading/2016/12/28/from-reading-a-nonsense-book.html" rel="alternate" type="text/html" title="从读一本废话连篇的书说起" /><published>2016-12-28T05:53:20+08:00</published><updated>2016-12-28T05:53:20+08:00</updated><id>https://judes.me/reading/2016/12/28/from-reading-a-nonsense-book</id><content type="html" xml:base="https://judes.me/reading/2016/12/28/from-reading-a-nonsense-book.html">&lt;p&gt;最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。&lt;/p&gt;
 
 &lt;p&gt;之所以要自己读一读，是因为觉得看这种被人消化过的二手知识不好：一是会被他人的偏见带跑，二是理解不深刻，三是没有学到书本作者得出结论的具体方法。&lt;/p&gt;
 
@@ -509,7 +654,7 @@ end
 
 &lt;p&gt;除了背单词，看完一篇文章、学到一个暂时用不到的知识，受这本书的影响，我都用 xmind 整理一下。读懂作者所说，只是在被动接受，注意力集中在细节上面；而把它们整理一下，就是从整体层面上，用自己的理解重新组织知识、取重点、舍弃细节。这其实就是另一种的“建立心理表征”。&lt;/p&gt;
 
-&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry><entry><title type="html">逝去的 2016</title><link href="http://localhost:4000/life/2016/12/18/my-2016.html" rel="alternate" type="text/html" title="逝去的 2016" /><published>2016-12-18T05:12:06+08:00</published><updated>2016-12-18T05:12:06+08:00</updated><id>http://localhost:4000/life/2016/12/18/my-2016</id><content type="html" xml:base="http://localhost:4000/life/2016/12/18/my-2016.html">&lt;p&gt;下面用一句话来描述今年作为程序员的我：&lt;/p&gt;
+&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry><entry><title type="html">逝去的 2016</title><link href="https://judes.me/life/2016/12/18/my-2016.html" rel="alternate" type="text/html" title="逝去的 2016" /><published>2016-12-18T05:12:06+08:00</published><updated>2016-12-18T05:12:06+08:00</updated><id>https://judes.me/life/2016/12/18/my-2016</id><content type="html" xml:base="https://judes.me/life/2016/12/18/my-2016.html">&lt;p&gt;下面用一句话来描述今年作为程序员的我：&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;我享受编程的乐趣，也想用自身所学，做个有一点受众的产品。&lt;/p&gt;
@@ -543,103 +688,4 @@ end
   &lt;p&gt;要得到自己所想的，就先设立最终目标，然后把最终目标分解成大中小目标，努力去完成一个个小目标，定期检查付出的努力是不是达到既定目标，如果没有，就改变努力的方式，甚至改变自己一直改不了的性格、做事方式、缺点，反复检查改变后的成效，如果某个目标最终完成不了，就根据实际调整目标。&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry><entry><title type="html">模糊的正确</title><link href="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html" rel="alternate" type="text/html" title="模糊的正确" /><published>2016-12-05T05:30:28+08:00</published><updated>2016-12-05T05:30:28+08:00</updated><id>http://localhost:4000/life/2016/12/05/simplify-bayes-theorem</id><content type="html" xml:base="http://localhost:4000/life/2016/12/05/simplify-bayes-theorem.html">&lt;p&gt;在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;如果在每 1000 人中有 1 个人携带艾滋病的病毒(HIV)， 
- 再假设有一种检查可以百分百地诊断出真的携带该病毒的人; 
- 最后，假设这个检查有 5% 的可能性，把没有携带者说成是有。
- 也就是说，这项检查在没有携带 HIV 的人中，也会错误地检测出有 5% 的人是携带病毒者。 
- 假设我们随便找一个人来进行这项检查，得到了呈阳性反应，亦即此人为 HIV 携带者。 
- 假定我们不知道这个人的患病史，那么他真的是 HIV 携带者的概率是多少呢?&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;如果凭直觉大概会猜答案是 95% 。&lt;/p&gt;
-
-&lt;p&gt;如果知道这是一道典型的条件概率题目，大概会认真对待：翻开书本，复习一下条件概率，然后套公式（贝叶斯定理）：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;首先找准事件：
-设 H 为携带 HIV 事件
-设 N 为没有携带 HIV 事件
-设 + 为检测为阳性事件&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;然后可以得到：
-P(H) = 0.1%
-P(N) = 1 - P(H) = 99.9%
-携带者接受检测，并检测出阳性的概率:
-P(+|H) = 100%
-没有携带者接受检测，并检测出阳性的概率:
-P(+|N) = 5%&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;table&gt;
-      &lt;tbody&gt;
-        &lt;tr&gt;
-          &lt;td&gt;问题是 P(H&lt;/td&gt;
-          &lt;td&gt;+) 等于多少&lt;/td&gt;
-        &lt;/tr&gt;
-      &lt;/tbody&gt;
-    &lt;/table&gt;
-  &lt;/li&gt;
-  &lt;li&gt;得到：
-P(H|+) = P(+,H) / P(+) = P(+|H) * P(H) / P(+) 
- = P(+|H) * P(H) / (P(+,H) + P(+,N)) 
- = P(+|H) * P(H) / (P(+|H) * P(H) + P(+|N) * P(N)) 
- = 1 * 0.1% / (1 * 0.1% + 5% * 99.9%)
- ≈ 0.01963&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;那么新的问题又来了，如果没学过（或者忘记了）条件概率，有没有办法得出“正确的”答案呢？&lt;/p&gt;
-
-&lt;p&gt;办法还是有的，有一种很简单的办法，能得到大致正确的答案。&lt;/p&gt;
-
-&lt;p&gt;关键思路是：把概率化作统计。&lt;/p&gt;
-
-&lt;p&gt;还记得题目问的是什么吗？&lt;strong&gt;一个检测呈阳性的人真实患病的概率有多大。这个问题可以略为简化一下，看成是真实患病的人占被检出阳性的人的比例有多大&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;首先随机找到 10,000 个人，根据条件，我们可以假设其中有 10 人患有艾滋病；&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;让这 10，000 人接受检查，那么这患病的 10 人一定会被检出阳性；&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;被检出阳性的人一共有多少呢？除去那真实患病的 10 人，还有不患病的 9990 人，他们当中被检出阳性的人数是 9990 * 5% ≈ 500 （要是算是 499.5 的话，得到的答案跟前面的方法是一样的）&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;那么这个比例就是： 10 / (10 + 500) ≈ 0.01961&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这个简单的方法并不总能都得到正确答案，但足以用来评估大概数字，做出正确决策（起码不会猜 95% ^_^ ）。实际上这个方法得到的概率只会比正确答案要高，不会低。&lt;/p&gt;
-
-&lt;p&gt;最后再来一个例子展示怎样使用这个简单的方法帮助我们做出正确判断：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;近来发生的多起恐怖活动中，某教人士所占比例非常大，导致人们大都信仰某教的人抱有成见：信仰某教的人很有可能是恐怖份子。问题来了，信仰某教的人是恐怖份子的概率有多大呢？
- 已知的条件有：1, 假设恐怖份子都信仰某教 ；2, 全球有 1/100 人口信仰某教；3, 恐怖份子人数占全球人口 1/10,000 。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;按照“把概率化作统计”的思路：&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;假设全球有 100，000 人口，那么当中的恐怖份子有 10 人，信仰某教的人数是 1,000 ，所以得到信仰某教的人是恐怖份子的概率只有 10 / 1,000 = 1%&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;考虑到信仰某教的实际人口比例比 1/100 要高，而恐怖份子则要比 1/10，000 低，所以这种成见是没有数据支持的。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;重要&lt;/strong&gt;
-本文所述的简单方法，出自《x的奇幻之旅》&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;参考&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/zh-cn/条件概率&quot;&gt;条件概率&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://zh.wikipedia.org/wiki/贝叶斯定理&quot;&gt;贝叶斯定理&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>jude zhu</name></author><category term="条件概率" /><category term="贝叶斯定理" /><category term="统计" /><summary type="html">在《对“伪心理学”说不》一书的第 10 章中，有这样一个例子：</summary></entry></feed>
+&lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry></feed>

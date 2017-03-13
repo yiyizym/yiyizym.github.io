@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-03-13T08:32:18+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">一个简单的 Promise 实现</title><link href="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html" rel="alternate" type="text/html" title="一个简单的 Promise 实现" /><published>2017-03-12T10:50:26+08:00</published><updated>2017-03-12T10:50:26+08:00</updated><id>https://judes.me/tech/frontend/2017/03/12/a_simple_promise</id><content type="html" xml:base="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html">&lt;p&gt;介绍 Promise 实现的文章早已烂大街了，但大多数文章都是先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-03-13T21:37:27+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">一个简单的 Promise 实现</title><link href="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html" rel="alternate" type="text/html" title="一个简单的 Promise 实现" /><published>2017-03-12T10:50:26+08:00</published><updated>2017-03-12T10:50:26+08:00</updated><id>https://judes.me/tech/frontend/2017/03/12/a_simple_promise</id><content type="html" xml:base="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html">&lt;p&gt;介绍 Promise 实现的文章早已烂大街了，大多数文章先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。&lt;/p&gt;
 
-&lt;p&gt;既然读者要看实现，那就可以假设他们都已熟悉 Promise 的使用方法。能不能换个角度，从使用出发，逐步实现一个简单可用的 Promise 呢？&lt;/p&gt;
+&lt;p&gt;既然读者来看实现，就可以假设他们都已熟悉 Promise 的使用方法。能不能换个角度，从使用出发，逐步实现一个简单可用的 Promise 呢？&lt;/p&gt;
 
-&lt;p&gt;最近我就看到一篇这样的&lt;a href=&quot;http://tech.meituan.com/promise-insight.html&quot;&gt;文章&lt;/a&gt;，以及它的&lt;a href=&quot;http://www.mattgreer.org/articles/promises-in-wicked-detail/&quot;&gt;参考文章&lt;/a&gt;。下面，我就试着整合两篇文章，聊聊一个简单的 Promise 实现。&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;简单的使用方法&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;最近我就看到一篇这样思路的&lt;a href=&quot;http://tech.meituan.com/promise-insight.html&quot;&gt;文章&lt;/a&gt;，以及它的&lt;a href=&quot;http://www.mattgreer.org/articles/promises-in-wicked-detail/&quot;&gt;参考文章&lt;/a&gt;。下面，我试着整合两篇文章，聊聊一个简单的 Promise 实现。&lt;/p&gt;
 
 &lt;p&gt;先来看一个简单的 Promise 使用例子，暂时不考虑 reject 和异常的情况。&lt;/p&gt;
 
@@ -25,7 +23,7 @@ function showUserId(id){
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;可以看到 Promise 实例化时需要传入一个函数（fn）， Promise 在实例化时会调用 fn ；Promise 有一个实例方法 then ，以及一个私有方法 resolve 。&lt;/p&gt;
+&lt;p&gt;可以看到 Promise 实例化时需要传入一个函数：fn ， Promise 在实例化时会调用 fn ；Promise 有一个实例方法 then ，以及一个私有方法 resolve ，可以写一个简单的构造函数：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
   var callback = null
@@ -40,9 +38,7 @@ function showUserId(id){
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;em&gt;then 与 resolve 的调用顺序&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;运行上面这段代码会报错，因为在执行 fn(resolve) 时， Promise 实例化还没完成， this.then 没有执行，callback 是 null 。用 setTimeout 把 callback 的执行时间推迟到下一个事件循环里来解决这个问题：&lt;/p&gt;
+&lt;p&gt;运行上面这段代码会报错，因为在执行 fn(resolve) 时， Promise 实例化还没完成， this.then 没有执行，callback 是 null 。这个问题可以用 setTimeout 把 callback 的执行时间推迟到下一个事件循环里来解决：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
   var callback = null
@@ -58,7 +54,7 @@ function showUserId(id){
 }
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-&lt;p&gt;用上 setTimeout 后，还支持先生成 Promise 实例，在后面再调用 then ：&lt;/p&gt;
+&lt;p&gt;用上 setTimeout 后，还支持先生成 Promise 实例，过些时候再调用 then ：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promise = getUserId()
 
@@ -66,8 +62,6 @@ promise.then(showUserId)
 
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-
-&lt;p&gt;&lt;em&gt;多次调用 then&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;我们经常会给 Promise 实例添加多个回调，举个例子：&lt;/p&gt;
 
@@ -83,7 +77,7 @@ function showUserIdAgain(id){
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;用一个数组记下用 then 添加的回调，在 resolve 时遍历调用数组中的回调：&lt;/p&gt;
+&lt;p&gt;可以用一个数组记下用 then 添加的回调，然后在 resolve 时遍历调用数组中的回调：&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
   var callbacks = []
@@ -103,28 +97,51 @@ function showUserIdAgain(id){
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;&lt;em&gt;链式调用 then&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;一般情况下，我们用同步的方式调用 then ，但有时候我们也会异步调用 then 。比如此刻你忽然想吃泡面：先烧壶水，在水烧开前这段时间到便利店买泡面，回到家水已经烧开了，这时再用开水泡面：&lt;/p&gt;
 
-&lt;p&gt;我们经常会像下面这样链式调用 then :&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function boilWater(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve('开水')
+    }, 1000)
+  })
+}
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promise = getUserId()
+function buyInstantNoodle(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve('泡面')
+    }, 2000)
+  })
+}
 
-promise
-  .then(showUserId)
-  .then(showUserIdAgain)
-
+var promiseOfBoilWater = boilWater()
+buyInstantNoodle().then(function(instantNoodle){
+  promiseOfBoilWater.then(function(boiledWater){
+    console.log('你用' + boiledWater + '泡' + instantNoodle)
+  })
+})
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;只要在调用 then 时，返回 Promise 实例的引用就能满足这点：&lt;/p&gt;
+&lt;p&gt;要让 promise 在调用 resolve 之后，还能执行通过 then 添加的回调方法，需要用一个标记区分 promise 的状态，调用 resolve 之前是 pending 状态，之后是 fulfilled 。在 pending 状态调用 then 会把方法放进回调数组中，而在 fulfilled 状态下调用 then 则会直接调用方法。&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
   var callbacks = []
+  var state = 'pending'
+  var value = null
   this.then = function(cb){
-    callbacks.push(cb)
+    if(state === 'pending'){
+      callbacks.push(cb)
+    }
+    else{
+      cb(value)
+    }
     return this
   }
-  function resolve(value){
+  function resolve(newValue){
+    value = newValue
+    state = 'fulfilled'
     setTimeout(function(){
       callbacks.forEach(function(callback){
         callback(value)
@@ -136,15 +153,317 @@ promise
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;** TODO **&lt;/p&gt;
+&lt;p&gt;我们经常会像下面这样链式调用 then ，假设你家里有泡面，不用下楼买，只需要烧开水 :&lt;/p&gt;
 
-&lt;p&gt;&lt;em&gt;异步调用 then&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promiseOfBoilWater = boilWater()
 
-&lt;p&gt;一般情况下，我们用同步的方式调用 then ，但有时候我们也会异步调用 then ：&lt;/p&gt;
+promiseOfBoilWater
+  .then(takeOutInstantNoodle)
+  .then(eat)
 
-&lt;p&gt;&lt;em&gt;then 返回 Promise 实例&lt;/em&gt;&lt;/p&gt;
+function takeOutInstantNoodle(boiledWater){
+  return boiledWater + '煮泡面'
+}
 
-&lt;p&gt;&lt;em&gt;处理失败与异常&lt;/em&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">介绍 Promise 实现的文章早已烂大街了，但大多数文章都是先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。</summary></entry><entry><title type="html">人类砍头的花边历史</title><link href="https://judes.me/reading/2017/03/10/history_of_human_beheaded.html" rel="alternate" type="text/html" title="人类砍头的花边历史" /><published>2017-03-10T07:48:07+08:00</published><updated>2017-03-10T07:48:07+08:00</updated><id>https://judes.me/reading/2017/03/10/history_of_human_beheaded</id><content type="html" xml:base="https://judes.me/reading/2017/03/10/history_of_human_beheaded.html">&lt;p&gt;说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。&lt;/p&gt;
+function eat(noodle){
+  console.log(noodle + ' 味道就是好！')
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;要实现这点,在调用 then 时，需要返回一个 Promise 实例。这个实例要做的事情是：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;在上一个 promise 执行 resolve 后，先调用 onResolved 回调；&lt;/li&gt;
+  &lt;li&gt;把得到的结果作为参数放到自身的 then 回调中执行。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved){
+    return new Promise(function(resolve){
+      handle({
+        onResolved: onResolved,
+        resolve: resolve
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else{
+      if(handler.onResolved){
+        var ret = handler.onResolved(value)
+        handler.resolve(ret)
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    value = newValue
+    state = 'fulfilled'
+    setTimeout(function(){
+      handlers.forEach(function(handler){
+        handle(handler)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;有了链式调用 then 的基础，回头看之前“烧开水——买泡面——泡泡面”的代码，我们一般不会那样写，而会这样写：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;boilWater()
+  .then(buyInstantNoodle)
+  .then(eat)
+
+function boilWater(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve('开水')
+    }, 1000)
+  })
+}
+
+function buyInstantNoodle(boiledWater){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve(boiledWater + '煮泡面')
+    }, 2000)
+  })
+}
+
+function eat(noodle){
+  console.log(noodle + ' 味道就是好！')
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;传入 then 的参数 buyInstantNoodle 会返回一个 promise 。我们先看看，在不改变 Promise 构造函数的基础上，要怎样写才能让程序正常执行：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;boilWater()
+  .then(buyInstantNoodle)
+  .then(function(promiseOfBuyInstantNoodle){
+    // 要让使用的人自己处理返回的 promise
+    promiseOfBuyInstantNoodle.then(eat)
+  })
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;为了方便使用的人，要在 Promise 构造函数的 resolve 方法里判断参数是不是 promise 实例，是的话就先调用实例的 then 方法。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved){
+    return new Promise(function(resolve){
+      handle({
+        onResolved: onResolved,
+        resolve: resolve
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else{
+      if(handler.onResolved){
+        var ret = handler.onResolved(value)
+        handler.resolve(ret)
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    if(typeof newValue === 'object' &amp;amp;&amp;amp; typeof newValue.then === 'function'){
+      // resolve 就是当前这个定义的函数
+      newValue.then(resolve)
+    }
+    else{
+      value = newValue
+      state = 'fulfilled'
+      setTimeout(function(){
+        handlers.forEach(function(handler){
+          handle(handler)
+        })
+      }, 0)
+    }
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;稍微扩展一下上面的代码，就能处理 reject 的情况：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved, onRejected){
+    return new Promise(function(resolve, reject){
+      handle({
+        onResolved: onResolved,
+        onRejected: onRejected,
+        resolve: resolve,
+        reject: reject
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else if(state === 'fulfilled'){
+      if(handler.onResolved){
+        var ret = handler.onResolved(value)
+        handler.resolve(ret)
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+    else{
+      if(handler.onRejected){
+        var ret = handler.onRejected(value)
+        // 因为前一个 promise 中有处理 reject 的情况
+        // 所以要调用下一个 promise 的 resolve
+        handler.resolve(ret)
+      }
+      else{
+        handler.reject(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    if(typeof newValue === 'object' &amp;amp;&amp;amp; typeof newValue.then === 'function'){
+      // resolve 就是当前这个定义的函数
+      newValue.then(resolve, reject)
+    }
+    else{
+      value = newValue
+      state = 'fulfilled'
+      setTimeout(function(){
+        handlers.forEach(function(handler){
+          handle(handler)
+        })
+      }, 0)
+    }
+  }
+  function reject(reason){
+    value = reason
+    state = 'rejected'
+    setTimeout(function(){
+      handlers.forEach(function(handler){
+        handle(handler)
+      })
+    }, 0)
+  }
+  fn(resolve, reject)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后还得处理异常情况：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved, onRejected){
+    return new Promise(function(resolve, reject){
+      handle({
+        onResolved: onResolved,
+        onRejected: onRejected,
+        resolve: resolve,
+        reject: reject
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else if(state === 'fulfilled'){
+      if(handler.onResolved){
+        try {
+          var ret = handler.onResolved(value)
+          handler.resolve(ret)
+        }
+        catch(e){
+          handler.reject(e)
+        }
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+    else{
+      if(handler.onRejected){
+        try {
+          var ret = handler.onRejected(value)
+          // 因为前一个 promise 中有处理 reject 的情况
+          // 所以要调用下一个 promise 的 resolve
+          handler.resolve(ret)
+        }
+        catch(e){
+          handler.reject(e)
+        }
+      }
+      else{
+        handler.reject(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    try {
+      if(typeof newValue === 'object' &amp;amp;&amp;amp; typeof newValue.then === 'function'){
+        // resolve 就是当前这个定义的函数
+        newValue.then(resolve, reject)
+      }
+      else{
+        value = newValue
+        state = 'fulfilled'
+        setTimeout(function(){
+          handlers.forEach(function(handler){
+            handle(handler)
+          })
+        }, 0)
+      }
+    }
+    catch(e){
+      reject(e)
+    }
+  }
+  function reject(reason){
+    value = reason
+    state = 'rejected'
+    setTimeout(function(){
+      handlers.forEach(function(handler){
+        handle(handler)
+      })
+    }, 0)
+  }
+  fn(resolve, reject)
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;全文完。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">介绍 Promise 实现的文章早已烂大街了，大多数文章先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。</summary></entry><entry><title type="html">人类砍头的花边历史</title><link href="https://judes.me/reading/2017/03/10/history_of_human_beheaded.html" rel="alternate" type="text/html" title="人类砍头的花边历史" /><published>2017-03-10T07:48:07+08:00</published><updated>2017-03-10T07:48:07+08:00</updated><id>https://judes.me/reading/2017/03/10/history_of_human_beheaded</id><content type="html" xml:base="https://judes.me/reading/2017/03/10/history_of_human_beheaded.html">&lt;p&gt;说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。&lt;/p&gt;
 
 &lt;p&gt;砍头往往被影视作品如此刻板描画着，以致刚看到这本《人类砍头小史》时，不敢相信这个动作还可以成书。更意外的是，读者们的评价还很不错。&lt;/p&gt;
 

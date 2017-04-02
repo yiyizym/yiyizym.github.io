@@ -1,5 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-03-13T21:37:27+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
-</subtitle><author><name>jude zhu</name></author><entry><title type="html">一个简单的 Promise 实现</title><link href="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html" rel="alternate" type="text/html" title="一个简单的 Promise 实现" /><published>2017-03-12T10:50:26+08:00</published><updated>2017-03-12T10:50:26+08:00</updated><id>https://judes.me/tech/frontend/2017/03/12/a_simple_promise</id><content type="html" xml:base="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html">&lt;p&gt;介绍 Promise 实现的文章早已烂大街了，大多数文章先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="https://judes.me/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="https://judes.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://judes.me/" rel="alternate" type="text/html" /><updated>2017-04-02T21:53:53+08:00</updated><id>https://judes.me//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">找出《围城》的比喻句</title><link href="https://judes.me/tech/reading/2017/04/02/find_out_metaphor.html" rel="alternate" type="text/html" title="找出《围城》的比喻句" /><published>2017-04-02T15:01:23+08:00</published><updated>2017-04-02T15:01:23+08:00</updated><id>https://judes.me/tech/reading/2017/04/02/find_out_metaphor</id><content type="html" xml:base="https://judes.me/tech/reading/2017/04/02/find_out_metaphor.html">&lt;p&gt;最近跟小牛队老板一样在看《Building Machine Learning Systems with Python, 2nd Edition》。&lt;/p&gt;
+
+&lt;p&gt;除却某些代码（特别是第 5 章的）有错，书写得很好。没怎么学过 Python ，数学也不太行的我，也能跟着一步步走进机器学习的大门。&lt;/p&gt;
+
+&lt;p&gt;稍微看过这本书后，我就冒出一个想法：能不能用相关技术提取出文章中的比喻句呢？要机器读懂文章中的比喻句，有点难，幸好这不是提取比喻句的必要条件。&lt;/p&gt;
+
+&lt;p&gt;不管难易，先找到好数据再说。记忆中最密集出现比喻句的作品是《围城》。就拿它试试。&lt;/p&gt;
+
+&lt;p&gt;跟书里的例子一样，拿到数据后，先处理一下：去掉《围城》里的空白字符、章节提示，把一段段的文章切成一句句，方便处理和统计。关键代码是一句正则表达式和 python 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;findall&lt;/code&gt; 方法：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import re
+reg = re.compile(u'.*?(?:！|。|？|(?:：“)|(?:[！。？]”))')
+#...
+for sentence in re.findall(reg, line):
+  #...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;正则表达式匹配感叹号、句号、问号以及人物说话的标志性开头符号“：“”和结尾符号“””，&lt;code class=&quot;highlighter-rouge&quot;&gt;findall&lt;/code&gt;能匹配并包含这些标点符号，对《围城》用这一套分句效果还可以。&lt;/p&gt;
+
+&lt;p&gt;接着先用一个最简单的办法——关键字匹配——找出所有可能是比喻句的句子，看看这样做的效果如何。&lt;/p&gt;
+
+&lt;p&gt;观察从网上收集到的《围城》里的比喻句，发现很多都带一个“像”字，还有其他诸如：似、一样、如、仿佛的字眼。写下简单的代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import re
+with open('weicheng_sentences.txt', 'r') as inputfile:
+    with open('weicheng_with_simple_tag.txt', 'w') as outputfile:
+        pattern = re.compile(r'|'.join(['[^不]像','似','如','一样','仿','好比','成了','俨然']))
+        for line in inputfile:
+            if pattern.search(line) != None:
+                tag = '1'
+            else:
+                tag = '0'
+            new_line = line.rstrip() + '\t' + tag
+            outputfile.write(new_line + '\n')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;试了试，从 1 万多句中找到了 800 多句，手动标记整理过后，发现当中有 400 多句是比喻句，而被判别为“不是比喻句”的有 9000 多句，我没一一手动整理，抽样看了看，估计 100 句里有 1 句是比喻句。这样算下来，准确率只有 50 % ，召回率是 81.6% 。&lt;/p&gt;
+
+&lt;p&gt;接下来，在匹配关键字的基础上，加上中文分词，看看能不能从中提取一些比喻句的特征。首先从一堆关键字中选了「像」字出来，用&lt;em&gt;结巴分词&lt;/em&gt;切好，仔细看了看，发现这样选出来很多比喻句都有本体和喻体，还有部分只出现喻体，如：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;孩子不足两岁，塌鼻子，眼睛两条斜缝，眉毛高高在上，跟眼睛远隔得彼此要害相思病，活像报上讽刺画里的中国人的脸。
+机密得好像四壁全挂着偷听的耳朵。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;我写下了一个判断方法，如果一个句子，在带「像」字的动词前后各出现一个名词，就把它判别为比喻句。如果只有一个名词，就认为它有 50 % 的可能是比喻句，因为有不少句子是这样的：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;就像系主任罢，我们的系主任韩先生比赵先生高一级，赵先生又比外语系的刘东方高一级。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;当然，带「像」字动词前后各有一个名词的句子也有可能不是比喻句，像下面这样的：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;孙先生常跟我说，女学生像苏小姐才算替中国争面子，人又美，又是博士，这样的人哪里去找呢？&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;其他的关键字也作各自处理过后，关键字匹配升级成为关键词加上一些句子结构特征的匹配，比如句子中若只出现「一样」并不被当成比喻句，只有「一样」前面还出现「跟」或者「和」时才算是比喻句。但仍然会有像下面不是比喻句却被当成比喻句的句子：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;从前男性所做的职业，国会议员、律师、报馆记者、飞机师等等，女性都会做，而且做得跟男性一样好。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;升级后，有 689 句被标记为比喻句，其中有 486 句是比喻句，剩下的 9218 句中，假设有 92 句是比喻句。这样算下来，准确率是 70.5 % ，召回率是 84.1 % 。&lt;/p&gt;
+
+&lt;p&gt;看起来不错，缺憾是这个判别比喻句的方法没有接受《围城》以外的文本的考验，而且我觉得这种方法已经很难再有突破了。&lt;/p&gt;
+
+&lt;p&gt;接下来有两个方向，一个是在分词的基础上，增加句法依存分析甚至是语义依存分析，看能不能提取比喻句的关键特征；另一个方向是参考《Building Machine Learning Systems with Python, 2nd Edition》中的分析推特情感色彩的例子，找到字词与比喻句之间的概率对应关系。&lt;/p&gt;
+
+&lt;p&gt;要说感想的话，在看过书以及自己动手实践过后，发现机器学习很依赖由人肉整理过、提取特征、标记过的高质量的数据，没这样的数据，很可能都是白折腾，或者效果不好。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;a href=&quot;https://github.com/yiyizym/haoci&quot;&gt;本文相关源码&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">最近跟小牛队老板一样在看《Building Machine Learning Systems with Python, 2nd Edition》。</summary></entry><entry><title type="html">一个简单的 Promise 实现</title><link href="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html" rel="alternate" type="text/html" title="一个简单的 Promise 实现" /><published>2017-03-12T10:50:26+08:00</published><updated>2017-03-12T10:50:26+08:00</updated><id>https://judes.me/tech/frontend/2017/03/12/a_simple_promise</id><content type="html" xml:base="https://judes.me/tech/frontend/2017/03/12/a_simple_promise.html">&lt;p&gt;介绍 Promise 实现的文章早已烂大街了，大多数文章先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。&lt;/p&gt;
 
 &lt;p&gt;既然读者来看实现，就可以假设他们都已熟悉 Promise 的使用方法。能不能换个角度，从使用出发，逐步实现一个简单可用的 Promise 呢？&lt;/p&gt;
 
@@ -973,38 +1046,4 @@ end
 
 &lt;p&gt;除了背单词，看完一篇文章、学到一个暂时用不到的知识，受这本书的影响，我都用 xmind 整理一下。读懂作者所说，只是在被动接受，注意力集中在细节上面；而把它们整理一下，就是从整体层面上，用自己的理解重新组织知识、取重点、舍弃细节。这其实就是另一种的“建立心理表征”。&lt;/p&gt;
 
-&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry><entry><title type="html">逝去的 2016</title><link href="https://judes.me/life/2016/12/18/my-2016.html" rel="alternate" type="text/html" title="逝去的 2016" /><published>2016-12-18T05:12:06+08:00</published><updated>2016-12-18T05:12:06+08:00</updated><id>https://judes.me/life/2016/12/18/my-2016</id><content type="html" xml:base="https://judes.me/life/2016/12/18/my-2016.html">&lt;p&gt;下面用一句话来描述今年作为程序员的我：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;我享受编程的乐趣，也想用自身所学，做个有一点受众的产品。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;以前对算法和数据结构只有零零碎碎的印象，年初有幸看到《算法第 4 版》这本书，对算法和数据结构有了整体的认知。2、3月份那段时间每天一边细看，一边手写书上的代码加深理解，还顺便学习 java 。以我粗浅的眼光来看， java 的接口和泛型对团队合作来说是好东西。&lt;/p&gt;
-
-&lt;p&gt;4 月份又遇到《Ruby 元编程》。 ruby 程序员怎样捧这本书都不为过。我之前连 ruby 对象的变量/方法存放的位置都不清楚，看完（还动手实现每章节的小测验）之后——既满足又有成就感——就忍不住用上各种黑魔法了。一本书写满知识而让读者看完感到满足并不难，难的是在前者之上还能让人全程都有成就感。&lt;/p&gt;
-
-&lt;p&gt;我做的别的事情，都可以在 &lt;a href=&quot;https://github.com/yiyizym&quot;&gt;github&lt;/a&gt; / &lt;a href=&quot;http://judes.me&quot;&gt;blog&lt;/a&gt; 上面看到，有三四个小东西。技术含量都不高，在做了一点点宣传之后，也没几个人用。即使如此，它们对我有很大意义：用所学践行自身所想：至少它们都满足了我个人的需求。&lt;/p&gt;
-
-&lt;p&gt;我想以后会做出既满足了自己的需求，还迎合另一部分受众的产品。它们是通往这个目标的第一步。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;如果说今年发生了什么重大事情，却没有在别的地方留下痕迹的话，就是 4 月初的一次主动交涉。当时受某句话的鼓动，跑去跟人家直接说要把月薪加到多少多少。交涉的结果就是月薪上涨 40% 。那句鼓动我的话是：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;一旦你跨了个性的界，那么你在同类人中就会成为佼佼者。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;本人个性一直很怕主动跟人接触，更别说主动要求那么大幅度的加薪。那个举动，没有源自金钱方面的压力，完全出自挑战自己固有界限的冲动。&lt;/p&gt;
-
-&lt;p&gt;加薪一大好处就是，9 月份凑够了钱办签证去东京玩一趟。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;最后，写下一句话，希望对读者有些许启发：&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;要得到自己所想的，就先设立最终目标，然后把最终目标分解成大中小目标，努力去完成一个个小目标，定期检查付出的努力是不是达到既定目标，如果没有，就改变努力的方式，甚至改变自己一直改不了的性格、做事方式、缺点，反复检查改变后的成效，如果某个目标最终完成不了，就根据实际调整目标。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;（本人正在实践中，除了在设定最终目标/五年/三年/一年/半年/季度等目标时比较挣扎之外，月度目标和周目标是很好计划和达成的）&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="年终" /><summary type="html">下面用一句话来描述今年作为程序员的我：</summary></entry></feed>
+&lt;p&gt;最后，如果没有写这篇文章，大概我只会疯狂吐槽，至于具体差在哪里却又说不出个所以然来。写完后，又发觉它没有当初认为的那么差。随着接触增多，对事物的认知真的会反反复复地改变呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="刻意练习" /><category term="废话连篇" /><summary type="html">最近在读一本叫《刻意练习：从新手到大师》的书。这本书的重点早已被万维钢和罗胖他们一条条地划出来。</summary></entry></feed>

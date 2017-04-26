@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>找出《围城》的比喻句</title>
+  <meta name="description" content="最近跟小牛队老板一样在看《Building Machine Learning Systems with Python, 2nd Edition》。">
+  <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/tech/reading/2017/04/02/find_out_metaphor.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js',{scope: '/'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+</script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+          <a class="page-link" href="/category/">分类</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">找出《围城》的比喻句</h1>
+    <p class="post-meta"><time datetime="2017-04-02T15:01:23+08:00" itemprop="datePublished">Apr 2, 2017</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>最近跟小牛队老板一样在看《Building Machine Learning Systems with Python, 2nd Edition》。</p>
+
+<p>除却某些代码（特别是第 5 章的）有错，书写得很好。没怎么学过 Python ，数学也不太行的我，也能跟着一步步走进机器学习的大门。</p>
+
+<p>稍微看过这本书后，我就冒出一个想法：能不能用相关技术提取出文章中的比喻句呢？要机器读懂文章中的比喻句，有点难，幸好这不是提取比喻句的必要条件。</p>
+
+<p>不管难易，先找到好数据再说。记忆中最密集出现比喻句的作品是《围城》。就拿它试试。</p>
+
+<p>跟书里的例子一样，拿到数据后，先处理一下：去掉《围城》里的空白字符、章节提示，把一段段的文章切成一句句，方便处理和统计。关键代码是一句正则表达式和 python 的 <code class="highlighter-rouge">findall</code> 方法：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>import re
+reg = re.compile(u'.*?(?:！|。|？|(?:：“)|(?:[！。？]”))')
+#...
+for sentence in re.findall(reg, line):
+  #...
+</code></pre>
+</div>
+
+<p>正则表达式匹配感叹号、句号、问号以及人物说话的标志性开头符号“：“”和结尾符号“””，<code class="highlighter-rouge">findall</code>能匹配并包含这些标点符号，对《围城》用这一套分句效果还可以。</p>
+
+<p>接着先用一个最简单的办法——关键字匹配——找出所有可能是比喻句的句子，看看这样做的效果如何。</p>
+
+<p>观察从网上收集到的《围城》里的比喻句，发现很多都带一个“像”字，还有其他诸如：似、一样、如、仿佛的字眼。写下简单的代码：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>import re
+with open('weicheng_sentences.txt', 'r') as inputfile:
+    with open('weicheng_with_simple_tag.txt', 'w') as outputfile:
+        pattern = re.compile(r'|'.join(['[^不]像','似','如','一样','仿','好比','成了','俨然']))
+        for line in inputfile:
+            if pattern.search(line) != None:
+                tag = '1'
+            else:
+                tag = '0'
+            new_line = line.rstrip() + '\t' + tag
+            outputfile.write(new_line + '\n')
+</code></pre>
+</div>
+
+<p>试了试，从 1 万多句中找到了 800 多句，手动标记整理过后，发现当中有 400 多句是比喻句，而被判别为“不是比喻句”的有 9000 多句，我没一一手动整理，抽样看了看，估计 100 句里有 1 句是比喻句。这样算下来，准确率只有 50 % ，召回率是 81.6% 。</p>
+
+<p>接下来，在匹配关键字的基础上，加上中文分词，看看能不能从中提取一些比喻句的特征。首先从一堆关键字中选了「像」字出来，用<em>结巴分词</em>切好，仔细看了看，发现这样选出来很多比喻句都有本体和喻体，还有部分只出现喻体，如：</p>
+
+<blockquote>
+  <p>孩子不足两岁，塌鼻子，眼睛两条斜缝，眉毛高高在上，跟眼睛远隔得彼此要害相思病，活像报上讽刺画里的中国人的脸。
+机密得好像四壁全挂着偷听的耳朵。</p>
+</blockquote>
+
+<p>我写下了一个判断方法，如果一个句子，在带「像」字的动词前后各出现一个名词，就把它判别为比喻句。如果只有一个名词，就认为它有 50 % 的可能是比喻句，因为有不少句子是这样的：</p>
+
+<blockquote>
+  <p>就像系主任罢，我们的系主任韩先生比赵先生高一级，赵先生又比外语系的刘东方高一级。</p>
+</blockquote>
+
+<p>当然，带「像」字动词前后各有一个名词的句子也有可能不是比喻句，像下面这样的：</p>
+
+<blockquote>
+  <p>孙先生常跟我说，女学生像苏小姐才算替中国争面子，人又美，又是博士，这样的人哪里去找呢？</p>
+</blockquote>
+
+<p>其他的关键字也作各自处理过后，关键字匹配升级成为关键词加上一些句子结构特征的匹配，比如句子中若只出现「一样」并不被当成比喻句，只有「一样」前面还出现「跟」或者「和」时才算是比喻句。但仍然会有像下面不是比喻句却被当成比喻句的句子：</p>
+
+<blockquote>
+  <p>从前男性所做的职业，国会议员、律师、报馆记者、飞机师等等，女性都会做，而且做得跟男性一样好。</p>
+</blockquote>
+
+<p>升级后，有 689 句被标记为比喻句，其中有 486 句是比喻句，剩下的 9218 句中，假设有 92 句是比喻句。这样算下来，准确率是 70.5 % ，召回率是 84.1 % 。</p>
+
+<p>看起来不错，缺憾是这个判别比喻句的方法没有接受《围城》以外的文本的考验，而且我觉得这种方法已经很难再有突破了。</p>
+
+<p>接下来有两个方向，一个是在分词的基础上，增加句法依存分析甚至是语义依存分析，看能不能提取比喻句的关键特征；另一个方向是参考《Building Machine Learning Systems with Python, 2nd Edition》中的分析推特情感色彩的例子，找到字词与比喻句之间的概率对应关系。</p>
+
+<p>要说感想的话，在看过书以及自己动手实践过后，发现机器学习很依赖由人肉整理过、提取特征、标记过的高质量的数据，没这样的数据，很可能都是白折腾，或者效果不好。</p>
+
+<p><strong><a href="https://github.com/yiyizym/haoci">本文相关源码</a></strong></p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude zhu
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@163.com">yiyizym@163.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

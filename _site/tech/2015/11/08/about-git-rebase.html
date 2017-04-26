@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>小心使用 git rebase</title>
+  <meta name="description" content="TL;DR 对已发布到远程仓库的分支进行衍合操作(rebase)，会产生重复的提交记录，本文举例描述这个问题。">
+  <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/tech/2015/11/08/about-git-rebase.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js',{scope: '/'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+</script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+          <a class="page-link" href="/category/">分类</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">小心使用 git rebase</h1>
+    <p class="post-meta"><time datetime="2015-11-08T17:49:08+08:00" itemprop="datePublished">Nov 8, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p><strong>TL;DR 对已发布到远程仓库的分支进行衍合操作(rebase)，会产生重复的提交记录，本文举例描述这个问题。</strong></p>
+
+<p>git merge 与 git rebase 命令都用来合并代码，如果不需要审查提交记录，两者都可以无脑操作，相互替换；如果要生成有条理的提交记录，前者会记录多条开发分支扰乱视线，因而推荐使用后者。但后者要是使用不当，会生成令人糊涂的提交记录。这点<a href="https://git-scm.com/book/zh/v1/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%9A%84%E8%A1%8D%E5%90%88">官方文档</a>里有描述，但我嫌它所举例子有点牵强，所以自己举例说明。</p>
+
+<p>要借助 github 模拟多人协作才能说清楚问题（当然你也可以在本地搭建 git server ，我嫌麻烦），所以先新建一个 github 仓库： rebase</p>
+
+<p>克隆到本地 <code class="highlighter-rouge">git clone git@github.com:yiyizym/rebase.git</code></p>
+
+<p>切换到 rebase 目录，在本地新建一个文件 initial ，内容如下：</p>
+
+<p><code class="highlighter-rouge">created by local user, the first submit on master branch</code></p>
+
+<p>添加到暂存区、提交，并推送到远程</p>
+
+<p>继续在本地操作，新建一个分支 dev ： <code class="highlighter-rouge">git checkout -b dev</code></p>
+
+<p>新建一个文件 local_dev_branch ，内容如下：</p>
+
+<p><code class="highlighter-rouge">created by local user, the first submit on dev branch</code></p>
+
+<p>添加到暂存区、提交</p>
+
+<p>继续在 dev 分支操作，修改 initial 文件，在末尾添加一行：</p>
+
+<p><code class="highlighter-rouge">add this line by local user, the second submit on dev branch</code></p>
+
+<p>添加到暂存区、提交</p>
+
+<p>切换到 github 上面操作，在 master 分支新建一个文件 remote_master_branch ，内容如下：</p>
+
+<p><code class="highlighter-rouge">created by remote user, the second submit on master branch</code></p>
+
+<p>添加到暂存区、提交</p>
+
+<p>继续在 github master 分支 上操作，修改 initial 文件，在末尾添加一行：</p>
+
+<p><code class="highlighter-rouge">add this line by remote user, the third submit on master branch</code></p>
+
+<p>添加到暂存区、提交</p>
+
+<p>切换到本地 master 分支，先与远程代码同步，因为可以快进合并，所以用 <code class="highlighter-rouge">git pull</code></p>
+
+<p>接下来就是出问题的一步，在本地 master 分支下衍合 dev 分支： <code class="highlighter-rouge">git rebase dev</code></p>
+
+<p>提示 initial 文件有冲突，编辑文件，添加到暂存区，提交或者不提交都可以（要是提交了，执行 <code class="highlighter-rouge">git rebase --continue</code> 就会提示 no changes, 只能用 <code class="highlighter-rouge">git rebase --skip</code> 跳过），继续执行 <code class="highlighter-rouge">git rebase --continue</code></p>
+
+<p>看看 master 分支状态， <code class="highlighter-rouge">git status</code> ，提示要与远程 master 分支合并</p>
+
+<p>这时要是使用 <code class="highlighter-rouge">git rebase origin/master</code> ，你会看到两个重复提交：</p>
+
+<p><code class="highlighter-rouge">add this line by remote user, the third submit on master branch</code> ，</p>
+
+<p><strong>更要命的是， initial 文件里因为自动合并，出现了两行：</strong></p>
+
+<p><code class="highlighter-rouge">add this line by remote user, the third submit on master branch</code></p>
+
+<p>这时如果使用 <code class="highlighter-rouge">git pull</code> ，你会看到两对重复提交（提交描述一样，所作修改一样， hash 值不一样）：</p>
+
+<p><code class="highlighter-rouge">created by remote user, the second submit on master branch</code> / <code class="highlighter-rouge">add this line by remote user, the third submit on master branch</code> ，</p>
+
+<p>不过除此之外，不会出现像上面一样的意外</p>
+
+<p>再次推送到远程： <code class="highlighter-rouge">git push origin master</code></p>
+
+<p>在 github 上面看提交记录，显示如下：
+<img src="http://localhost:4000/assets/rebase.jpg" alt="commitlog " />*commitlog *</p>
+
+<p><strong>结论</strong></p>
+
+<p>不要在已发布到远程仓库的分支上进行衍合操作，否则后果可大可小，运气好就只会出现重复提交，运气差的还带有实际伤害。</p>
+
+<p><strong>参考</strong></p>
+
+<ul>
+  <li>本文所举例子 <a href="https://github.com/yiyizym/rebase">github 地址</a></li>
+</ul>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude zhu
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@163.com">yiyizym@163.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

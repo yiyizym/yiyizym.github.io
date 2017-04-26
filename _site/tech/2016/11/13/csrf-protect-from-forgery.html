@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Rails 的 CSRF 对策</title>
+  <meta name="description" content="最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。">
+  <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/tech/2016/11/13/csrf-protect-from-forgery.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js',{scope: '/'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+</script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+          <a class="page-link" href="/category/">分类</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Rails 的 CSRF 对策</h1>
+    <p class="post-meta"><time datetime="2016-11-13T06:33:28+08:00" itemprop="datePublished">Nov 13, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>最近的工作是把原有 PC 端的一整套面向客户的询价下单流程移植到微信公众号上。</p>
+
+<p>原有的流程十分复杂，移植时想着后台代码能不改就不改，前端代码能重用的就重用。</p>
+
+<p>其中有一步是前端提交一个表单，后台根据处理结果，分别重定向到成功和失败页面。</p>
+
+<p>在 AJAX 流行之前，这是标准的做法（简单且重定向有效防止重复提交表单）。</p>
+
+<p>如今要用 AJAX 模拟表单提交很容易，但接下来要重定向页面就有点困难了。简单的做法就是创建一个表单元素，然后塞一些 input 元素进去，再调用表单元素的 submit 方法：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var form = document.createElement('form');
+form.method = 'post'
+form.action = '/where/to/post'
+var input_1 = document.createElement('input');
+input_1.name = 'name_1';
+input_1.type = 'hidden';
+input_1.val = 'val_1';
+
+form.appendChild(input_1);
+document.body.appendChild(form);
+
+form.submit();
+</code></pre>
+</div>
+
+<p>(想来想去，与其写这么多 javascript ，还不如直接在 html 里放一个隐藏的表单元素。自己纯粹就是闲的)</p>
+
+<p>单看上面这段代码应该没问题，但实际上有很大的安全隐患，在 Rails 中会提交失败。</p>
+
+<p>这个安全隐患就是提交到这个路径 ‘/where/to/post’ 的表单很容易被伪造，后台没办法区分伪造的表单和正常的表单。这就是 cross site request forgery, <a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">CSRF</a> 。</p>
+
+<p>事情得从头说起。</p>
+
+<p>后台为识别用户的操作，可以在每个操作前都要求用户输入用户名和密码，这样做太麻烦了，为方便用户，后台和浏览器共同发展出一套只需输入一次用户名密码就能在一段时间内记住用户身份的 session 机制。这套机制依赖于保存在浏览器里的 cookie 。</p>
+
+<p>因此如果 cookie 漏泄了，被用来伪造用户身份的话，后台没有办法区分哪些是假冒操作，哪些正常操作。</p>
+
+<p>CSRF 正是利用了这个弱点。</p>
+
+<p>Rails 为防止 CSRF ，默认会检查除 GET 、 HEAD 之外的其他请求当中的请求头或请求正文，看里面有没有一个 token 字段，如果没有或者跟 session 中保存的值不一致，就判定为非法请求。</p>
+
+<p>Rails 的这一套机制覆盖了多种发出请求的方式：</p>
+
+<p><strong>在前端</strong></p>
+
+<ul>
+  <li>
+    <p>jQuery</p>
+
+    <p>如果使用 jQuery 的 ajax 方法，那么需要引入 jquery-ujs.js 。这个文件调用 <code class="highlighter-rouge">jQuery.ajaxPrefilter</code> 方法，为所有非跨域的请求（跨域的请求，后台通过 CORS ，检查 Origin 字段避免非法请求来源），在其请求头中加入一个 X-CSRF-Token 字段。</p>
+
+    <p>X-CSRF-Token 的值来自页面中的一个 meta 标签，这个标签在 layout 中通过设置：<code class="highlighter-rouge">&lt;%= csrf_meta_tags %&gt;</code> 生成。</p>
+  </li>
+  <li>
+    <p>表单提交</p>
+
+    <p>如果引入了 jQuery 和 jquery-ujs.js ，所有的 form 元素会在页面初始化时被塞进一个隐藏的 token 字段，它的值同样来自 meta 标签。</p>
+  </li>
+  <li>
+    <p>form_tag</p>
+
+    <p>如果没有引入 jquery-ujs.js 或不能用 javascript ，也可以使用 <code class="highlighter-rouge">form_tag</code>, <code class="highlighter-rouge">form_for</code> helper 方法，它们也会根据上述情况加入 token 字段。</p>
+  </li>
+</ul>
+
+<p><strong>在后台</strong></p>
+
+<p>ActionPack 提供一个 <strong>protect_from_forgery</strong> 方法，用脚手架生成的 Rails 应用，会在 ApplicationController 调用这个方法：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>#Prevent CSRF attacks by raising an exception.
+protect_from_forgery with: :exception
+</code></pre>
+</div>
+
+<p>它做两件事情：</p>
+
+<ul>
+  <li>
+    <p>在处理请求前，检验请求是不是 GET 或 HEAD 请求，是不是关闭了 protect_from_forgery ，请求头中的 X-CSRF-Token 字段是否正确， 请求正文中的 authenticity_token 字段是否正确，只要满足以上四个条件的一个，校验就算通过，可以处理请求；一个都不满足的话，就抛出异常。</p>
+  </li>
+  <li>
+    <p>在处理完请求，返回数据前，如果是 GET 请求并且不是 xhr 请求，抛出异常，不返回数据。这样做是为了防止有人使用 script 标签加载内容，并盗窃其中敏感的信息（因为 script 加载完成后会执行）。</p>
+  </li>
+</ul>
+
+<p><strong>总结</strong></p>
+
+<p>Rails 应对 CSRF 的措施覆盖了大多数使用场景，帮助程序员在不知不觉间写出安全的代码，但这种贴心的保护往往使得程序员忘记各种危险，一旦脱离 Rails 代码就写得很脆弱。</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude zhu
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@163.com">yiyizym@163.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

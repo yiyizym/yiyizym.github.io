@@ -1,0 +1,1150 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-04-26T18:14:41+08:00</updated><id>http://localhost:4000//</id><title type="html">jude’s life</title><subtitle>记录生活的点点滴滴
+</subtitle><author><name>jude zhu</name></author><entry><title type="html">简单总结 javascript 对象模型</title><link href="http://localhost:4000/frontend/2017/04/18/javascript_object_model.html" rel="alternate" type="text/html" title="简单总结 javascript 对象模型" /><published>2017-04-18T09:18:27+08:00</published><updated>2017-04-18T09:18:27+08:00</updated><id>http://localhost:4000/frontend/2017/04/18/javascript_object_model</id><content type="html" xml:base="http://localhost:4000/frontend/2017/04/18/javascript_object_model.html">&lt;p&gt;&lt;strong&gt;本文假设读者已对 javascript 继承和原型链有所了解，如果没有，可以先到&lt;a href=&quot;https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain&quot;&gt;这里&lt;/a&gt;补补课&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;最近在整理 javascript 知识点时，逐渐发觉 javascript 所有的对象都在一套基于原型链体系之中，这套体系描述了对象实例与类、子类与父类的关系。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;几乎一切都是对象&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在 javascript 中，几乎一切（除了 &lt;code class=&quot;highlighter-rouge&quot;&gt;undefined&lt;/code&gt; 和 &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;）都是对象： &lt;code class=&quot;highlighter-rouge&quot;&gt;42&lt;/code&gt; 这个数字，是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Number&lt;/code&gt; 类的一个实例对象；&lt;code class=&quot;highlighter-rouge&quot;&gt;true&lt;/code&gt; 是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Boolean&lt;/code&gt; 类的一个实例对象。&lt;/p&gt;
+
+&lt;p&gt;类同时也是别的类的实例： &lt;code class=&quot;highlighter-rouge&quot;&gt;Number&lt;/code&gt; 类和 &lt;code class=&quot;highlighter-rouge&quot;&gt;Boolean&lt;/code&gt; 类是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Object&lt;/code&gt; 类的实例对象，&lt;code class=&quot;highlighter-rouge&quot;&gt;Object&lt;/code&gt; 类是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Function&lt;/code&gt; 类的实例对象，只有 &lt;code class=&quot;highlighter-rouge&quot;&gt;Function&lt;/code&gt; 类比较特别，它是自己的实例。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;__proto__&lt;/code&gt;&amp;amp;&lt;code class=&quot;highlighter-rouge&quot;&gt;prototype&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;所有对象都有一个指向自己的原型的引用，在 javascript 中，对象可以通过 &lt;code class=&quot;highlighter-rouge&quot;&gt;__proto__&lt;/code&gt; 属性获取对象自己的原型。继续上面的例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(42).__proto__ 
+// Number {constructor: function, toExponential: function, toFixed: function, toPrecision: function, toString: function…}
+(true).__proto__ 
+// Boolean {[[PrimitiveValue]]: false, constructor: function, toString: function, valueOf: function}
+var o = {}
+o.__proto__
+// Object {__defineGetter__: function, __defineSetter__: function, hasOwnProperty: function, __lookupGetter__: function, __lookupSetter__: function…}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;对象还有一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;prototype&lt;/code&gt; 属性，它指向一个有 &lt;code class=&quot;highlighter-rouge&quot;&gt;constructor&lt;/code&gt; 属性的简单的对象， &lt;code class=&quot;highlighter-rouge&quot;&gt;constructor&lt;/code&gt; 又指向对象的构造函数：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function A(){}
+A.prototype
+// Object {constructor: function A()}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;对象的 &lt;code class=&quot;highlighter-rouge&quot;&gt;__proto__&lt;/code&gt; 属性和 &lt;code class=&quot;highlighter-rouge&quot;&gt;prototype&lt;/code&gt; 属性是完全不一样的东西，但有关系：在使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;new&lt;/code&gt; 关键字实例化对象时，对象的 &lt;code class=&quot;highlighter-rouge&quot;&gt;__proto__&lt;/code&gt; 属性指向它所属的类的 &lt;code class=&quot;highlighter-rouge&quot;&gt;prototype&lt;/code&gt; 属性，接上例：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function A(){}
+var a = new A();
+a.__proto__ === A.prototype
+// true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;而使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Object.create&lt;/code&gt; 方法时，实例对象的 &lt;code class=&quot;highlighter-rouge&quot;&gt;__proto__&lt;/code&gt; 指向的不是类的 &lt;code class=&quot;highlighter-rouge&quot;&gt;prototype&lt;/code&gt; ，而是类本身：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function A(){}
+var aa = Object.create(A)
+aa.__proto__ === A.prototype
+// false
+aa.__proto__ === A
+// true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;使用 &lt;code class=&quot;highlighter-rouge&quot;&gt;class&lt;/code&gt; 关键字时，生成的原型跟用 &lt;code class=&quot;highlighter-rouge&quot;&gt;Object.create&lt;/code&gt; 的类似&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class A(){}
+class AA extends A {}
+AA.__proto__ === A.prototype
+// false
+AA.__proto__ === A
+// true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;原型链&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在 javascript 的原型链体系中，所有对象都是 &lt;code class=&quot;highlighter-rouge&quot;&gt;Object&lt;/code&gt; 类的实例对象，通过递归调用 &lt;code class=&quot;highlighter-rouge&quot;&gt;__proto__&lt;/code&gt; 属性可以看到对象的整条原型链：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function printProtoOf(obj) {
+  var protos = [String(obj)]; // 可能会报错 Function.prototype.toString is not generic ，不是所有的对象都能用 string 表示
+  var proto = (obj).__proto__;
+  while(proto){
+    protos.push(String(proto.constructor));
+    proto = (proto).__proto__;
+  }
+  protos.push(String(proto));
+  console.log(protos.join(' -&amp;gt; '))
+}
+
+printProtoOf(42)
+// 42 -&amp;gt; function Number() { [native code] } -&amp;gt; function Object() { [native code] } -&amp;gt; null
+printProtoOf('str')
+str -&amp;gt; function String() { [native code] } -&amp;gt; function Object() { [native code] } -&amp;gt; null
+function A(){}
+var a = new A();
+printProtoOf(a)
+// [object Object] -&amp;gt; function A(){} -&amp;gt; function Object() { [native code] } -&amp;gt; null
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;更好的继承&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;借助这些细节可以实现更好的继承，比如：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Animal(){}
+
+function Cat(){}
+
+// 目标是让 Cat 继承 Animal ，思路是修改原型链
+
+// 假设 oneCat 是 Cat 的实例对象
+// 那么 oneCat 的原型链应该是这样的：
+// oneCat.__proto__ === Cat.prototype
+// oneCat.__proto__.__proto__ === Animal.prototype
+
+// 实现步骤：
+
+// 1. 新建空白对象
+var o = new Object();
+
+// 2. 让空白对象的原型指向 Animal.prototype
+o.__proto__ = Animal.prototype
+
+// 3. 设置空白对象的 `constructor` 属性
+o.constructor = Cat
+
+// 4. 让 Cat.prototype 指向这个空白对象
+Cat.prototype = o
+
+Animal.prototype.species = '动物';
+
+Cat.prototype.meows = function(){
+  console.log('meow meow ~');
+}
+
+var oneCat = new Cat();
+oneCat.species
+// 动物
+oneCat.meows()
+// meow meow ~
+
+var anotherAnimal = new Animal();
+anotherAnimal.species
+// 动物
+anotherAnimal.meows
+// undefined
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</content><author><name>jude zhu</name></author><summary type="html">本文假设读者已对 javascript 继承和原型链有所了解，如果没有，可以先到这里补补课</summary></entry><entry><title type="html">自学一堂谈判课</title><link href="http://localhost:4000/reading/2017/04/17/a_negotiation_lesson.html" rel="alternate" type="text/html" title="自学一堂谈判课" /><published>2017-04-17T16:37:30+08:00</published><updated>2017-04-17T16:37:30+08:00</updated><id>http://localhost:4000/reading/2017/04/17/a_negotiation_lesson</id><content type="html" xml:base="http://localhost:4000/reading/2017/04/17/a_negotiation_lesson.html">&lt;p&gt;我不怎么买励志畅销书，但有一本叫《沃顿商学院 最受欢迎的谈判课》的，一直躺在我的 kindle 里
+。什么时候买的已经记不清楚，我想至少有 3 年了，因为大约在 3 年前，自己曾经按书里的建议，在社保局办业务前先跟工作人员寒暄了一句，效果如何，也早忘了。&lt;/p&gt;
+
+&lt;p&gt;书的封面一直用进度条提醒我，这些年来只读了不到 20% ，出于内疚，好几次都试着点开读完它，但每次都不到几页就放弃了。大概是因为它又犯西方人写书的毛病：总是有大段大段的实例，重点却不突出，在手机上翻页翻得我心烦吧。&lt;/p&gt;
+
+&lt;p&gt;在这已读的 20% 里，我发现一个闪光点。&lt;/p&gt;
+
+&lt;p&gt;这本书的英文名是《Getting More, how you can negotiate succeed in work and life》（《获取更多，如何在工作和生活中谈判成功》）。书中没一个失败的案例。但千万别以为用上书中的方法就能每次谈判都能得到更多，作者一上来就说：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;我不是要在谈判中努力打出本垒打。我是要努力在每9局比赛中额外击出一记安打。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;这本书不是教你击出本垒打，只是每 9 局才额外多出来的一记安打。这个很不鸡血的目标让我对这本疑似“励志畅销书”有了好感。谈判技巧固然很有用，但这种基于概率的积极心态更为重要。&lt;/p&gt;
+
+&lt;p&gt;最近——因为提了离职——上班基本在摸鱼，闲得发慌，下了个 PC 端的 kindle 客户端，又一次点开了这本书。忽然发现在 PC 大屏幕下看这本书十分得力：先扫一眼每段开头的几个字，然后跳过所有疑似案例的段落，偶尔按两下翻页就能找到论述的重点，如果看不懂再结合案例仔细读读。&lt;/p&gt;
+
+&lt;p&gt;就这样很快就看完了。这本书的整体结构挺清晰的：前面 8 章讲通用的原理，后 8 章讲各种具体应用场景。&lt;/p&gt;
+
+&lt;p&gt;通用原理有三大重点：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;时刻明确谈判的目标&lt;/li&gt;
+  &lt;li&gt;了解对方是谁&lt;/li&gt;
+  &lt;li&gt;说服对方的技巧和策略&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;第 1 点虽然很少出现，但目标显然才是最重要的；第 3 点中不少技巧就是为了第 2 点：了解对方。&lt;/p&gt;
+
+&lt;p&gt;具体应用场景有很多，所有你跟别人的交涉都称得上是谈判：小到让家里小孩听话，大到和平解决巴以冲突。&lt;/p&gt;
+
+&lt;p&gt;谈判技巧只是知识和技能。提供知识和技能是书的基础价值，更高层次的价值——往往可遇不可求——是改变读者的价值观。从这个角度来看，《沃顿商学院 最受欢迎的谈判课》对我而言就是本难能可贵的书。&lt;/p&gt;
+
+&lt;p&gt;我一直以为，跟别人漫无目的地聊天（比如聊天气、问对方吃了饭没）纯属浪费时间。&lt;/p&gt;
+
+&lt;p&gt;但我错了，跟别人漫无目的地聊天——特别是在双方都不认识彼此的时候——是非常有意义的行为。&lt;/p&gt;
+
+&lt;p&gt;以前我总是站在自己的角度而且目光短浅地去看这个问题，如果站在对方的立场，而且把目光放远，就会发觉：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;别人主动没话找话跟你聊天，意味着他对你感兴趣。别人没有忽视你、你被别人重视&lt;/li&gt;
+  &lt;li&gt;就算是瞎聊，也能通过语气、用词了解对方&lt;/li&gt;
+  &lt;li&gt;如果能通过瞎聊找到话题，就能借机了解对方的喜好、思考方式&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;虽然性格内向不喜欢随便跟人扯两句，但闲聊几句于我已经不再是毫无价值的事了。人活到这个岁数还能稍微改造一下自己的价值观，真是件好事。&lt;/p&gt;
+
+&lt;p&gt;PS. 如果对书的脉络和重点，包括说服对方的技巧和策略感兴趣，可以下载我做的 &lt;a href=&quot;https://github.com/yiyizym/xmind/blob/master/谈判课.xmind&quot;&gt;xmind文件&lt;/a&gt; 看看。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">我不怎么买励志畅销书，但有一本叫《沃顿商学院 最受欢迎的谈判课》的，一直躺在我的 kindle 里
+。什么时候买的已经记不清楚，我想至少有 3 年了，因为大约在 3 年前，自己曾经按书里的建议，在社保局办业务前先跟工作人员寒暄了一句，效果如何，也早忘了。</summary></entry><entry><title type="html">找出《围城》的比喻句</title><link href="http://localhost:4000/tech/reading/2017/04/02/find_out_metaphor.html" rel="alternate" type="text/html" title="找出《围城》的比喻句" /><published>2017-04-02T15:01:23+08:00</published><updated>2017-04-02T15:01:23+08:00</updated><id>http://localhost:4000/tech/reading/2017/04/02/find_out_metaphor</id><content type="html" xml:base="http://localhost:4000/tech/reading/2017/04/02/find_out_metaphor.html">&lt;p&gt;最近跟小牛队老板一样在看《Building Machine Learning Systems with Python, 2nd Edition》。&lt;/p&gt;
+
+&lt;p&gt;除却某些代码（特别是第 5 章的）有错，书写得很好。没怎么学过 Python ，数学也不太行的我，也能跟着一步步走进机器学习的大门。&lt;/p&gt;
+
+&lt;p&gt;稍微看过这本书后，我就冒出一个想法：能不能用相关技术提取出文章中的比喻句呢？要机器读懂文章中的比喻句，有点难，幸好这不是提取比喻句的必要条件。&lt;/p&gt;
+
+&lt;p&gt;不管难易，先找到好数据再说。记忆中最密集出现比喻句的作品是《围城》。就拿它试试。&lt;/p&gt;
+
+&lt;p&gt;跟书里的例子一样，拿到数据后，先处理一下：去掉《围城》里的空白字符、章节提示，把一段段的文章切成一句句，方便处理和统计。关键代码是一句正则表达式和 python 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;findall&lt;/code&gt; 方法：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import re
+reg = re.compile(u'.*?(?:！|。|？|(?:：“)|(?:[！。？]”))')
+#...
+for sentence in re.findall(reg, line):
+  #...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;正则表达式匹配感叹号、句号、问号以及人物说话的标志性开头符号“：“”和结尾符号“””，&lt;code class=&quot;highlighter-rouge&quot;&gt;findall&lt;/code&gt;能匹配并包含这些标点符号，对《围城》用这一套分句效果还可以。&lt;/p&gt;
+
+&lt;p&gt;接着先用一个最简单的办法——关键字匹配——找出所有可能是比喻句的句子，看看这样做的效果如何。&lt;/p&gt;
+
+&lt;p&gt;观察从网上收集到的《围城》里的比喻句，发现很多都带一个“像”字，还有其他诸如：似、一样、如、仿佛的字眼。写下简单的代码：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;import re
+with open('weicheng_sentences.txt', 'r') as inputfile:
+    with open('weicheng_with_simple_tag.txt', 'w') as outputfile:
+        pattern = re.compile(r'|'.join(['[^不]像','似','如','一样','仿','好比','成了','俨然']))
+        for line in inputfile:
+            if pattern.search(line) != None:
+                tag = '1'
+            else:
+                tag = '0'
+            new_line = line.rstrip() + '\t' + tag
+            outputfile.write(new_line + '\n')
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;试了试，从 1 万多句中找到了 800 多句，手动标记整理过后，发现当中有 400 多句是比喻句，而被判别为“不是比喻句”的有 9000 多句，我没一一手动整理，抽样看了看，估计 100 句里有 1 句是比喻句。这样算下来，准确率只有 50 % ，召回率是 81.6% 。&lt;/p&gt;
+
+&lt;p&gt;接下来，在匹配关键字的基础上，加上中文分词，看看能不能从中提取一些比喻句的特征。首先从一堆关键字中选了「像」字出来，用&lt;em&gt;结巴分词&lt;/em&gt;切好，仔细看了看，发现这样选出来很多比喻句都有本体和喻体，还有部分只出现喻体，如：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;孩子不足两岁，塌鼻子，眼睛两条斜缝，眉毛高高在上，跟眼睛远隔得彼此要害相思病，活像报上讽刺画里的中国人的脸。
+机密得好像四壁全挂着偷听的耳朵。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;我写下了一个判断方法，如果一个句子，在带「像」字的动词前后各出现一个名词，就把它判别为比喻句。如果只有一个名词，就认为它有 50 % 的可能是比喻句，因为有不少句子是这样的：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;就像系主任罢，我们的系主任韩先生比赵先生高一级，赵先生又比外语系的刘东方高一级。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;当然，带「像」字动词前后各有一个名词的句子也有可能不是比喻句，像下面这样的：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;孙先生常跟我说，女学生像苏小姐才算替中国争面子，人又美，又是博士，这样的人哪里去找呢？&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;其他的关键字也作各自处理过后，关键字匹配升级成为关键词加上一些句子结构特征的匹配，比如句子中若只出现「一样」并不被当成比喻句，只有「一样」前面还出现「跟」或者「和」时才算是比喻句。但仍然会有像下面不是比喻句却被当成比喻句的句子：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;从前男性所做的职业，国会议员、律师、报馆记者、飞机师等等，女性都会做，而且做得跟男性一样好。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;升级后，有 689 句被标记为比喻句，其中有 486 句是比喻句，剩下的 9218 句中，假设有 92 句是比喻句。这样算下来，准确率是 70.5 % ，召回率是 84.1 % 。&lt;/p&gt;
+
+&lt;p&gt;看起来不错，缺憾是这个判别比喻句的方法没有接受《围城》以外的文本的考验，而且我觉得这种方法已经很难再有突破了。&lt;/p&gt;
+
+&lt;p&gt;接下来有两个方向，一个是在分词的基础上，增加句法依存分析甚至是语义依存分析，看能不能提取比喻句的关键特征；另一个方向是参考《Building Machine Learning Systems with Python, 2nd Edition》中的分析推特情感色彩的例子，找到字词与比喻句之间的概率对应关系。&lt;/p&gt;
+
+&lt;p&gt;要说感想的话，在看过书以及自己动手实践过后，发现机器学习很依赖由人肉整理过、提取特征、标记过的高质量的数据，没这样的数据，很可能都是白折腾，或者效果不好。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;a href=&quot;https://github.com/yiyizym/haoci&quot;&gt;本文相关源码&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">最近跟小牛队老板一样在看《Building Machine Learning Systems with Python, 2nd Edition》。</summary></entry><entry><title type="html">一个简单的 Promise 实现</title><link href="http://localhost:4000/tech/frontend/2017/03/12/a_simple_promise.html" rel="alternate" type="text/html" title="一个简单的 Promise 实现" /><published>2017-03-12T10:50:26+08:00</published><updated>2017-03-12T10:50:26+08:00</updated><id>http://localhost:4000/tech/frontend/2017/03/12/a_simple_promise</id><content type="html" xml:base="http://localhost:4000/tech/frontend/2017/03/12/a_simple_promise.html">&lt;p&gt;介绍 Promise 实现的文章早已烂大街了，大多数文章先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。&lt;/p&gt;
+
+&lt;p&gt;既然读者来看实现，就可以假设他们都已熟悉 Promise 的使用方法。能不能换个角度，从使用出发，逐步实现一个简单可用的 Promise 呢？&lt;/p&gt;
+
+&lt;p&gt;最近我就看到一篇这样思路的&lt;a href=&quot;http://tech.meituan.com/promise-insight.html&quot;&gt;文章&lt;/a&gt;，以及它的&lt;a href=&quot;http://www.mattgreer.org/articles/promises-in-wicked-detail/&quot;&gt;参考文章&lt;/a&gt;。下面，我试着整合两篇文章，聊聊一个简单的 Promise 实现。&lt;/p&gt;
+
+&lt;p&gt;先来看一个简单的 Promise 使用例子，暂时不考虑 reject 和异常的情况。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;getUserId().then(showUserId)
+
+function getUserId(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve(1)
+    }, 2000)
+  })
+}
+
+function showUserId(id){
+  console.log(id)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;可以看到 Promise 实例化时需要传入一个函数：fn ， Promise 在实例化时会调用 fn ；Promise 有一个实例方法 then ，以及一个私有方法 resolve ，可以写一个简单的构造函数：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callback = null
+  this.then = function(cb){
+    callback = cb
+  }
+  function resolve(value){
+    callback(value)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;运行上面这段代码会报错，因为在执行 fn(resolve) 时， Promise 实例化还没完成， this.then 没有执行，callback 是 null 。这个问题可以用 setTimeout 把 callback 的执行时间推迟到下一个事件循环里来解决：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callback = null
+  this.then = function(cb){
+    callback = cb
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callback(value)
+    }, 0)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;用上 setTimeout 后，还支持先生成 Promise 实例，过些时候再调用 then ：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promise = getUserId()
+
+promise.then(showUserId)
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们经常会给 Promise 实例添加多个回调，举个例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promise = getUserId()
+
+promise.then(showUserId)
+promise.then(showUserIdAgain)
+
+function showUserIdAgain(id){
+  console.log('again ! ', id)
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;可以用一个数组记下用 then 添加的回调，然后在 resolve 时遍历调用数组中的回调：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callbacks = []
+  this.then = function(cb){
+    callbacks.push(cb)
+  }
+  function resolve(value){
+    setTimeout(function(){
+      callbacks.forEach(function(callback){
+        callback(value)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;一般情况下，我们用同步的方式调用 then ，但有时候我们也会异步调用 then 。比如此刻你忽然想吃泡面：先烧壶水，在水烧开前这段时间到便利店买泡面，回到家水已经烧开了，这时再用开水泡面：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function boilWater(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve('开水')
+    }, 1000)
+  })
+}
+
+function buyInstantNoodle(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve('泡面')
+    }, 2000)
+  })
+}
+
+var promiseOfBoilWater = boilWater()
+buyInstantNoodle().then(function(instantNoodle){
+  promiseOfBoilWater.then(function(boiledWater){
+    console.log('你用' + boiledWater + '泡' + instantNoodle)
+  })
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;要让 promise 在调用 resolve 之后，还能执行通过 then 添加的回调方法，需要用一个标记区分 promise 的状态，调用 resolve 之前是 pending 状态，之后是 fulfilled 。在 pending 状态调用 then 会把方法放进回调数组中，而在 fulfilled 状态下调用 then 则会直接调用方法。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var callbacks = []
+  var state = 'pending'
+  var value = null
+  this.then = function(cb){
+    if(state === 'pending'){
+      callbacks.push(cb)
+    }
+    else{
+      cb(value)
+    }
+    return this
+  }
+  function resolve(newValue){
+    value = newValue
+    state = 'fulfilled'
+    setTimeout(function(){
+      callbacks.forEach(function(callback){
+        callback(value)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我们经常会像下面这样链式调用 then ，假设你家里有泡面，不用下楼买，只需要烧开水 :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var promiseOfBoilWater = boilWater()
+
+promiseOfBoilWater
+  .then(takeOutInstantNoodle)
+  .then(eat)
+
+function takeOutInstantNoodle(boiledWater){
+  return boiledWater + '煮泡面'
+}
+
+function eat(noodle){
+  console.log(noodle + ' 味道就是好！')
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;要实现这点,在调用 then 时，需要返回一个 Promise 实例。这个实例要做的事情是：&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;在上一个 promise 执行 resolve 后，先调用 onResolved 回调；&lt;/li&gt;
+  &lt;li&gt;把得到的结果作为参数放到自身的 then 回调中执行。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved){
+    return new Promise(function(resolve){
+      handle({
+        onResolved: onResolved,
+        resolve: resolve
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else{
+      if(handler.onResolved){
+        var ret = handler.onResolved(value)
+        handler.resolve(ret)
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    value = newValue
+    state = 'fulfilled'
+    setTimeout(function(){
+      handlers.forEach(function(handler){
+        handle(handler)
+      })
+    }, 0)
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;有了链式调用 then 的基础，回头看之前“烧开水——买泡面——泡泡面”的代码，我们一般不会那样写，而会这样写：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;boilWater()
+  .then(buyInstantNoodle)
+  .then(eat)
+
+function boilWater(){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve('开水')
+    }, 1000)
+  })
+}
+
+function buyInstantNoodle(boiledWater){
+  return new Promise(function(resolve){
+    setTimeout(function(){
+      resolve(boiledWater + '煮泡面')
+    }, 2000)
+  })
+}
+
+function eat(noodle){
+  console.log(noodle + ' 味道就是好！')
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;传入 then 的参数 buyInstantNoodle 会返回一个 promise 。我们先看看，在不改变 Promise 构造函数的基础上，要怎样写才能让程序正常执行：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;boilWater()
+  .then(buyInstantNoodle)
+  .then(function(promiseOfBuyInstantNoodle){
+    // 要让使用的人自己处理返回的 promise
+    promiseOfBuyInstantNoodle.then(eat)
+  })
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;为了方便使用的人，要在 Promise 构造函数的 resolve 方法里判断参数是不是 promise 实例，是的话就先调用实例的 then 方法。&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved){
+    return new Promise(function(resolve){
+      handle({
+        onResolved: onResolved,
+        resolve: resolve
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else{
+      if(handler.onResolved){
+        var ret = handler.onResolved(value)
+        handler.resolve(ret)
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    if(typeof newValue === 'object' &amp;amp;&amp;amp; typeof newValue.then === 'function'){
+      // resolve 就是当前这个定义的函数
+      newValue.then(resolve)
+    }
+    else{
+      value = newValue
+      state = 'fulfilled'
+      setTimeout(function(){
+        handlers.forEach(function(handler){
+          handle(handler)
+        })
+      }, 0)
+    }
+  }
+  fn(resolve)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;稍微扩展一下上面的代码，就能处理 reject 的情况：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved, onRejected){
+    return new Promise(function(resolve, reject){
+      handle({
+        onResolved: onResolved,
+        onRejected: onRejected,
+        resolve: resolve,
+        reject: reject
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else if(state === 'fulfilled'){
+      if(handler.onResolved){
+        var ret = handler.onResolved(value)
+        handler.resolve(ret)
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+    else{
+      if(handler.onRejected){
+        var ret = handler.onRejected(value)
+        // 因为前一个 promise 中有处理 reject 的情况
+        // 所以要调用下一个 promise 的 resolve
+        handler.resolve(ret)
+      }
+      else{
+        handler.reject(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    if(typeof newValue === 'object' &amp;amp;&amp;amp; typeof newValue.then === 'function'){
+      // resolve 就是当前这个定义的函数
+      newValue.then(resolve, reject)
+    }
+    else{
+      value = newValue
+      state = 'fulfilled'
+      setTimeout(function(){
+        handlers.forEach(function(handler){
+          handle(handler)
+        })
+      }, 0)
+    }
+  }
+  function reject(reason){
+    value = reason
+    state = 'rejected'
+    setTimeout(function(){
+      handlers.forEach(function(handler){
+        handle(handler)
+      })
+    }, 0)
+  }
+  fn(resolve, reject)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后还得处理异常情况：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function Promise(fn){
+  var handlers = []
+  var state = 'pending'
+  var value = null
+  this.then = function(onResolved, onRejected){
+    return new Promise(function(resolve, reject){
+      handle({
+        onResolved: onResolved,
+        onRejected: onRejected,
+        resolve: resolve,
+        reject: reject
+      })
+    })
+  }
+  function handle(handler){
+    if(state === 'pending'){
+      handlers.push(handler)
+    }
+    else if(state === 'fulfilled'){
+      if(handler.onResolved){
+        try {
+          var ret = handler.onResolved(value)
+          handler.resolve(ret)
+        }
+        catch(e){
+          handler.reject(e)
+        }
+      }
+      else{
+        handler.resolve(value)
+      }
+    }
+    else{
+      if(handler.onRejected){
+        try {
+          var ret = handler.onRejected(value)
+          // 因为前一个 promise 中有处理 reject 的情况
+          // 所以要调用下一个 promise 的 resolve
+          handler.resolve(ret)
+        }
+        catch(e){
+          handler.reject(e)
+        }
+      }
+      else{
+        handler.reject(value)
+      }
+    }
+  }
+  function resolve(newValue){
+    try {
+      if(typeof newValue === 'object' &amp;amp;&amp;amp; typeof newValue.then === 'function'){
+        // resolve 就是当前这个定义的函数
+        newValue.then(resolve, reject)
+      }
+      else{
+        value = newValue
+        state = 'fulfilled'
+        setTimeout(function(){
+          handlers.forEach(function(handler){
+            handle(handler)
+          })
+        }, 0)
+      }
+    }
+    catch(e){
+      reject(e)
+    }
+  }
+  function reject(reason){
+    value = reason
+    state = 'rejected'
+    setTimeout(function(){
+      handlers.forEach(function(handler){
+        handle(handler)
+      })
+    }, 0)
+  }
+  fn(resolve, reject)
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;全文完。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">介绍 Promise 实现的文章早已烂大街了，大多数文章先解读 Promise/A+ 标准，然后用一行行代码实现标准。能用代码实现标准是件了不起的事，但我很讨厌这样，那些文章我都没能读完。</summary></entry><entry><title type="html">人类砍头的花边历史</title><link href="http://localhost:4000/reading/2017/03/10/history_of_human_beheaded.html" rel="alternate" type="text/html" title="人类砍头的花边历史" /><published>2017-03-10T07:48:07+08:00</published><updated>2017-03-10T07:48:07+08:00</updated><id>http://localhost:4000/reading/2017/03/10/history_of_human_beheaded</id><content type="html" xml:base="http://localhost:4000/reading/2017/03/10/history_of_human_beheaded.html">&lt;p&gt;说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。&lt;/p&gt;
+
+&lt;p&gt;砍头往往被影视作品如此刻板描画着，以致刚看到这本《人类砍头小史》时，不敢相信这个动作还可以成书。更意外的是，读者们的评价还很不错。&lt;/p&gt;
+
+&lt;p&gt;按捺不住好奇心看完了，我承认这种心态，就似 18 世纪时欧洲那些在远处围观斩首的群众，如果可以的话，自己或许会争取再靠近一点的位置看看这段历史。&lt;/p&gt;
+
+&lt;p&gt;下面是一些从书中摘录下来的片段，用现代人的眼光来看，那是一段既熟悉，又陌生的历史。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;变质的干缩人头：从有利可图到滥竽充数&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;19 世纪末，南美的土著人有“猎头”习俗：杀死敌人，割下首级，制成干缩人头。这些土著人认为，一旦通过仪式取出干缩人头内藏着强大力量之后，干缩人头就没有价值了。但对欧洲人来说有价值的不是人头里的那股力量，而是干缩人头本身：一个干缩人头可以卖很多钱。他们从土著手上大量采购，人头很快就供不应求，“猎头”迅速从习俗变成赤裸血腥的杀戮：首先是土著人的敌对部落的女人、孩子，然后是倒霉的欧洲游客，最后是无辜的猴子。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;战场上的无头亡者&lt;/em&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;1984年从马里亚纳群岛被送回本国的日本战死者当中，有 60% 的尸体丢失了头颅。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;这些丢失的头颅有不少是被美国大兵砍下来的，此外恐怕就是被炮弹炸飞了。&lt;/p&gt;
+
+&lt;p&gt;那片战场到处散落半掩着破碎肢体，时刻弥漫着腐败恶臭，人要活着变得变成魔鬼：切下对方头颅宣示自己最后的胜利；把对方头颅制成骷髅，当作玩具，当作送给女朋友的礼物，还当作朋友。&lt;/p&gt;
+
+&lt;p&gt;不远处的海面上空，蜂拥而至的神风战斗机在炮火中爆裂，血如雨下，大大小小人体碎块如冰雹弹落在战舰甲板上，铺满一层：手臂、心脏、肠子、脑浆……&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;ISIS 的最爱&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;既保留着砍头这个历史悠久的野蛮行径，又与时俱进地搞全球视频播放的就只有 ISIS 了。但在围观砍头这件事上，如今的人跟 18 世纪甚至更早（中世纪）的人似乎并没有本质的不同。&lt;/p&gt;
+
+&lt;p&gt;对人们来说，透过屏幕围观斩首，既不会被指责袖手旁观，又满足了好奇心；对运营视频的网站来说，这是绝好的带来流量广告的机会。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;人血馒头不止 MADE IN CHINA&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;在鲁迅笔下，围观行刑的国人“頸項都伸得很長，仿佛許多鴨，被無形的手捏住了的，向上提著”。这冷漠有力的笔触同样可以用来描画在那不久之前的西方世界，兴许还得再添加一点魔幻色彩：华老栓要是能够穿越到几十年前（1869年）的丹麦，要把钱交给刽子手，得先穿过一大群“准备痛饮从那还在颤抖的身体中流出的鲜血”的癫痫病患者呢。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;人一出名，这头就保不住了&lt;/em&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;作曲家贝多芬、莫扎特和舒伯特都丢掉了自己的骷髅，落入了崇拜者之手。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;贝多芬、莫扎特和舒伯特他们的脑袋好歹还能在土里静静待上 10 来年，可怜的海顿刚躺下没几天就被掘坟枭首。&lt;/p&gt;
+
+&lt;p&gt;在 19 世纪，人们对天才的颅骨产生巨大的兴趣，诡异的是，他们只打算把这些颅骨当成某样看不懂的宝物一样收藏展览，而没有去研究天才的颅骨与普通人有何不同。及至开始研究人头，却让“颅相学”风靡一时。人类科学发展史有些片段可谓是很傻很天真呢。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">说到砍头，就想起刑场上一个个跪着的身着白囚衣，被五花大绑，脖子上还插着一块木板的的犯人。到正午行刑时候，刽子手大刀一挥，就见一碗热血泼洒在地上。</summary></entry><entry><title type="html">雪花分形，一次从前到后的尝试</title><link href="http://localhost:4000/tech/2017/03/07/snow_flake_app.html" rel="alternate" type="text/html" title="雪花分形，一次从前到后的尝试" /><published>2017-03-07T08:06:50+08:00</published><updated>2017-03-07T08:06:50+08:00</updated><id>http://localhost:4000/tech/2017/03/07/snow_flake_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/03/07/snow_flake_app.html">&lt;p&gt;&lt;strong&gt;缘起&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;很久之前，我写下一篇介绍“雪花分形”写作理论的文章。我觉得可以做一个让人方便地用上这个理论写作的工具，甚至一度幻想着可以靠它提供的服务来赚点钱。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;选型&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;我打算先做一个原型。原型的话，网页最容易做。在技术选型时原本可以抓起身边的 Bootstrap 和 jQuery 撸起袖子就是干的，但我不想依靠思维惯性写代码，这样很没意思。&lt;/p&gt;
+
+&lt;p&gt;刚好听说 vue 出 2.0 ，要不试着用一用？将来也好说自己用过 vue 2.0 嘛 =w= 于是，开始一边看着文档，一边敲代码，开启了踩坑之旅。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;顺带说一句，在工作中，这样的选型思路非常危险哦，除非是玩票项目且完全不在乎成败，又想任性一把&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;踩坑&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;模块化&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;雪花分形有十一个步骤，大体分为两条线：剧情和人物。随着步骤的进展，剧情和人物都在之前步骤的基础上逐渐清晰丰满。&lt;/p&gt;
+
+&lt;p&gt;因此可以用两大类组件来展示这些步骤。&lt;/p&gt;
+
+&lt;p&gt;刚开始用字符串拼接的形式写组件 &lt;code class=&quot;highlighter-rouge&quot;&gt;template&lt;/code&gt; 的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; ，拼接了十几行，相当痛苦。&lt;/p&gt;
+
+&lt;p&gt;我觉得 vue 文档里的一个坑就是在介绍组件时没同时展示一种很方便的模板语法。文档中一个例子：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Vue.component('my-component', {
+  template: '&amp;lt;div&amp;gt;A custom component!&amp;lt;/div&amp;gt;'
+  // 这里的 template 很简单，如果 template 是一大堆的 html ，写起来很累，读起来也很累
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;我用字符串拼接的形式写了两个组件的 &lt;code class=&quot;highlighter-rouge&quot;&gt;html&lt;/code&gt; 之后，太难受，终于忍不住要找点别的写法。虽然 es6 的语法能解决问题，但最理想的是 vue 原生支持的语法。找了一会儿还真找到了：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;!--把模板用 `type` 是 `text/x-template` 的 script 标签包着 --&amp;gt;
+&amp;lt;script type=&quot;text/x-template&quot; id=&quot;component-id&quot;&amp;gt;
+  &amp;lt;div&amp;gt;A custom component!&amp;lt;/div&amp;gt;
+&amp;lt;/script&amp;gt;
+
+&amp;lt;script&amp;gt;
+  Vue.component('my-component', {
+    template: '#component-id'
+  })
+&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;驼峰与烤串&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;在书写组合词时，不同语言有各自约定俗成的习惯，因此有不同的写法，如“组件ID”这个词，在 html/css 中，会写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;component-id&lt;/code&gt; (kebab-case/烤串形)，在 javascript 中，会写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;componentId&lt;/code&gt; (camelCase/驼峰形)，在 ruby 中，会写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;component_id&lt;/code&gt; (snake_case/蛇形)。原本这些只是约定，就算不遵守也不会出问题，但在使用 vue 时，不遵守就会出问题。比如把“组件ID”这个词一律写成 &lt;code class=&quot;highlighter-rouge&quot;&gt;componentId&lt;/code&gt; ，程序不会正常运行，但也不报错。这是个大坑。&lt;/p&gt;
+
+&lt;p&gt;避开这个坑的要点是，时刻注意代码身处的语境，在 html/css 语境中用 kebab-case ，在 javascript 语境中就用 camelCase 。举&lt;a href=&quot;https://vuejs.org/v2/guide/components.html#camelCase-vs-kebab-case&quot;&gt;文档&lt;/a&gt;中的例子说明语境问题：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;script&amp;gt;
+Vue.component('child', {
+  // myMessage 在 JavaScript 中，所以用 camelCase
+  props: ['myMessage'],
+  template: '&amp;lt;span&amp;gt;&amp;lt;/span&amp;gt;'
+}) 
+&amp;lt;/script&amp;gt;
+
+&amp;lt;div&amp;gt;
+  &amp;lt;input v-model=&quot;parentMsg&quot;&amp;gt;
+  &amp;lt;br&amp;gt;
+  &amp;lt;!-- my-message 在 HTML 中，用 kebab-case  --&amp;gt;
+  &amp;lt;!-- parentMsg 在 JavaScript 中，用 camelCase  --&amp;gt;
+  &amp;lt;child :my-message=&quot;parentMsg&quot;&amp;gt;&amp;lt;/child&amp;gt;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;事件绑定、触发也是类似的写法，但是有一个例外：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;div id=&quot;app&quot;&amp;gt;
+  &amp;lt;!-- select-item 在 HTML 中，用 kebab-case  --&amp;gt;
+  &amp;lt;!-- alertItem 在 HTML 中，用 camelCase  --&amp;gt;
+  &amp;lt;list :list=&quot;list&quot; @select-item=&quot;alertItem&quot;&amp;gt;&amp;lt;/list&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;script type=&quot;text/x-template&quot; id=&quot;list&quot;&amp;gt;
+  &amp;lt;ul&amp;gt;
+      &amp;lt;!-- 例外！！ select-item 在 JavaScript 中，但在 $emit 时，要跟在上面声明时的保持一样  --&amp;gt;
+    &amp;lt;li
+      v-for=&quot;(item, index) in list&quot;
+      @click=&quot;$emit('select-item', item)&quot;
+    &amp;gt;&amp;lt;/li&amp;gt;
+  &amp;lt;/ul&amp;gt;
+&amp;lt;/script&amp;gt;
+
+&amp;lt;script&amp;gt;
+  Vue.component('list', {
+    props: ['list'],
+    template: '#list'
+  })
+  new Vue({
+    el: '#app',
+    data: {
+      list: [1,2,3,4]
+    },
+    methods: {
+      // alertItem 在 HTML 中，用 camelCase
+      alertItem: function(item){
+        window.alert(item);
+      }
+    }
+  })
+&amp;lt;/script&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;使用 vue 时，要经常切换语境，所以很容易搞错。我在写这个应用时，偷了个懒，既不用驼峰，也不用烤串，更不用蛇形，组合词一律小写，比如: &lt;code class=&quot;highlighter-rouge&quot;&gt;togglemenu&lt;/code&gt; 。工作中千万别这样写。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;加个后台吧&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;前台页面很快就写好。用到不少 vue 的功能，挺有满足感的。果然编程知识还是动手学得快。&lt;/p&gt;
+
+&lt;p&gt;满足感很快就退却，忽然想到一个问题，这东西没后台，用户一关闭页面，写下的内容不就什么都没有了吗？缺少保存功能，明显违背了做这个应用的初衷啊。这个功能必须有。&lt;/p&gt;
+
+&lt;p&gt;我有阿里云主机资源，也会 Rails ，但要做这个保存功能，就得做一整套的用户系统：注册、验证、登录、保持会话、注销、忘记密码、重置密码等等。一套功能做下来工作量不少；如果只是个原型的话，可不可以直接调用现成的服务呢？&lt;/p&gt;
+
+&lt;p&gt;记得有个叫“后台即服务”(BaaS)的概念，基于这个概念的产品，有 google 的 Firebase ，国内也有个 leancloud 。&lt;/p&gt;
+
+&lt;p&gt;能不能用呢？出于好奇，我注册了个 leancloud 账号，看到它还真有用户系统，而且开发版应用每天有几千次免费的接口调用次数，够用了。&lt;/p&gt;
+
+&lt;p&gt;凭借 leancloud 我很快写好了用户注册、登录、保存、退出的功能。不得不说，在原型开发时借助“后台即服务”真会大大提高效率。&lt;/p&gt;
+
+&lt;p&gt;贴个成品网址： &lt;a href=&quot;https://judes.me/snow_flake/&quot;&gt;snow flake&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;后记&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;在快写好这个应用时，不小心把 leancloud 应用的 key/secrect 上传到 github 了。在此之前自己还很有信心不会出这种差错，而把 key/secrect 跟主程序放到一起呢。事实证明，程序员的信心真是不靠谱啊～&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">缘起</summary></entry><entry><title type="html">《人类简史》感想</title><link href="http://localhost:4000/reading/2017/02/25/history_of_human.html" rel="alternate" type="text/html" title="《人类简史》感想" /><published>2017-02-25T10:23:56+08:00</published><updated>2017-02-25T10:23:56+08:00</updated><id>http://localhost:4000/reading/2017/02/25/history_of_human</id><content type="html" xml:base="http://localhost:4000/reading/2017/02/25/history_of_human.html">&lt;p&gt;在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;人类（智人）为什么能在漫长的物种演化中胜出？&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;不少书中都回答过类似的问题，答案五花八门，有：直立行走解放了双手,能使用工具;使用火来烤熟食物,减少消化时间和疾病;汗腺发达,在白天也能觅食;会使用语言等等。《人类简史》这本书给出了另外一种可能性:人类会讲虚构故事。&lt;/p&gt;
+
+&lt;p&gt;人除了像某些动物一样会使用语言发出“狮子来了”的警告信号，还能说些虚构故事：包括种族成员之间的八卦故事,以及不存在的神话故事。虚构故事能组织、维系大规模的群体共同协作、抵抗其他物种。&lt;/p&gt;
+
+&lt;p&gt;譬如体力（甚至智力）比智人要好的尼安德特人，最终在与智人的竞争中落败，书中相信原因就在于尼安德特人没能用虚构故事组织起群体对抗智人的入侵。&lt;/p&gt;
+
+&lt;p&gt;人类用虚构故事组织起帝国、宗教、贸易；就算在科技高度发展的今天，仍然用虚构故事来建立让社会稳定运行的秩序。&lt;/p&gt;
+
+&lt;p&gt;作为个体，人无时无刻不活在被广泛接受的共同虚构故事当中：&lt;/p&gt;
+
+&lt;p&gt;“人人生而平等”实际上是一个虚构故事，至少在人文主义兴起之前，这个想法并没有存在于人的脑袋里头。&lt;/p&gt;
+
+&lt;p&gt;又有，当下流行的一句话：来一场说走就走的旅行。旅行是从什么时候开始让人向往的呢？是不是因为有了浪漫主义和消费主义才让人产生这种想法呢？&lt;/p&gt;
+
+&lt;p&gt;因为人与虚构故事的这一层关系，人是不是变得比从前更快乐、人活着的是不是有意义等等都成了问题。&lt;/p&gt;
+
+&lt;p&gt;未来，人类会不会因为科技发展，可以脱离种种虚构故事呢？如果可以，那时人还是当下意义上的人吗？&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">在《人类简史》里，我读到一股伴随着人类发展的越来越强大的力量：虚构故事。</summary></entry><entry><title type="html">微信小程序组件开发示例</title><link href="http://localhost:4000/tech/2017/02/11/wechat_app.html" rel="alternate" type="text/html" title="微信小程序组件开发示例" /><published>2017-02-11T11:09:57+08:00</published><updated>2017-02-11T11:09:57+08:00</updated><id>http://localhost:4000/tech/2017/02/11/wechat_app</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/11/wechat_app.html">&lt;p&gt;&lt;strong&gt;2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;本文介绍微信小程序 （自制）上传图片组件 的关键实现，喜欢通过代码学习的朋友，可以直接看 &lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;github 源码&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;缘由&quot;&gt;缘由&lt;/h2&gt;
+
+&lt;p&gt;最近在微信小程序上要实现上传图片的功能，因为多个页面都会用到这个功能，我试着就像网页开发一样，写一个能复用的组件。&lt;/p&gt;
+
+&lt;p&gt;上传图片的功能，微信小程序已经提供了相应的组件和API，结合 weui 样式，如果不考虑复用的话，很容易实现（官方 demo 就可以拿来用 ^_^ ）。&lt;/p&gt;
+
+&lt;p&gt;如果要复用，可以利用模板，但是会面临微信小程序的很多限制。&lt;/p&gt;
+
+&lt;h2 id=&quot;限制&quot;&gt;限制&lt;/h2&gt;
+
+&lt;p&gt;举个例子，下面是一个模板文件 customer.wxml （ 注意模板文件里绑定了一个回调函数 sayHello ）&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;template name=&quot;customer&quot; data-customerid=&quot;{{ id }}&quot; bindtap=&quot;sayHello&quot;&amp;gt;
+  &amp;lt;text&amp;gt;{{ name }}&amp;lt;/text&amp;gt;
+  &amp;lt;text&amp;gt;{{ gender }}&amp;lt;/text&amp;gt;
+  &amp;lt;text&amp;gt;{{ age }}&amp;lt;/text&amp;gt;
+  &amp;lt;block wx:for=&quot;orders&quot; wx:for-item=&quot;order&quot;&amp;gt;
+    &amp;lt;view&amp;gt;{{order.id}}&amp;lt;/view&amp;gt;
+    &amp;lt;view&amp;gt;{{order.detail}}&amp;lt;/view&amp;gt;
+  &amp;lt;/block&amp;gt;
+&amp;lt;/template&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;页面 A.wxml 引用了这个模板文件 :&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;import src=&quot;path/to/customer.wxml&quot;&amp;gt;
+&amp;lt;template is=&quot;customer&quot; data=&quot;{{...customer}}&quot;&amp;gt;&amp;lt;/template&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;如果要显示模板里的 &lt;code class=&quot;highlighter-rouge&quot;&gt;orders&lt;/code&gt; 部分，页面 A 的 js 文件里 data 必须有一个名为 &lt;code class=&quot;highlighter-rouge&quot;&gt;customer&lt;/code&gt; 的 key （可以通过 setData 设置 name/gender/age ，但不能通过 setData 设置 orders ，这样会报错。猜测是因为 &lt;code class=&quot;highlighter-rouge&quot;&gt;setData&lt;/code&gt; 在模板解析之后执行，解析模板时 name/gender/age/orders 都为 undefined ，name/gender/age 为 undefined 时不显示就行，但 wx:for 会遍历 orders ，遍历时调用 hasOwnProperty 方法，这时就报错了。），如果要调用模板里的回调函数 &lt;code class=&quot;highlighter-rouge&quot;&gt;sayHello&lt;/code&gt; ，同样必须在页面 A 的 js 文件里先定义它：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// A.js
+Page({
+  data: {
+    customer: {} // 可以先写成空 hash ，稍后更新，但 key 必须先存在
+  },
+  sayHello: function(e){
+    // say hello
+    // e.target.dataset.customerid
+  }
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;解决办法&quot;&gt;解决办法&lt;/h2&gt;
+
+&lt;p&gt;因为这两个限制，必须找出一个办法让模板文件能动态改变引用它的文件（以下称为宿主）的作用域下的一些变量和方法，如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// A.js
+require('path/to/customer.js');
+
+Page({
+  data: {
+    customer: {}
+  }
+  onLoad: function(){
+    // this 是宿主的执行上下文环境
+    // this.data 可以访问 data
+    // this.setData 可以更新 data
+    // this.func = function() {} 可以往宿主增加新方法
+    new Customer(this);
+  }
+})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// customer.js
+// 这里用到 es6 的类定义语法
+
+class Customer {
+  constructor(pageContext){
+    this.page = pageContext
+    this.page.sayHello = this.sayHello.bind(this)
+  }
+
+  sayHello(e){
+    // say hello
+    // e.target.dataset.customerid
+  }
+}
+
+module.exports = Customer
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;本文关于微信小程序的组件开发关键点介绍完毕，&lt;a href=&quot;https://github.com/yiyizym/wechat_mini_program_upload_img_module&quot; target=&quot;_blank&quot;&gt;源码&lt;/a&gt; 还展示了如何 设置组件的默认配置以及更改组件的回调方法。&lt;/p&gt;</content><author><name>jude zhu</name></author><category term="微信小程序" /><category term="插件" /><summary type="html">2017-02-26 更新了组件的代码，支持在同一页面中引入多个组件实例</summary></entry><entry><title type="html">提交历史神秘消失事件薄</title><link href="http://localhost:4000/tech/2017/02/06/overwrite-code.html" rel="alternate" type="text/html" title="提交历史神秘消失事件薄" /><published>2017-02-06T18:57:14+08:00</published><updated>2017-02-06T18:57:14+08:00</updated><id>http://localhost:4000/tech/2017/02/06/overwrite-code</id><content type="html" xml:base="http://localhost:4000/tech/2017/02/06/overwrite-code.html">&lt;p&gt;老司机最怕的是什么？&lt;/p&gt;
+
+&lt;p&gt;老司机最怕的就是在新手面前装逼失败,比如说我刚刚向新人传授一系列确保不覆盖别人的代码的方法,转过头就有新人(将他称为 A)反映我覆盖了他的代码。&lt;/p&gt;
+
+&lt;p&gt;覆盖别人代码这种事,我已经很久没做过了。所以当听到这个消息时，我半信半疑。仔细的看过他给我展示的代码后,发觉确实是被覆盖了。我清楚记得自己在那个文件添加过几行代码,如今也都不见了。在查看的文件的提交历史时,发现文件的提交历史只有寥寥几次，里面并没有 A 的提交历史。&lt;/p&gt;
+
+&lt;p&gt;文件的提交历史消失真是一件很有意思的事情,但是当务之急是证明代码不是我覆盖的。&lt;/p&gt;
+
+&lt;p&gt;没有了文件的提交历史，只好查看开发分支上面所有的提交历史。找到 A 那些被覆盖的代码最初引进来的提交,以及最新提交,把两个提交之间的所有提交都按顺序仔细看一遍。&lt;/p&gt;
+
+&lt;p&gt;A 说是我覆盖了代码，是因为他在最新的一个提交里（那是个合并提交）看到我删除了他的代码。我没印象这样做过，但面对清清楚楚的代码，又无从辩白，只好在众人鄙视的眼光下默默地寻找真相。&lt;/p&gt;
+
+&lt;p&gt;这些提交都出自两个人,一个是我,另外一个暂且称他为 B 。我的代码也被覆盖了,所以推测覆盖代码的人肯定就是 B 。&lt;/p&gt;
+
+&lt;p&gt;平时很少用查看代码提交历史的工具（ stash ），花上不少时间后我终于找到证据， B 在一次合并操作当中 把我和 A 的代码都覆盖了。&lt;/p&gt;
+
+&lt;p&gt;事情就此告一段落，过了一个多月，直到最近看到这篇文章&lt;a href=&quot;http://coolshell.cn/articles/17680.html&quot; target=&quot;_blank&quot;&gt;《从GITLAB误删除数据库想到的》&lt;/a&gt;，Gitlab 员工误删数据库非但不跑路，还在网上记录犯错的详细过程，这种追根究底的精神感动了我，忽然回想起文件提交历史神秘消失的事情。&lt;/p&gt;
+
+&lt;p&gt;我首先弄明白了为什么在最新的那个提交里显示的是我删除了代码,我却没有印象。因为那次合并没有产生冲突,是一次快速合并。覆盖代码就是在双方修改同一个文件并产生冲突时,在合并冲突过程中错误的删除了别人的代码。解决完冲突后的提交,在填写提交 message 时,会自动生成提示语表明这是一次产生过冲突的提交。因此,以后如果发生了代码覆盖,就应该首先关注那些有冲突提示的合并提交。&lt;/p&gt;
+
+&lt;p&gt;接下来就是文件提交历史的消失。首先我注意到文件的提交历史并没有消失,毕竟它们出现在分支的提交历史中。最初,我猜测这是我们用的工具的一个 bug ，为了证实这一点,我在 terminal 中运行了 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log -- filename&lt;/code&gt; 命令,发现竟然跟工具显示的一模一样,于是我又猜想,难道这是 git 的 bug ？直觉告诉我不可能。&lt;/p&gt;
+
+&lt;p&gt;同时,我还发现这些消失的历史提交的一个特点,可以这样描述：一个文件提交了 n 次，假如第 2 次跟第 n-1 次提交后文件内容相同，文件提交历史就只显示 1,2,n 三个历史，第 3 次直到第 n-2 次的提交都消失不见了。&lt;/p&gt;
+
+&lt;p&gt;如果这并不是一个 bug 的话，难道这是一个特性？我不由得想起了那个笑话：&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;It’s not a bug, it’s a feature .&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;想到这一点,我不由得看起了 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log&lt;/code&gt; 的帮助文档,文档有 1600 多行,我试着先查找一些关键字,比如 full ，结果还真被我很快地找到了 &lt;code class=&quot;highlighter-rouge&quot;&gt;--full-history&lt;/code&gt; 这个选项。&lt;/p&gt;
+
+&lt;p&gt;原来 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log&lt;/code&gt; 在查看某个文件提交历史时，默认下会隐藏一些提交历史。&lt;/p&gt;
+
+&lt;p&gt;这一切得先从一个关键概念开始： &lt;strong&gt;TREESAME&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;假设有一个文件 foo ，如果某次提交改变了文件的内容，那么针对文件 foo 来说，这次提交与父提交的关系就是 !TREESAME ， 否则就是 TREESAME .&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;用 &lt;code class=&quot;highlighter-rouge&quot;&gt;git log&lt;/code&gt; 查看某个文件的提交历史，默认只会显示那些与之前任何一个父提交都是 !TREESAME 的提交，而且当一个提交是合并提交，且这个提交与其中一个父提交 TREESAME ，不显示别的父提交。&lt;/p&gt;
+
+&lt;p&gt;接下来借用文档中的例子，简单说明上面的行为。&lt;/p&gt;
+
+&lt;p&gt;下图是一个图形化的提交历史：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   .-A---M---N 
+  /     /   / 
+ I     B   C  
+  \   /   /  
+   `-------
+
+  注： &quot;A--M---N&quot; 是在 master 分支上的提交
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;I 是初始提交，这个提交新建了一个名为 foo 的文件，内容是 asdf ，因为是初始提交，所以 I 是 !TREESAME&lt;/li&gt;
+  &lt;li&gt;A 提交中，把 foo 的内容改为 foo ，显然 A 是 !TREESAME&lt;/li&gt;
+  &lt;li&gt;B 处在 I 提交之后，在其基础上 checkout 出来的一个新分支（称为 b_branch），在 B 提交中，也把 foo 的内容改为 foo ，显然 B 是 !TREESAME&lt;/li&gt;
+  &lt;li&gt;M 是在 master 分支上， A 与 B 合并得到的提交。显然 M 中 foo 的内容跟两个父提交都是一样的，所以 M 是 TREESAME&lt;/li&gt;
+  &lt;li&gt;C 处在 I 提交之后，在其基础上 checkout 出来的一个新分支（称为 c_branch），在 C 提交中，没有发动 foo 的内容，而是新增了一个文件： c_file 。显然 C 是 TREESAME&lt;/li&gt;
+  &lt;li&gt;N 是在 master 分支上， M 与 C 合并得到的提交。在 N 提交中，把 foo 的内容改变为 foobar (要做到这个点不难，在合并时带上 –no-commit 选项，之后手动修改 foo 的内容)，显然 N 是 !TREESAME&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;做完上面的步骤之后，在 master 分支上运行命令： &lt;code class=&quot;highlighter-rouge&quot;&gt;git log --oneline -- foo&lt;/code&gt; ，就会看到类似下面的提交历史：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;9959742 N
+5a52a9b A
+e6d934b I
+
+# 提交 M B C 都消失了。B 消失了是因为 M 与 A TREESAME ，M 的其他父提交（B）不显示
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;要看到较为完整的提交历史，在 master 分支上运行命令： &lt;code class=&quot;highlighter-rouge&quot;&gt;git log --oneline --full-history -- foo&lt;/code&gt; ：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;9959742 N
+0cf1684 B
+5a52a9b A
+e6d934b I
+
+#此时 M 提交仍然不显示
+#因为单独使用 `--full-history` （不带 `--parents` 或 `--children`）时不显示与两个父提交都 TREESAME 的提交
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;要看到最为完整的提交历史，在 master 分支上运行命令： &lt;code class=&quot;highlighter-rouge&quot;&gt;git log --oneline --full-history --sparse -- foo&lt;/code&gt; ：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;9959742 N
+e513d97 C
+b4cc017 M
+0cf1684 B
+5a52a9b A
+e6d934b I
+
+#这时所有的提交都显示出来了
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;最后，这个例子的&lt;a href=&quot;https://github.com/zymiboxpay/git_log_full_history&quot;&gt;源码&lt;/a&gt;已经上传到 github ，建议仔细看文档之余亲自动手试试。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">老司机最怕的是什么？</summary></entry><entry><title type="html">我所经历的敏捷开发</title><link href="http://localhost:4000/life/2017/01/23/my-so-call-agile.html" rel="alternate" type="text/html" title="我所经历的敏捷开发" /><published>2017-01-23T19:36:06+08:00</published><updated>2017-01-23T19:36:06+08:00</updated><id>http://localhost:4000/life/2017/01/23/my-so-call-agile</id><content type="html" xml:base="http://localhost:4000/life/2017/01/23/my-so-call-agile.html">&lt;p&gt;&lt;strong&gt;以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;我来到现在的公司才第一次接触敏捷开发,之前对敏捷开发一无所知。&lt;/p&gt;
+
+&lt;p&gt;说起敏捷开发,网上已经有一大堆复杂抽象的概念,在实际工作当中能接触到的有典型特征的几件事情就是:每天站立会议、头脑风暴形式的需求讨论会议、测试用例设计会议、code review、迭代回顾等等。&lt;/p&gt;
+
+&lt;p&gt;每天站立会议的形式是让每一个人当着大家的面说一下自己昨天完成了什么用户故事,今天计划完成什么用户故事,以及遇到了什么问题，需要谁的帮助等等。会议方便大家了解、监督彼此的进度，之所以采取站立的形式,是要控制开会的时间不要过长。&lt;/p&gt;
+
+&lt;p&gt;用户故事来源于客户的需求以及整个产品和研发团队对客户需求的分析，分析的过程就是需求讨论会议,参与会议的人有客户(最理想的情况)、产品经理、整个研发团队。大家对客户提出的需求进行讨论、头脑风暴,最终整理得出一个个的用户故事。&lt;/p&gt;
+
+&lt;p&gt;接下来就是测试用例设计会议。参加会议的人有产品经理以及整个研发团队。会议上面大家对每一个用户故事提出各种可能的用例,每一个用例的形式大致就像这样:谁在什么前提下依步骤做了什么操作,操作成功的时候他会得到什么回应,操作失败的时候她又会得到什么回应。在验收迭代产出的时候,验收人员根据测试用例来判定测试是否通过。&lt;/p&gt;
+
+&lt;p&gt;研发人员根据测试用例,首先写好测试用例,然后实现功能代码,确保所有的测试用例都顺利通过。之后请其他研发人员做 code review 。review 通过之后才能提交代码。&lt;/p&gt;
+
+&lt;p&gt;迭代回顾安排在每一次迭代完成之后。让整个团队,包括产品经理和研发人员总结在这一次迭代当中有什么事做得好的,有什么事做得不好,以及有什么事可以做得更好。在回顾当中,针对做得不好的地方提出可行的改善方案,在下一次迭代当中实行此方案。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;以上所说,就是较为理想的敏捷开发。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;最初我们在站立会议上使用白板和便签来描述每一个人计划要做的,正在做的,已经完成的用户故事。后来,我们发现把用户故事写在便签上面,查看用户故事,以及在迭代回顾总结自己所做的事情的时候并不方便,所以后来我们直接就用了 jira 来录入和管理每一个人领取的用户故事。&lt;/p&gt;
+
+&lt;p&gt;用户需求讨论会议上,虽说是头脑风暴,但实际上往往只要那么几个人愿意开动脑筋去思考用户提出的具体的某一个需求背后到底隐藏着怎么样的真正的需求,或者说我们交付出去的产品怎么样才能更好的满足用户的需求。&lt;/p&gt;
+
+&lt;p&gt;测试用例设计会议,我们只坚持开了几次,之后的测试用例就让负责完成每一个用户故事的研发人员自己去写。我一直觉得测试用例是非常重要的：软件的某一个行为究竟是特性还是碧油鸡（bug）,就由测试用例决定。之所以只能坚持几次,我想是因为负责纪录测试用例的人打字速度不够快吧:如果有十个人在会上轮流提出一个测试用例,但只有一个人负责记录,那么当那个人写第一条测试用例的时候,其余九个人就只能等着,对他们来说这段时间浪费了。&lt;/p&gt;
+
+&lt;p&gt;敏捷开发要求研发人员实行测试驱动开发,测试驱动开发有几个步骤:第一，在编写任何功能代码之前先编写测试代码；第二，只编写刚好体现一个失败的测试用例；第三，只编写刚好让失败的测试用例通过的功能代码。&lt;/p&gt;
+
+&lt;p&gt;在实践测试驱动开发的过程中,我始终不能接受上面的三个步骤。在写好能运行起来的代码之前,我很难给这段代码编写相应的测试用例,因为：第一,在什么都没有的时候,我不知道测试的边界在哪里;第二,在功能代码有雏形之前,代码本身会频繁变动,这时候我并不在乎代码本身是否正确,但一旦写了测试代码,我都必须要在每一次改动之后相应地修改测试代码,这样会不断地打断开发人员的思路,影响开发效率。&lt;/p&gt;
+
+&lt;p&gt;但是我很认同测试对软件质量的是至关重要的,所以最终采取的是:先编写功能代码,编写功能代码的时候,先让代码能跑起来,再让代码“看起来正确”地跑起来,然后编写测试代码,测试代码要覆盖相应的测试用例,编写好测试代码之后,再着手修正、重构功能代码。&lt;/p&gt;
+
+&lt;p&gt;确保所有测试用例都跑通过之后,让其他研发人员帮忙检查代码,也就是 code review 。在实行代码检查的时候遇到很多困难:比如说,在研发人员忙的时候,让他替你检查代码,他通常是不愿意的,他要么是直接拒绝你,要么是敷衍了事。还有一种情况就是,检查的人与被检查的人对某一段代码的实现有不同的意见,而且都不能说服对方。这些都会导致研发人员不愿意进行代码检查,我个人的做法是在编写具体的功能代码之前,首先向其他人描述自己的大概实现思路,确保在大方向上不会出现偏差,找人检查代码的时候,如果他忙就找另外一个人(就算这个人对这个功能一无所知也没有问题),用最简单的语言让他明白你实现了一个怎样的功能。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;以上所说,是我们崩坏之前的敏捷开发，说说崩坏后的景况：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;如今,只有每天站立会议和代码检查还能维持下来,需求讨论会议便成需求了解会议,测试用例设计会议早就不存在,测试代码也早已成为研发人员的包袱:新开发的功能影响了已有的功能,导致已有的测试失败,但是并没有时间修改正确,当大部分测试代码都失败的时候,研发人员已经不再指望测试代码来保证功能的正确性;迭代回顾也已经很久没有开,但也没有人感觉缺少了什么东西。&lt;/p&gt;
+
+&lt;p&gt;回顾近两年所经历的敏捷开发,我总结出敏捷开发是一整套对所有参与其中的人员有着高要求的规范:他要求所有人主动承担整个产品的责任,人与人之间要密切沟通交流,最重要的是要求尽早的交付给客户有价值的能满足用户需要的产品。&lt;/p&gt;
+
+&lt;p&gt;我们的敏捷开发之所以会崩坏,就是因为我们一直都没有找到对客户有价值的功能点,没有找到有价值的功能点就不确定该先做哪些功能,所以全都做，因此就不能尽早的交付给客户。经历了近两年的失败，无论是产品经理还是研发人员已经对公司在这个方向上的探索不抱希望：产品经理辞职,研发人员从主动了解需求、提出建议到被动接受、执行需求。同时,因为一直没有找到主要的功能点，业务方向经常改变,导致功能代码到了需要重构的时候,却不得不在此基础上实现新的功能代码,功能代码都没有时间来得及好好想想如何实现,测试代码的通过与否就更不在话下了。&lt;/p&gt;</content><author><name>jude zhu</name></author><summary type="html">以下关于敏捷开发的内容，只是我个人经历和感想，没打算说点“正确”的话，觉得我说的错得离谱，大可以认为我经历的是假的敏捷开发 ^_^</summary></entry></feed>

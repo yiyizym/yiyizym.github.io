@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>webpack 踩坑记</title>
+  <meta name="description" content="我公司用的开发框架是 ruby on rails ，话说这套框架真的很不错，只要遵守约定，很多必要但是琐碎的事情对你来说都是透明的。比如说静态资源的压缩、打包、打指纹这三大必要步骤，rails 对开发者就很友好：在 development 环境下，更改前端任何一个静态文件，保存之后，文件都会被重新打指纹；开发完成...">
+  <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/frontend/2015/11/21/try-webpack.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js',{scope: '/'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+</script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+          <a class="page-link" href="/category/">分类</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">webpack 踩坑记</h1>
+    <p class="post-meta"><time datetime="2015-11-21T19:00:58+08:00" itemprop="datePublished">Nov 21, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>我公司用的开发框架是 ruby on rails ，话说这套框架真的很不错，只要遵守约定，很多必要但是琐碎的事情对你来说都是透明的。比如说静态资源的压缩、打包、打指纹这三大必要步骤，rails 对开发者就很友好：在 development 环境下，更改前端任何一个静态文件，保存之后，文件都会被重新打指纹；开发完成之后，部署到 production 时，自动帮你压缩、打包、打指纹，再也不用管这些破事儿了。</p>
+
+<p>你会问，既然这么好，为什么要踩 webpack 的坑呢？rails 能满足绝大部分情况下的需求，剩下的一小部分是自己折腾出来的：比如说公司要做官网展示页面，是静态页面，有人希望静态页面只需经 nginx 就直接返回，不需要再转发到 rails 。我也认同这种做法，但这样就用不上 rails 的种种好处了。</p>
+
+<p>静态资源的压缩、打包、打指纹都没有了。我得找一种替代品。</p>
+
+<p>以前用过 gulp ，它对文件处理比较好，但依赖加载要另外处理；图片打指纹这种事只能自己动手，不能一视同仁地对待各种静态资源。 webpack 恰恰没有这些不足。</p>
+
+<p>但 webpack 也不是百分百满足我的奇葩需求，比如说我要用它来做的是多个静态页面而不是单页应用；要兼容 IE8 ；要全局使用 jQuery ；要处理原有页面，确保它能找到打上指纹后的图片。</p>
+
+<p>这些需求对当时——完全没用过 webpack 的我来说——都是一个个的坑。</p>
+
+<p>好，跟着我来踩坑吧。安装、跑个最简单的例子什么的就不说了。虽然我觉得 webpack 官网不咋的，但还是推荐 官网的<a href="https://webpack.github.io/docs/installation.html">这篇</a>和<a href="http://webpack.github.io/docs/tutorials/getting-started/">这篇</a>，跟着动手，一切 OK ，之后的坑就要靠多看看 <a href="https://webpack.github.io/docs/configuration.html">configuration</a> 了。</p>
+
+<p><strong>以下步骤都有对应源码，已上传到 github ，还有对应的 tag ，方便一步步跟踪。</strong></p>
+
+<h2 id="先挑软柿子-jquery-来捏">先挑软柿子 jQuery 来捏。</h2>
+
+<p>使用 resolve 配置项加载 jQuery ，要注意两点：一，jQuery 的版本要够新，得支持 <code class="highlighter-rouge">module.exports</code> 导出 jQuery ，这是 Node 的 commonjs 模块加载形式（其实不支持也没关系，只是使用require语法会把 $/jQuery 挂到 window 变量下，被 require 赋值的变量为 <code class="highlighter-rouge">undefined</code>而已）；二，也不能太新，以至于不支持 IE8 。（相关代码见 tag v1.0）</p>
+
+<p>还可以在 resolve 基础上使用插件 ProvidePlugin 预先加载 jQuery ，这样就不用在每个使用 jQuery 的文件前面显式 require 加载了。（见 tag v1.1）</p>
+
+<h2 id="再兼容-ie-8">再兼容 IE 8</h2>
+
+<p>在 IE8 下使用 webpack 加载依赖可能会遇到某些函数 undefined 报错的情况，你需要在 webpack 打包好的文件执行之前加载 es5 polyfill 。另外要在 IE8 下使用 CSS3 的媒体查询特性，就必须使用 respond.js ，如果你没留意 respond.js 的工作原理，就不会知道它要求样式文件要用 link 标签加载，使用 style 标签的行内样式会被忽略。webpack 恰恰会默认把样式塞到 style 标签中（把资源都一次性加载过来，作者显然已经抛弃了 IE8 ）。</p>
+
+<p>首先解决 polyfill 问题，在每个 js 文件最前面用 script-loader 加载 polyfill 。这个办法有点麻烦，而且不论是现代浏览器还是 IE8 都会加载 polyfill ，所以最简单的做法就是把 polyfill 用 script 标签加到 index.html 文件里面。</p>
+
+<p>同理， respond.js 和 html5shim 也可以用标签加载。</p>
+
+<p>接下来就是要把 css 由行内形式变为嵌入形式，你需要用到 extract-text-plugin ，具体用法参见<a href="http://webpack.github.io/docs/stylesheets.html#separate-css-bundle">这篇文章</a>。</p>
+
+<p>首先安装这个插件，然后修改 webpack.config.js 文件，最后修改 index.html 文件，在 head 标签里加上 <code class="highlighter-rouge">&lt;link rel="stylesheet" type="text/css" href="bundle.css"&gt;</code> ，注意要放在 respond.js 之前。（见 tag v1.2）</p>
+
+<h2 id="接着给图片打指纹">接着给图片打指纹</h2>
+
+<p>webpack 会自动对样式文件中引用的图片打指纹，所以使用 img 的 content 属性可以做到加载图片，其他元素可以使用 backgound 属性加载。问题是 IE8 不支持 img 的 content 属性。</p>
+
+<p>webpack 的<a href="https://github.com/petehunt/webpack-howto#5-stylesheets-and-images">样板做法</a>是先 require 图片资源，取得带有指纹的图片地址（或者直接是base64编码的图片），然后用 javascript 手动设置 img 标签的 src 属性。</p>
+
+<p>在找不到合适插件的情况下，只能这样做了：</p>
+
+<ol>
+  <li>把 html 文件里 img 的 src 属性改为 data-src ，否则浏览器会在 javascript 执行之前加载图片，而图片不存在，会报错；</li>
+  <li>用 javascript 获取 data-src 属性值，然后加载对应的图片，再设置 src 属性。</li>
+</ol>
+
+<p>在实践过程中，发现使用 webpack 编译时工作量十分大，最后报错提示要加载的图片地址需要“计算”得出。因为这个地址需要在执行 javascript 时取出来，所以实际上 webpack 计算不到，它遍历了当前目录所有文件，包括 node_modules 目录下的文件。</p>
+
+<p>不得已，我重新安排了文件的目录，限定了图片查找范围。最后出来的效果还不错。（见 tag v1.3）</p>
+
+<h2 id="最后还记得要生成多个静态页面吗">最后，还记得要生成多个静态页面吗？</h2>
+
+<p>这可以用插件 <a href="https://github.com/ampedandwired/html-webpack-plugin">html-webpack-plugin</a> 解决，真是太好了。具体用法很简单，看插件的 github page 或者（见 tag v1.4）</p>
+
+<h2 id="本文对应-github-仓库">本文对应 <a href="https://github.com/yiyizym/try_webpack/tree/master">github 仓库</a></h2>
+
+<h2 id="参考文章">参考文章</h2>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/28969861/managing-jquery-plugin-dependency-in-webpack">Managing Jquery plugin dependency in webpack</a></li>
+  <li><a href="http://stackoverflow.com/questions/11173991/content-attribute-of-img-elements">content attribute of img elements</a></li>
+</ul>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude zhu
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@163.com">yiyizym@163.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

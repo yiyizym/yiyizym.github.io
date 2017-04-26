@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>浅谈CSS2.1可视化格式模型</title>
+  <meta name="description" content="近日看了CSS2.1规范文档中对可视化格式模型（visual formatting model）的描述，弄懂了很多之前理解模糊的概念。顺手写写总结，理理思路，以便日后忘记了可以回头看看。">
+  <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/frontend/2014/03/28/aboutCss2VFM.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js',{scope: '/'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+</script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+          <a class="page-link" href="/category/">分类</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">浅谈CSS2.1可视化格式模型</h1>
+    <p class="post-meta"><time datetime="2014-03-28T00:47:38+08:00" itemprop="datePublished">Mar 28, 2014</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>近日看了CSS2.1规范文档中对可视化格式模型（visual formatting model）的描述，弄懂了很多之前理解模糊的概念。顺手写写总结，理理思路，以便日后忘记了可以回头看看。</p>
+
+<p>网页上看得到的所有元素都是一个个大小不同、或相互嵌套、或上下堆叠、或水平排列的盒子。</p>
+
+<p>可视化格式模型说的就是如何摆放这些盒子。盒子的布局与以下几个因素有关：</p>
+
+<ol>
+  <li><a href="http://www.w3.org/TR/CSS21/conform.html#doctree">文档树</a>中元素之间的关系；</li>
+  <li>盒子的类型和尺寸；</li>
+  <li>定位方案；</li>
+  <li>其他外部信息（如视点、图片的本征尺寸等）</li>
+</ol>
+
+<h2 id="文档树中各元素的关系">文档树中各元素的关系</h2>
+
+<p>文档树中各元素的关系无非就是祖先、同辈、后代。值得一说的是包含块（containing blocks）的概念。一个盒子在真正被定位时需要一个具体的大环境，盒子被包含在这个大环境之中，这个大环境就是此盒子的包含块，具体来说盒子的包含块是从盒子的某个祖先盒子中挑选出来的，不一定就是它的父亲盒子。因为盒子之内可以嵌套其他盒子，换句话说盒子可以有子孙后代，此盒子也可充当后代盒子的包含块。</p>
+
+<h2 id="盒子的类型尺寸">盒子的类型、尺寸</h2>
+
+<p>盒子的类型细分起来有很多种，由 display 属性的值决定。常用的 display属性值有：</p>
+
+<ul>
+  <li>block
+  此值可使元素产生块盒子</li>
+  <li>inline
+  此值可使元素产生一个或多个行内盒子</li>
+  <li>inline-block
+  此值可使元素产生一个行内级块容器。行内级块容器对包含在其内部的元素表现为块盒子，其自身——即对同辈元素及祖先元素而言——是一个原子行内级盒子。</li>
+  <li>none
+  此值可使元素不产生任何盒子，其本身、内容、后代元素在格式化结构中消失。同辈元素、祖先元素就当其根本不存在一样。</li>
+</ul>
+
+<p>display还有很多其他的取值，在此不作研究。</p>
+
+<p>下面来说说盒子的两大类型：块盒子、行内盒子。</p>
+
+<h3 id="块盒子">块盒子</h3>
+
+<p>在说块盒子前，要先说说块级元素。块级元素最显著的特征是其开头和结尾处都会另起一行。<a href="http://reference.sitepoint.com/html/block-level">这里</a>罗列了所有的块级元素。块级元素会产生块级盒子（准确来说是原始块级盒子），这个块级盒子会充当包含在其内的元素的包含块。</p>
+
+<p>块级盒子在多数情况下（除非它是表格盒子或元素本身是重置元素。重置元素指元素本身的尺寸和外形由外部信息决定，不由CSS决定。images/plugins/form 元素都属于重置元素。<a href="http://reference.sitepoint.com/css/replacedelements">此处</a>有更详细的描述）也是块容器盒子。块级盒子与块容器盒子不是包含与被包含的关系，它们之间有重叠的部分，也有不重叠的部分。非重置行内块盒子和非重置表格单元是块容器盒子，但并不是块级盒子。既是块级盒子也是块容器盒子的可被称作：块盒子。</p>
+
+<p><strong>块容器盒子要么只包含块级盒子，要么只包含行内级盒子。</strong>这句话很重要。</p>
+
+<h4 id="匿名块级盒子">匿名块级盒子</h4>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;div&gt;
+	Some text
+	&lt;p&gt;More text&lt;/p&gt;
+&lt;/div&gt;
+</code></pre>
+</div>
+
+<p>假设div与p的display属性值均为blcok。实际如下图，div标签生成一个块容器盒子，若块容器盒子内包含块级盒子（本例正是此种情况：p为块级盒子），则强制此块容器盒子只包含块级盒子。文本节点“Some text”此时将被一个匿名块级盒子包裹。</p>
+
+<p>产生匿名块级盒子的情况是，当一个行内盒子包含一个流内（in-flow，流在这里指常规流）块级盒子时，这个行内盒子会被块级盒子腰斩成两个匿名块级盒子。由此形成的三个块级盒子是同辈的关系。匿名块级盒子还有很多细节，详见<a href="http://www.w3.org/TR/CSS21/visuren.html">文档</a>。</p>
+
+<h3 id="行内盒子">行内盒子</h3>
+
+<p>与块级元素和块级盒子对应的是行内级元素和行内级盒子。</p>
+
+<p>行内级元素与块级元素相反，它不会在开头和结尾处另起一行，<a href="https://developer.mozilla.org/en-US/docs/HTML/Inline_elements">这里</a>罗列了所有的块级元素。行内级盒子由行内级元素产生。</p>
+
+<p>与块级盒子一样，并不是所有的行内级盒子都是行内盒子，由重置行内级元素、inline-block元素、inline-table元素产生的行内级盒子就不是行内盒子，这些盒子被称为原子行内级盒子。</p>
+
+<h4 id="匿名行内盒子">匿名行内盒子</h4>
+
+<p>也存在匿名行内盒子，见下面的例子。p产生的块容器盒子内不包含块级盒子，却包含一个行内盒子（由em产生），此时将强制p产生的块容器盒子只包含行内盒子。文本节点“Some”和“text”将被一个匿名行内盒子包裹。匿名行内盒子还有很多细节，详见<a href="http://www.w3.org/TR/CSS21/visuren.html">文档</a>。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;p&gt;Some&lt;em&gt;emphasized&lt;/em&gt;text&lt;/p&gt;
+</code></pre>
+</div>
+
+<p><strong>盒子的尺寸</strong></p>
+
+<p>盒子的尺寸并不受限与包含块，若比包含块的尺寸要大，盒子将会溢出。</p>
+
+<h2 id="定位方案">定位方案</h2>
+
+<p>定位方案分以下三种：</p>
+
+<ol>
+  <li>常规流；</li>
+  <li>浮动；</li>
+  <li>绝对定位；</li>
+</ol>
+
+<h3 id="常规流">常规流</h3>
+
+<p>只要元素没有被设置为浮动或绝对定位，元素就位于常规流之内（否则称之为脱离常规流），采用常规流定位。</p>
+
+<p>位于常规流内的元素，其产生的盒子要么处于块格式化上下文要么处于行内格式化上下文。理所当然地，块级盒子参与构成块格式化上下文，行内级盒子参与构成行内格式化上下文。</p>
+
+<p><strong>块格式化上下文</strong></p>
+
+<p>浮动元素、绝对定位元素、不是块盒子的块容器（如inline-block等）、设置overflow属性值且值不为visible的块盒子都将会为其内容（内容是一个术语，对其准确解释见<a href="http://www.w3.org/TR/CSS21/conform.html#doctree">这里</a>）产生一个新的块格式化上下文。</p>
+
+<p>在块格式化上下文之中，所有盒子都将从包含块的顶部开始，从上到下垂直堆叠，它们之间的垂直间距由margin属性确定，两个相邻的块级盒子之间还将发生垂直边距的塌陷（collapse）。每个盒子的左外边缘将与包含块的左边缘（这里指内容的的左边缘）重合。</p>
+
+<p><strong>行内格式化上下文</strong></p>
+
+<p>在行内格式化上下文之中，盒子将从包含块的顶部开始，从左到右排布。盒子的垂直对齐方式有：顶部对齐、底部对齐、基线对齐。</p>
+
+<p>这里还有一个重要的概念：行盒子（line box），行内盒子排成一行，这一行就形成行盒子。</p>
+
+<p>行盒子的宽度由两点决定：包含块的宽度、浮动的存在与否。行盒子的高度是个比较复杂的问题，详见<a href="http://www.w3.org/TR/CSS21/visudet.html#line-height">此处</a>,行盒子的高度永远大于或等于其包含的盒子。</p>
+
+<p>除去存在浮动的情况，行盒子的左边缘将与包含块的左边缘重合。</p>
+
+<p>当构成行盒子的所有行内级盒子的总宽度比行盒子的宽度要短时，行内级盒子的水平排布方式将由行盒子的text-align属性决定。反过来，当一个行内盒子的宽度比行盒子的宽度要大，行内盒子将被分割成几个行内盒子摆放在几个行盒子当中，除非这个行内盒子被设置为不可分割的，这种情况下，行内盒子将会溢出行盒子。</p>
+
+<p>行盒子的相关细节比较多，详见<a href="http://www.w3.org/TR/CSS21/visuren.html#positioning-scheme">文档</a>。</p>
+
+<h3 id="浮动">浮动</h3>
+
+<p>只要元素设置float属性值且其不为none，元素就将会脱离常规流且尽可能向左（或右）移动。
+（这里的内容指文本、行内元素）可能会排布在浮动的周围。</p>
+
+<p>元素产生的浮动盒子将一直向左（或右）移动直到它的外边缘与包含块的边缘或者其他浮动的外边缘重合。如果此时存在同辈的行盒子，浮动将与行盒子的顶部垂直对齐。</p>
+
+<p>如果当前的水平空间不足以容纳浮动，浮动将会下移到要么放得下它要么只有它一个浮动的地方。</p>
+
+<p><strong>浮动盒子脱离常规流，所以块盒子在布局时视它为无物，但行盒子却受其影响，紧邻浮动的行盒子会排布在浮动的周围，前提是浮动的高度（outer height，算上padding、border、margin）是个正值，</strong>这是文字围绕图片的原理。</p>
+
+<p>浮动的外边距从不与相邻的其他盒子发生塌陷。</p>
+
+<p>浮动可以覆盖（overlap）处于常规流中的其他块盒子。如果发生覆盖，浮动将呈现在块盒子的前面（前面指的是更接近用户），而在行内盒子的后面。</p>
+
+<p>浮动的盒子除了尽可能向左（或右）移动之外，它还尽可能向上移动，当两者冲突时，它会选择尽量向上移动。</p>
+
+<p>设置元素的clear属性，可使其左侧（或右侧，或两侧）不与浮动相邻。</p>
+
+<p>浮动的还有不少细节，详见<a href="http://www.w3.org/TR/CSS21/visuren.html#positioning-scheme">文档</a>。</p>
+
+<h3 id="绝对定位">绝对定位</h3>
+
+<p>设置元素的postion属性值为 absolute 或 fixed 可使元素采用绝对定位，此时元素脱离常规流。</p>
+
+<h3 id="displayposition和float的关系">display、position和float的关系</h3>
+
+<ol>
+  <li>如果display设置为none，则position和float属性无论为何值都不会生效，元素不产生盒子；</li>
+  <li>否则，当position设置为absolute或fixed时，float属性的计算值为none，display属性的计算值如下表。盒子的位置为包含块及top/right/left/bottom等值确定；</li>
+  <li>否则，当float为非none的值时，其display属性的计算值如下表；</li>
+  <li>否则，当元素为根元素时，display属性的计算值如下表，有一种例外情况就是声明值为list-item其计算值可以是block或者list-item；</li>
+  <li>
+    <p>否则，其他的dispaly属性值表现为其声明的值。</p>
+
+    <p>specified value						computed value
+ ——————————————————
+ inline-table								  table
+ ——————————————————
+ inline,inline-block,table-row-group,
+ table-column,table-column-group,
+ table-header-group,table-footer-group,		 block
+ table-row,table-cell,table-caption
+ ——————————————————
+ others								same as specified</p>
+  </li>
+</ol>
+
+<h2 id="参考资料">参考资料</h2>
+
+<p>Cascading Style Sheets Level 2 Revision 1 (CSS 2.1) Specification, <a href="http://www.w3.org/TR/CSS21/visuren.html">Visual formatting model</a>;</p>
+
+<p>Github上面的一篇同主题<a href="https://github.com/sunnylost/sunnylost.github.com/blob/master/draft/css-visual-formatting-model.md">文章</a>;</p>
+
+<h2 id="后记">后记</h2>
+
+<p>关于可视化格式模型，还有很多知识点没有谈及，比如视点，相对定位，绝对定位时包含块的选择，z-index，等等。写技术文章很辛苦，而且总感觉挂一漏万，不过写技术文章有且于内化知识，也算是一道苦口良药吧。</p>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude zhu
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@163.com">yiyizym@163.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

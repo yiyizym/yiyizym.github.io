@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>两个小巧的javascript类工厂</title>
+  <meta name="description" content="阅读前，希望你了解javascript的原型链">
+  <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/frontend/2015/08/01/JSClass.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js',{scope: '/'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+</script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+          <a class="page-link" href="/category/">分类</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">两个小巧的javascript类工厂</h1>
+    <p class="post-meta"><time datetime="2015-08-01T07:02:51+08:00" itemprop="datePublished">Aug 1, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="阅读前希望你了解javascript的原型链">阅读前，希望你了解javascript的原型链</h2>
+
+<h2 id="pjs">P.js</h2>
+
+<h3 id="项目地址"><a href="https://github.com/jneen/pjs">项目地址</a></h3>
+
+<h3 id="基础用法">基础用法：</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var Animal = P(function(animal){
+      animal.init = function(name){
+          this.name = name;
+      };
+      animal.move = function(meters){
+          console.log(this.name + " moved " + meters + " m.");
+      }
+  });
+
+var Snake = P(Animal, function(snake, animal){
+        snake.move = function(){
+            console.log("Slithering...");
+            animal.move.call(this, 5);
+        };
+    });
+
+var Horse = P(Animal, function(horse, animal){
+        horse.move = function(){
+            console.log("Galloping...");
+            animal.move.call(this, 45);
+        };
+    });
+
+var sam = Snake("Sammy the Python"),
+    tom = Horse("Tommy the Palomino");
+
+sam.move(); 
+// 输出 
+// Slithering...
+// Sammy the Python moved 5 m.
+tom.move();
+// 输出 
+// Galloping...
+// Tommy the Palomino moved 45 m.
+</code></pre>
+</div>
+
+<h3 id="源码">源码</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>//说点题外话，作者利用闭包做了不少事情：
+
+//传入变量 prototype 是为了能在使用代码压缩工具时缩短代码，例如把 prototype 替换为 p
+//在压缩代码时 obj.prototype 和 obj[prototype] 是不一样的，前者的 prototype 不会被替换，所以要达到压缩变量的目的，还要配合后一种写法
+
+//ownProperty 是 helper function
+
+//传入 undefined 是阻止在使用 undefined 时回溯原型链，提高性能
+
+(function(prototype, ownProperty, undefined) {
+    //这个立即执行函数返回 类工厂 P
+    //P接受两个参数， 分别对应 父类 和对父类的相关扩展
+    //如果只传一个参数，就认为父类是 Object
+    return function P(_superclass /* = Object */, definition) {
+        // handle the case where no superclass is given
+        if (definition === undefined) {
+          definition = _superclass;
+          _superclass = Object;
+        }
+
+        // C is the class to be returned.
+        //
+        // When called, creates and initializes an instance of C, unless
+        // `this` is already an instance of C, then just initializes `this`;
+        // either way, returns the instance of C that was initialized.
+        //
+        //  TODO: the Chrome inspector shows all created objects as `C`
+        //        rather than `Object`.  Setting the .name property seems to
+        //        have no effect.  Is there a way to override this behavior?
+
+        // C 是 创建好类之后，实例化类时（不管有没有使用new）返回的对象，
+        function C() {
+            //如果没有使用 new ，则调用 new Bare
+            var self = this instanceof C ? this : new Bare;
+            self.init.apply(self, arguments);
+            return self;
+        }
+
+        // C.Bare is a class with a noop constructor.  Its prototype will be
+        // the same as C, so that instances of C.Bare are instances of C.
+        // `new MyClass.Bare` then creates new instances of C without
+        // calling .init().
+        //    如果不想在实例化时调用 init() ，可以用 new C.Bare
+        function Bare() {}
+        C.Bare = Bare;
+
+        // Extend the prototype chain: first use Bare to create an
+        // uninitialized instance of the superclass, then set up Bare
+        // to create instances of this class.
+
+        //实现类继承，本质上都是用这样的手法：
+        //    var TempClass = function(){}
+        //    TempClass.prototype = Parent.prototype
+        //    Child.prototype = new TempClass()
+
+        var _super = Bare[prototype] = _superclass[prototype];
+        var proto = Bare[prototype] = C[prototype] = C.p = new Bare;
+
+        // pre-declaring the iteration variable for the loop below to save
+        // a `var` keyword after minification
+        // 把 key 声明为变量，方便压缩代码时替换
+        var key;
+
+        // set the constructor property on the prototype, for convenience
+        //    修正 C 的构造函数，不修正的话会是 Bare
+        proto.constructor = C;
+
+        //    extend 返回一个子类
+        C.extend = function(def) { return P(C, def); }
+
+        //    这里写得比较复杂，化简一下会是这样 
+        //    return (C.open = C)
+        //    C.open 用于修改已存在的类的属性
+        return (C.open = function(def) {
+          if (typeof def === 'function') {
+            // call the defining function with all the arguments you need
+            // extensions captures the return value.
+
+            //    def 接收的参数有4个
+            //    proto为Bare的原型，即Object的原型
+            //    _super为父类的原型
+            //    C,_superclass
+
+            //如果def返回对象，接下来会把此对象合并到proto里
+            def = def.call(C, proto, _super, C, _superclass);
+          }
+
+          // ...and extend it
+          if (typeof def === 'object') {
+            for (key in def) {
+              if (ownProperty.call(def, key)) {
+                proto[key] = def[key];
+              }
+            }
+          }
+
+          // if no init, assume we're inheriting from a non-Pjs class, so
+          // default to using the superclass constructor.
+          if (!('init' in proto)) proto.init = _superclass;
+
+          return C;
+        })(definition);
+    }
+
+  // as a minifier optimization, we've closured in a few helper functions
+  // and the string 'prototype' (C[p] is much shorter than C.prototype)
+})('prototype', ({}).hasOwnProperty);
+</code></pre>
+</div>
+
+<h2 id="simple-javascript-inheritance">Simple JavaScript Inheritance</h2>
+
+<h3 id="地址"><a href="http://ejohn.org/blog/simple-javascript-inheritance/">地址</a></h3>
+
+<h3 id="用法">用法</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>var Person = Class.extend({
+  init: function(isDancing){
+    this.dancing = isDancing;
+  },
+  dance: function(){
+    return this.dancing;
+  }
+});
+
+var Ninja = Person.extend({
+  init: function(){
+    this._super( false );
+  },
+  dance: function(){
+    // Call the inherited version of dance()
+    return this._super();
+  },
+  swingSword: function(){
+    return true;
+  }
+});
+
+var p = new Person(true);
+p.dance(); // =&gt; true
+
+var n = new Ninja();
+n.dance(); // =&gt; false
+n.swingSword(); // =&gt; true
+
+// Should all be true
+p instanceof Person &amp;&amp; p instanceof Class &amp;&amp;
+n instanceof Ninja &amp;&amp; n instanceof Person &amp;&amp; n instanceof Class
+</code></pre>
+</div>
+
+<h3 id="源码-1">源码</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/* Simple JavaScript Inheritance
+ * By John Resig http://ejohn.org/
+ * MIT Licensed.
+ */
+// Inspired by base2 and Prototype
+(function(){
+
+    //fnTest 如果浏览器支持 Function.prototype.toString 打印自身内容，则匹配里面有没有 _super
+    //        如果不支持，fnTest匹配结果为 true
+  var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+
+  // The base Class implementation (does nothing)
+  this.Class = function(){};
+
+  // Create a new Class that inherits from this class
+  Class.extend = function(prop) {
+      //先保存当前 Class 的原型
+    var _super = this.prototype;
+
+    // Instantiate a base class (but only create the instance,
+    // don't run the init constructor)
+    //    有一种实现继子的方式是 Child.prototype = new Parent()
+    //    这种方式的好处是隔离了 Child.prototype 和 Parent.prototype
+    //    坏处是调用了一次 Parent 的构造函数，构造函数中的一些初始化操作对子类来说是多余的
+    //    开关 initializing 能控制在 new this() 时不进行初始化操作
+    initializing = true;
+    var prototype = new this();
+    initializing = false;
+
+    // Copy the properties over onto the new prototype
+    for (var name in prop) {
+      // Check if we're overwriting an existing function
+      prototype[name] = typeof prop[name] == "function" &amp;&amp;
+        typeof _super[name] == "function" &amp;&amp; fnTest.test(prop[name]) ?
+        //    如果在 proto 里有跟父类同名的函数，而且函数里面有 _super
+        //    则用父类的同名函数覆盖 this._super
+        (function(name, fn){
+          return function() {
+              //    this._super 不一定存在，但先保存下来肯定没错
+            var tmp = this._super;
+
+            // Add a new ._super() method that is the same method
+            // but on the super-class
+            this._super = _super[name];
+
+            // The method only need to be bound temporarily, so we
+            // remove it when we're done executing
+            //    作者假设 fn 里面调用了 this._super
+            //    所以 fn 执行时会调用父类的同名函数
+            var ret = fn.apply(this, arguments);        
+            this._super = tmp;
+
+            return ret;
+          };
+        })(name, prop[name]) :
+        prop[name];
+    }
+
+    // The dummy class constructor
+    function Class() {
+      // All construction is actually done in the init method
+      // 在 extend 时不会调用 this.init
+      if ( !initializing &amp;&amp; this.init )
+        this.init.apply(this, arguments);
+    }
+
+    // Populate our constructed prototype object
+    Class.prototype = prototype;
+
+    // Enforce the constructor to be what we expect
+    Class.prototype.constructor = Class;
+
+    // And make this class extendable
+    //    让子类也有 extend 方法
+    //    在 es5 严格模式下，禁止使用 arguments.callee ，原因见 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions_and_function_scope/arguments/callee
+    //    可以使用命名函数解决此问题
+    Class.extend = arguments.callee;
+
+    return Class;
+  };
+})();
+</code></pre>
+</div>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude zhu
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@163.com">yiyizym@163.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

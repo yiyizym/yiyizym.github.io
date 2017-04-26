@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>xss 一点总结</title>
+  <meta name="description" content="xss 一点总结">
+  <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAMh/bAA4bHABP3OMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMzMAAAAAADMzMzMAAAADETMzETAAAAMRMzMRMAAAAzMzMzMwAAAAMzMzMwAAAAAzMzMzAAAAADMzMzMAAAAAMwAAMwAAAAMwAAADMAAAIwAAAAAyAAIgAAAAAAIgAAAAAAAAAAD//wAA//8AAP//AAD8PwAA8A8AAOAHAADgBwAA4AcAAPAPAADwDwAA8A8AAPPPAADn5wAAz/MAAJ/5AAD//wAA" rel="icon" type="image/x-icon" />
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/frontend/2015/10/02/xss-study.html">
+  <link rel="alternate" type="application/rss+xml" title="jude&#39;s life" href="/feed.xml">
+  
+  
+
+  
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js',{scope: '/'}).then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }).catch(function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  }
+</script>
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">jude&#39;s life</a>
+
+    <nav class="site-nav">
+      <span class="menu-icon">
+        <svg viewBox="0 0 18 15" width="18px" height="15px">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </span>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">关于</a>
+          
+        
+          
+          <a class="page-link" href="/category/">分类</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">xss 一点总结</h1>
+    <p class="post-meta"><time datetime="2015-10-02T22:45:41+08:00" itemprop="datePublished">Oct 2, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h1 id="xss-一点总结">xss 一点总结</h1>
+
+<p>我不是很理解 xss 这个词： Cross-site scripting ，它怎么就跟跨站勾搭上了呢？</p>
+
+<h2 id="xss-输入输出">xss 输入/输出</h2>
+
+<p>网页是xss的舞台，要达成 xss 攻击，首先必须找到页面中可以注入代码的地方（注入点），而且网页必须要有执行注入代码的地方（输出点）。</p>
+
+<p>发现 xss 漏洞的一种方法就是在所有用户输入的地方输入一些特殊字符（字母和数字的随机组合，方便与正常文本区分开），看看页面有没有展示这些特殊字符，如果没有那肯定没戏了，如果有还可以继续测试。</p>
+
+<h2 id="xss-类型">xss 类型</h2>
+
+<p>先看看 xss 类型。根据 要不要与后台交互 和 会不会保存到数据库 大致可以分为不需要与后台交互的 DOM XSS ，需要与后台交互但不会被保存到数据库的 反射型XSS ，以及会把注入代码保存到数据库的 存储型 XSS 。因为存储型XSS可以一处存储，多处显示，所以危害比较大。</p>
+
+<h2 id="输出场景编码方式解码顺序">输出场景/编码方式/解码顺序</h2>
+
+<p>之前说页面展现特殊字符可以继续测试。特殊字符可能出现的地方，有：</p>
+
+<ul>
+  <li>HTML 标签之间 <code class="highlighter-rouge">&lt;div&gt;[输出]&lt;/div&gt;</code></li>
+  <li>HTML 属性值 <code class="highlighter-rouge">&lt;input value="[输出]"&gt;</code></li>
+  <li>javascript 代码里面 <code class="highlighter-rouge">&lt;script type="text/javascript"&gt;val = [输出]&lt;/script&gt;</code></li>
+  <li>CSS 代码里面 <code class="highlighter-rouge">&lt;style type="text/css"&gt; body {height: [输出]px;} &lt;/style&gt;</code></li>
+</ul>
+
+<p>为什么要区分不同的地方呢？这与不同语境下不同的编码以及浏览器的解码次序有关。</p>
+
+<p>先来说说编码：</p>
+
+<ul>
+  <li>HTML 支持实体编码（如 <code class="highlighter-rouge">&amp;lt;</code> 就是 ‘&lt;’），十进制（&amp;#60）、十六进制（&amp;#x3c）ASCII编码，以及unicode字符编码（&amp;#x3c）。</li>
+  <li>javascript 支持 八进制（\74）、十六进制（\x3c）ASCII编码，以及 unicode字符编码（\u003c）。</li>
+  <li>CSS 支持十六进制ASCII编码（#fff 可以写成#\66\66\66） 以及 utf-8 编码（\0066）。</li>
+  <li>URL 支持十六进制ASCII编码 以及 utf-8 编码 和 GB2312 编码 或者还有更多。</li>
+</ul>
+
+<p>在不同的语境下用其支持的编码有时候可以绕过后台的字符过滤。能不能绕过，得测试很多种情况，所以要借助工具。</p>
+
+<p>浏览器获取源码之后，一边解析一边执行源码：</p>
+
+<ul>
+  <li>
+    <p>一开始解析 HTML 代码，如果遇到 script 标签，停止解析 HTML ，开始解析 script 内容（如果要加载远程代码，一般情况下——没有加 defer ；浏览器不作优化——在加载完成后解析），解析完毕后，继续解析 HTML 。解析 HTML 时，同时也在解析 CSS 。因为 javascript 有可能会读取样式，在解析 CSS 时怎样处理 javascript ，各浏览器有不同的实现，详见<a href="http://taligarsiel.com/Projects/howbrowserswork1.htm#The_order_of_processing_scripts_and_style_sheets">how browsers work</a>。</p>
+  </li>
+  <li>
+    <p>解析 HTML 时，如果遇到标签属性中的事件句柄，如 onclick ，会先当作 HTML 代码解析，在事件被触发时，再调用脚本解析器解析。</p>
+
+    <p>比如下面这行代码：</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>  &lt;button onclick="location.href = 'http://www.yoursite.com?userName=&lt;%= userName %&gt;';"&gt;redirect&lt;/button&gt;
+</code></pre>
+    </div>
+
+    <p>用户输入的 userName 到达浏览器之后，首先会被当作 HTML 解析，当 click 事件触发之后，又会被当作 script 解析，因为是 url 的一部分，最后还会被当作 url 来解析。</p>
+
+    <p><strong>为了不出乱子（即把用户的输入当作当前环境下的代码执行），后台对 userName 的编码将是浏览器解码的逆过程，先是 url 编码，再是 script 编码，最后是 HTML 编码。</strong></p>
+  </li>
+  <li>
+    <p>解析 script 时，也有可能调用 HTML 解析器解析代码。这时先进行 script 解析，再进行 HTML 解析。</p>
+
+    <p>比如下面的代码：</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>  &lt;scirpt&gt;
+    var div = document.createElement('div');
+    div.innerHTML = "\x3cimg src=1 onerror=alert(1)\x3e";
+    // 与 div.innerHTML = "&lt;img src=1 onerror=alert(1)&gt;" 效果一样
+    // 试试 div.innerHTML = "&amp;#x3cimg src=1 onerror=alert(1)&amp;#x3e"
+
+    // 试试 div.innerHTML = "&lt;script alert(1);" 为什么不执行？
+
+    //document.body.appendChild(div); 不用 append 到页面中
+
+  &lt;/script&gt;
+</code></pre>
+    </div>
+
+    <p>会弹出提示窗。不是所有 DOM 元素调用其 innerHTML 方法都会像上面一样弹窗，比如 textarea 就不会。</p>
+  </li>
+</ul>
+
+<h2 id="未尽事宜">未尽事宜</h2>
+
+<p>XSS 漏洞是网络攻击的第一步，黑客可以利用漏洞加载远程脚本、盗取用户信息（cookie），再配合 CSRF 实施进一步攻击。</p>
+
+<h2 id="参考文献">参考文献</h2>
+
+<ul>
+  <li>
+    <p><a href="http://blog.knownsec.com/2014/07/%E7%BB%99%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E7%BB%88%E6%9E%81xss%E9%98%B2%E6%8A%A4%E5%A4%87%E5%BF%98%E5%BD%95-v1-0/">给开发者的终极XSS防护备忘录</a></p>
+  </li>
+  <li>
+    <p><a href="http://www.freebuf.com/articles/web/43285.html">XSS编码剖析</a></p>
+  </li>
+  <li>
+    <p><a href="http://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B00B14IGUK">Web前端黑客技术揭秘</a></p>
+  </li>
+  <li>
+    <p><a href="http://www.cnblogs.com/hustskyking/p/xss-snippets.html">XSS零碎指南</a></p>
+  </li>
+</ul>
+
+  </div>
+
+  
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">jude&#39;s life</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              jude zhu
+            
+            </li>
+            
+            <li><a href="mailto:yiyizym@163.com">yiyizym@163.com</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/yiyizym"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">yiyizym</span></a>
+
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>记录生活的点点滴滴
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

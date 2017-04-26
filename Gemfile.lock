@@ -1,5 +1,12 @@
+GIT
+  remote: git@github.com:yiyizym/custom_minima.git
+  revision: 91c5a1bc00db79bac6055389bd65597aa47874fb
+  branch: master
+  specs:
+    custom_minima (1.0)
+
 GEM
-  remote: https://rubygems.org/
+  remote: https://gems.ruby-china.org/
   specs:
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
@@ -29,8 +36,6 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
     mercenary (0.3.6)
-    minima (2.1.0)
-      jekyll (~> 3.3)
     pathutil (0.14.0)
       forwardable-extended (~> 2.6)
     public_suffix (2.0.5)
@@ -45,9 +50,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  custom_minima!
   jekyll (= 3.4.0)
   jekyll-feed (~> 0.6)
-  minima (~> 2.0)
   tzinfo-data
 
 RUBY VERSION

@@ -31,7 +31,7 @@ service_worker: true
 
 # Build settings
 markdown: kramdown
-theme: custom_minima
+theme: minima
 gems:
   - jekyll-feed
 exclude:

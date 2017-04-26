@@ -1,9 +1,9 @@
 GIT
   remote: git@github.com:yiyizym/custom_minima.git
-  revision: 91c5a1bc00db79bac6055389bd65597aa47874fb
+  revision: 692d3ee38d885487e0b0d4895a2717ddfdbbb62a
   branch: master
   specs:
-    custom_minima (1.0)
+    minima (1.0)
 
 GEM
   remote: https://gems.ruby-china.org/
@@ -50,9 +50,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  custom_minima!
   jekyll (= 3.4.0)
   jekyll-feed (~> 0.6)
+  minima!
   tzinfo-data
 
 RUBY VERSION

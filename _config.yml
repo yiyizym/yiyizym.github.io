@@ -27,7 +27,7 @@ github_username:  yiyizym
 google_analytics: UA-88024669-1
 
 # service_worker
-service_worker: true
+service_worker: false
 
 # Build settings
 markdown: kramdown

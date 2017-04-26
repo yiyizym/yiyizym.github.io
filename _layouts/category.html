@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<div>
+  <h1 class="page-heading">分类</h1>
+  {% for category in site.categories %}
+  <ul>
+    <li>
+      {{category[0]}} ({{category[1].size}})
+      <ul>
+        {% assign ctg = category[0] %}
+        {% for posts_of_category in site.categories[ctg] %}
+          <li>
+            <a href="{{posts_of_category.url}}" target="_blank">
+              {{ posts_of_category.title}}
+            </a>
+          </li>
+        {% endfor %}      
+      </ul>
+    </li>
+  </ul>
+  {% endfor %}
+</div>

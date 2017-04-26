@@ -2,11 +2,12 @@
 layout: default
 ---
 <div>
-  <h1 class="page-heading">分类</h1>
+  <h1 class="page-heading">分类（点击类别可展开条目）</h1>
   {% for category in site.categories %}
-  <ul>
+  <ul class="categories">
     <li>
-      {{category[0]}} ({{category[1].size}})
+      <input type="checkbox" id="id_{{category[0]}}" />
+      <label for="id_{{category[0]}}">{{category[0]}} ({{category[1].size}})</label>
       <ul>
         {% assign ctg = category[0] %}
         {% for posts_of_category in site.categories[ctg] %}

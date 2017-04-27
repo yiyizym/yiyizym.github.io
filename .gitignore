@@ -1,2 +1,4 @@
 .DS_Store
 new_post.rb
+_site/
+.sass-cache/

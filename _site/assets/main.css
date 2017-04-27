@@ -95,10 +95,7 @@ code {
   font-size: 15px;
   border: 1px solid #e8e8e8;
   border-radius: 3px;
-  /*override jude*/
-  /*background-color: #eef;*/
-  background-color: #fff;
-  /*override jude*/ }
+  background-color: #eef; }
 
 code {
   padding: 1px 5px; }
@@ -319,10 +316,7 @@ pre {
 .highlight {
   background: #fff; }
   .highlighter-rouge .highlight {
-    /*override jude*/
-    /*background: #eef;*/
-    background: #fff;
-    /*override jude*/ }
+    background: #eef; }
   .highlight .c {
     color: #998;
     font-style: italic; }
@@ -456,6 +450,19 @@ pre {
     color: #008080; }
   .highlight .il {
     color: #099; }
+
+/**
+ * Code formatting
+ */
+pre,
+code {
+  background-color: #fff; }
+
+/**
+ * Syntax highlighting styles
+ */
+.highlighter-rouge .highlight {
+  background: #fff; }
 
 /* for categories */
 .categories label {

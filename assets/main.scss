@@ -1,0 +1,48 @@
+---
+---
+@import "minima";
+/**
+ * Code formatting
+ */
+pre,
+code {
+  background-color: #fff;
+}
+
+/**
+ * Syntax highlighting styles
+ */
+
+.highlight {
+  .highlighter-rouge & {
+    background: #fff;
+  }
+}
+
+
+/* for categories */
+
+.categories {
+  label {
+    cursor: pointer;
+  }
+  input[type=checkbox] {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+
+    & ~ ul {
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: opacity .5s ;
+    }
+
+    &:checked ~ ul {
+      height: auto;
+      opacity: 1;
+    }
+  }
+}
+
+/* for categories */

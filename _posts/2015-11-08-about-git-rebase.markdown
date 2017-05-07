@@ -76,7 +76,7 @@ git merge 与 git rebase 命令都用来合并代码，如果不需要审查提�
 再次推送到远程： `git push origin master`
 
 在 github 上面看提交记录，显示如下：
-![commitlog ]({{ site.url }}/assets/rebase.jpg)*commitlog *
+![commitlog ]({{ site.url }}/assets/rebase.jpg)*commitlog*
 
 
 **结论**

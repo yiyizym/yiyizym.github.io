@@ -163,7 +163,7 @@ var webpackConfig = {
         // 用于清空 output 目录
         new WebpackCleanupPlugin(),
     ],
-    // devtool 更详细的资料： 
+    // devtool 更详细的资料：https://segmentfault.com/a/1190000008315937
     devtool: '#eval-source-map-inline'
 }
 

@@ -2,25 +2,25 @@
 
   <div class="wrapper">
 
-    <h2 class="footer-heading">{{ site.title | escape }}</h2>
+    <!-- <h2 class="footer-heading">{{ site.title | escape }}</h2> -->
 
     <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
+      <div class="footer-col footer-col-3">
         <ul class="contact-list">
-          <li>
+            <!-- <li>
             {% if site.author %}
               {{ site.author | escape }}
             {% else %}
               {{ site.title | escape }}
             {% endif %}
-            </li>
+            </li> -->
             {% if site.email %}
             <li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
             {% endif %}
         </ul>
       </div>
 
-      <div class="footer-col footer-col-2">
+      <div class="footer-col footer-col-1">
         <ul class="social-media-list">
           {% if site.github_username %}
           <li>
@@ -36,8 +36,9 @@
         </ul>
       </div>
 
-      <div class="footer-col footer-col-3">
-        <p>{{ site.description | escape }}</p>
+      <div class="footer-col footer-col-2">
+          <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+          <!-- <p>{{ site.description | escape }}</p> -->
       </div>
     </div>
 

@@ -2,11 +2,24 @@
 ---
 @import "minima";
 /**
+ * override body style
+ */
+body {
+   font-family: "Helvetica Neue",Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+   line-height: 1.7;
+ }
+/**
  * Code formatting
  */
 pre,
 code {
   background-color: #fff;
+}
+/**
+  override
+*/
+blockquote {
+  font-style: normal;
 }
 
 /**

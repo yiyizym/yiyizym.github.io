@@ -39,7 +39,7 @@ categories: tech
 
 **fn**采取如下三种形式之一就能让任务变成异步执行：
 
-###传入回调函数
+### 传入回调函数
 
 	// run a command in a shell
 	var exec = require('child_process').exec;
@@ -51,7 +51,7 @@ categories: tech
 	  });
 	});
 
-###返回一个流
+### 返回一个流
 
 	gulp.task('somename', function() {
 	  var stream = gulp.src('client/**/*.js')
@@ -60,7 +60,7 @@ categories: tech
 	  return stream;
 	});
 
-###返回一个promise
+### 返回一个promise
 
 	var Q = require('q');
 	gulp.task('somename', function() {

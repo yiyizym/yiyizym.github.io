@@ -12,7 +12,7 @@ categories: frontend
 唉，谁叫我是一个 google/stackoverflow 搬运工呢，要是哪一天完全翻不动，就不干程序员了！不过在此之前，我想着能留下点什么有用的给后人就好，所以写下这篇文章。
 
 ## 序言
-最近要实现一个高度自适应的输入框，要是能用插件的话，我会用 [autosize](https://github.com/jackmoore/autosize) 。
+因工作要实现一个高度自适应的输入框，要是能用插件的话，我会用 [autosize](https://github.com/jackmoore/autosize) 。
 
 不过考虑了下，还是不用插件。
 

@@ -22,6 +22,10 @@ blockquote {
   font-style: normal;
 }
 
+img+em {
+    display: block;
+}
+
 /**
  * Syntax highlighting styles
  */

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 理解 Git 工作原理，几篇上好文章
+title: 几篇好文章帮你理解 Git 工作原理
 date: 2017-12-16 06:50:10
 description: 最近对 Git 又有了更深入的了解，本想用自己的语言解释 Git 原理，但见珠玉在前，没自信做得更好，索性罗列自己看过的好文章
 categories: tech
@@ -48,7 +48,7 @@ Git 是一个非常复杂的工具，一般人要想理解它的工作原理，�
 
 - [图解 Git](https://marklodato.github.io/visual-git-guide/index-zh-cn.html?no-svg)
     
-    这是一份清晰易懂的材料，看完之后，你会对 Git 要做的事情有大致的印象： Git 做的事情就是在 工作区、暂存区、仓库（的各个提交）之间操作文件。
+    清晰易懂的文章，看完之后，你会对 Git 要做的事情有大致的印象： Git 做的事情就是在 工作区、暂存区、仓库（的各个提交）之间操作文件。
 - [Git 工具 - 重置揭密](https://git-scm.com/book/zh/v2/Git-工具-重置揭密)
     
     在提及“要了解 Git 原理该读什么书时”，不少人推荐 [Pro Git](https://git-scm.com/book/zh/v2) 。这确实是一本好书：每个概念都有详细的说明和具体的例子，而且是在线免费的。只是如果没有带着特定问题去看的话，可能坚持不到看完。

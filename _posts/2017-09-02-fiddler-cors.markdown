@@ -16,6 +16,8 @@ categories: frontend
 
 ### 解决跨域问题
 
+#### 通用情况
+
 用 fiddler 解决跨域问题的原理是通过规则来设置响应头的相应字段。
 在 fiddler 右侧的 "详情和数据统计面板" 中找到 FiddlerScript 标签页，里面是一个脚本文件，语法有点像 typeScript ，不难看懂，里面只定义了一个 Handlers 类，可以通过它来编辑 fiddler 菜单栏中的 Rules 选项以及 fiddler 处理请求的回调函数。
 
@@ -72,9 +74,17 @@ if(m_ForceCORS &&
 
 ![在 OnBeforeResponse 添加相关代码]({{ site.url }}/assets/OnBeforeResponse.png)*在 OnBeforeResponse 添加相关代码*
 
-### AutoResponder 匹配请求
+#### 特殊情况
 
-#### 精准匹配及正则匹配
+可以看到上面的代码中只处理了响应头没有设置相应 CORS 头字段的情况，如果响应头设置了相应 CORS 字段，只是字段值不符合预期，那该怎么办呢？
+
+你当然可以修改上面的代码，强制覆盖原来的字段值，但这又会引发新问题：如果请求头带上 cookie 等等用于认证的信息，这个请求就叫作 "credentialed" requests ，对这类请求，响应头的 `Access-Control-Allow-Origin` 字段就不能设为 `*` ，否则浏览器会丢弃响应。详见[这里](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)。
+
+这时候可以用 AutoResponder 拦截特定请求， mock 响应 。
+
+### AutoResponder 
+
+#### 精准匹配请求及正则匹配请求
 
 当需要 mock 响应时，我们可以在 fiddler 左侧的 会话列表中，把目标请求按住、拖到右侧 详情和数据统计面板 中的 AutoResponder 标签页面中，这样会自动生成一条精准匹配的 rules 和与之对应的响应，如下图：
 ![精准匹配]({{ site.url }}/assets/exact_rules.png)*精准匹配*
@@ -106,6 +116,33 @@ x - 忽略 pattern 里的空白符以及启用注释
     ![正确的正则匹配写法]({{ site.url }}/assets/right_regex.png)*正确的正则匹配写法*
     ![文件路径正确，返回内容]({{ site.url }}/assets/right_response.png)*文件路径正确，返回内容*
 
+
+#### 伪造响应
+
+**修改响应头**
+
+当把匹配到的请求拖到右边，生成规则之后，右键规则，点击 `edit response` 的选项，会弹出对话框，你可以点击 `Headers` 标签页下的 `Raw` 链接来修改响应头（如下图）。
+
+![修改响应头，方法一]({{ site.url }}/assets/fiddler_res_header_1.png)*在 `Headers` 标签页下修改响应头*
+
+除了此之外，你还可以点击 `Raw` 标签页，同时修改响应头和响应体（如下图）
+![修改响应头，方法二]({{ site.url }}/assets/fiddler_res_header_2.png)*在 `Raw` 标签页下修改响应头和响应体*
+
+**修改响应体**
+
+在修改响应体时，如果改变了它的长度，一定要相应地修改响应头的 `Content-Length` 字段值（这是 http 协议的规定）。要注意两点：
+
+- 如果字段值比实际长度要小，多出来的响应体会被截断，无论是 fiddler 、 浏览器还是你自己的程序都不会报错。
+
+- 一个英文字母长度是 1 ，而一个中文字长度是 3 。
+
+**gzip压缩后的响应体**
+
+如果后台启用了 gzip 压缩响应体，响应头中可能会没有 `Content-Length` 字段（因为事先并不知道压缩完成后的长度，而且服务器可以选择以 chunks 的方式分批发送响应），更重要的是你没有办法直接修改 gzip 压缩的响应体。这时候你需要在 fiddler 的 `Inspectors` 标签页先解压（解压方法如下图），再把结果复制粘贴到 `AutoResponder -> Raw` 标签页：
+
+![解压 gzip]({{ site.url }}/assets/fiddler_response_gzip.png)*先解压，再复制粘贴到 `AutoResponder -> Raw` 标签页*
+
+可能是 fiddler 的 bug ，解压后得到的 `Content-Length` 不一定正确，你需要在浏览器地址栏里直接输入请求的 url ，看看响应体有没有被截断，相应地修改 `Content-Length` 的值。
 
 ### 参考
 - [Using Fiddler to emancipate HttpOnly cookies for web app debugging](http://simplyaprogrammer.com/2013/10/using-fiddler-to-emancipate-httponly.html)

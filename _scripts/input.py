@@ -120,7 +120,7 @@ class Config(object):
         
 if __name__ == '__main__':
 
-    config = Config('income.md','../_posts/2017-12-04-DRR201712.markdown',7)
+    config = Config('income.md','../_posts/2018-01-20-DRR201801.markdown',7)
 
     r = ReadFile(config.getIncomeFile())
     raw = r.getReadFile()

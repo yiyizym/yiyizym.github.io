@@ -1,5 +1,6 @@
 # coding=utf-8
 import time
+import os
 
 class ReadFile(object):
     """docstring for ReadFile"""
@@ -120,7 +121,9 @@ class Config(object):
         
 if __name__ == '__main__':
 
-    config = Config('income.md','../_posts/2018-01-20-DRR201801.markdown',7)
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    
+    config = Config(os.path.join(dir_path, 'income.md'),os.path.join(dir_path, '../_posts/2018-01-20-DRR201801.markdown'),7)
 
     r = ReadFile(config.getIncomeFile())
     raw = r.getReadFile()

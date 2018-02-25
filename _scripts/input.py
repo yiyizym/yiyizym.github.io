@@ -118,12 +118,10 @@ class Config(object):
     def getInsertPos(self):
         return self.insertPos
 
-        
 if __name__ == '__main__':
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    
-    config = Config(os.path.join(dir_path, 'income.md'),os.path.join(dir_path, '../_posts/2018-01-20-DRR201801.markdown'),7)
+    DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+    config = Config(os.path.join(DIR_PATH, 'income.md'),os.path.join(DIR_PATH, '../_posts/2018-01-20-DRR201801.markdown'),7)
 
     r = ReadFile(config.getIncomeFile())
     raw = r.getReadFile()
@@ -133,7 +131,3 @@ if __name__ == '__main__':
     w.write()
     c = CleanIncome(config.getIncomeFile())
     c.clean()
-
-
-
-

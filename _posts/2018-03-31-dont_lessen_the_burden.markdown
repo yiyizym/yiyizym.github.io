@@ -3,7 +3,9 @@ layout: post
 title: 读《请不要给我的孩子减负》有感
 date: 2018-03-31 00:29:04
 description: 我对减负的看法跟大众不一样
-categories: life, reading
+categories: 
+- life
+- reading
 ---
 
 大约在半个月前，看了篇叫[《教育部，请不要给我的孩子减负》](http://bbs.tianya.cn/post-worldlook-1827258-1.shtml)（下面简称为《减负》）的热门文章。

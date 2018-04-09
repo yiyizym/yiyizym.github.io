@@ -4,20 +4,25 @@
 /**
  * override body style
  */
+
 body {
-   font-family: "Helvetica Neue",Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
    line-height: 1.7;
  }
+
 /**
  * Code formatting
  */
+
 pre,
 code {
   background-color: #fff;
 }
+
 /**
   override
 */
+
 blockquote {
   font-style: normal;
 }
@@ -36,7 +41,6 @@ img+em {
   }
 }
 
-
 /* for categories */
 
 .categories {
@@ -44,18 +48,17 @@ img+em {
     cursor: pointer;
   }
   input[type=checkbox] {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-
-    & ~ ul {
+    width: 0px;
+    height: 0px;
+    visibility: hidden;
+    margin-right: -1ex;
+    &~ul {
       height: 0;
       opacity: 0;
       overflow: hidden;
-      transition: opacity .5s ;
+      transition: opacity .5s;
     }
-
-    &:checked ~ ul {
+    &:checked~ul {
       height: auto;
       opacity: 1;
     }

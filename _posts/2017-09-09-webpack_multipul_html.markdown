@@ -6,6 +6,10 @@ description: 一个简单的使用样例
 categories: frontend
 ---
 
+## 更新
+
+项目基于 webpack 2.X 版本，对应的源码在 master 分支；如果想使用 webpack 4.X ，请切换到 webpack4 分支。 webpack 4.X 大致思路不变，但配置 webpack 时的写法有变，同时可能要升级一些依赖。当控制台提示某个包缺少相应版本的 webpack 时，直接 `npm install 包名` 升级那个包就行。
+
 ## 序
 通常我们只会用 webpack 把多个入口文件打包成一个出口文件，然后用一个 html 引用这个出口文件，做成单页应用。
 

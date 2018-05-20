@@ -65,5 +65,6 @@ categories: frontend
 
 **参考**
 
--[Using CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations#Setting_multiple_animation_property_values) 
--[transition-timing-function](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function) 
+- [Using CSS animations](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations#Setting_multiple_animation_property_values) 
+
+- [transition-timing-function](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-timing-function) 

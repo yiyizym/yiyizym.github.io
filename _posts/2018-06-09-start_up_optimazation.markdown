@@ -46,7 +46,7 @@ categories: frontend
 
 因为整个技术栈是我选定的，稍微一想就知道这两个 JS 文件都是些什么东西，以及为什么会先后串行加载。
 
-第一个 JS 文件是 vue + vuex + vue-router + 其他插件 + main.js + app.vue 的内容，而第二个文件是首页命中的路由对应的页面文件 home.vue 。
+第一个 JS 文件是 vue + vuex + vue-router + 其他插件 + main.js + app.vue 的内容，而第二个文件是首页命中的路由对应的页面文件 home.vue 。
 
 之所以这样，是因为用了 vue-router 的 [lazy loading routes](https://router.vuejs.org/guide/advanced/lazy-loading.html#grouping-components-in-the-same-chunk)，比如在 router.js 里这样写：
 
@@ -57,8 +57,8 @@ import Foo from './Foo.vue'
 const router = new VueRouter({
   routes: [
     { path: '/foo', component: Foo }, // 在打包好的文件里直接包含这个模块的内容
-    { 
-      path: '/bar', 
+    {
+      path: '/bar',
       component: () => import('./Bar.vue') // 在命中路由后才用 Ajax 加载这个模块的内容，需要相应的 webpack/babel 支持
     }
   ]

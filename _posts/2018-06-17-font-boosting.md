@@ -48,7 +48,7 @@ clusterMultiplier = max(1, textScalingSlider × systemFontScale × clusterWidth 
 
 可以令 font boosting 失效。因为 textScalingSlider 和 systemFontScale 默认为 1 ，而 clusterWidth <= viewport width == screenWidth ，clusterMultiplier 就等于 1 。
 
-以上两种方法都难以满足实际情况时，还可以设置 text-size-adjust: none; 样式禁用特性。不过这个样式比较新，浏览器还没有全面支持，可以用上特性检测结合第一种方法使用：
+以上两种方法都难以满足实际情况时，还可以设置 `text-size-adjust: none;` 样式禁用特性。不过这个样式比较新，浏览器还没有全面支持，可以用上特性检测结合第一种方法使用：
 
 ```css
 .disableFontBoosting {

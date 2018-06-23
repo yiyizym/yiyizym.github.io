@@ -2,7 +2,7 @@
 layout: post
 title: 被放大的字体
 date: 2018-06-17 14:20:28
-description: 在手机端字体被无故放大？原来是 font boosting 惹的祸
+excerpt: 在手机端字体被无故放大？原来是 font boosting 惹的祸
 categories: frontend
 ---
 

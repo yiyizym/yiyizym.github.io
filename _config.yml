@@ -26,8 +26,11 @@ github_username:  yiyizym
 # google_analytics
 google_analytics: UA-88024669-1
 
-# service_worker
+# enable service_worker
 service_worker: true
+
+# enable twitter_card
+twitter_card: true
 
 # Build settings
 markdown: kramdown

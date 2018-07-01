@@ -9,11 +9,13 @@ categories: frontend
 前几天踩到一个坑，弹窗里的文字稍微多了一点，字体就会变大：
 
 ![文字少的表现]({{ site.url }}/assets/font_boosting_1.png)*文字少的表现*
+
 ![文字多的表现]({{ site.url }}/assets/font_boosting_3.png)*文字多的表现*
 
 可以看到第二张图中的文字只比第一段的多一个 "abcd" ，但字体明显不一样大。查看具体的 style 值，发现就算是应用了同样的 `0.6222rem` ，算出来的值都不一样：
 
 ![文字少的 fontSize]({{ site.url }}/assets/font_boosting_2.png)*文字少的 fontSize*
+
 ![文字多的 fontSize]({{ site.url }}/assets/font_boosting_4.png)*文字多的 fontSize*
 
 这么诡异的问题，应该不止我一个遇到！很快我就从网上搜到事情的真相。如果你英文较好，有耐心，又有梯子的话，可以直接看原文:[Chromium’s Text Autosizer](https://docs.google.com/document/d/1PPcEwAhXJJ1TQShor29KWB17KJJq7UJOM34oHwYP3Zg/edit#)

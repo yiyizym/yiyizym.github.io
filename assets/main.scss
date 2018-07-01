@@ -1,44 +1,99 @@
 ---
----
+# Only the main Sass file needs front matter (the dashes are enough) 
+--- 
 @import "minima";
-/**
- * override body style
- */
-
 body {
-    font-family: "Helvetica Neue", Helvetica, Tahoma, Arial, STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
-   line-height: 1.7;
- }
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", STXihei, "华文细黑", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.625;
+  font-size: 1.125rem;
+}
 
-/**
- * Code formatting
- */
+@media (min-width: 760px) {
+  body {
+    font-size: 1.375rem;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+ul,
+ol,
+dl,
+figure,
+.highlight {
+  margin-bottom: 2rem;
+}
 
 pre,
 code {
-  background-color: #fff;
+  font-family: Menlo, Monaco, Consolas, "Andale Mono", "Courier New", monospace;
 }
 
-/**
-  override
-*/
+code {
+  background-color: #f5f2f0;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 3px 4px;
+  font-size: 75%;
+}
+
+pre code {
+  font-size: 1rem;
+  background: 0 0;
+  border: 0;
+  padding: 0;
+}
 
 blockquote {
   font-style: normal;
 }
 
-img+em {
-    display: block;
+img {
+  display: block;
+  margin: 0 auto;
 }
 
-/**
- * Syntax highlighting styles
- */
+img+em {
+  display: block;
+  text-align: center;
+  font-size: 1rem;
+}
 
 .highlight {
   .highlighter-rouge & {
     background: #fff;
   }
+}
+
+/**
+ * Links
+ */
+
+a {
+  color: #111;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #2a7ae2;
+  text-decoration: none;
+}
+
+a.post-link {
+  color: #4e93ee;
+  text-decoration: none;
+}
+
+a.post-link:hover {
+  color: #2a7ae2;
+  text-decoration: none;
 }
 
 /* for categories */

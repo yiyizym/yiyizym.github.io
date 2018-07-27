@@ -42,7 +42,7 @@ tags:
         end
         break nil if arr[child_index] <= arr[index]
         exchange(arr, index, child_index)
-        index = child_index * 2
+        index = child_index
       end
     end
 

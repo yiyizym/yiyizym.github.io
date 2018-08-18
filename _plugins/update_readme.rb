@@ -8,7 +8,7 @@ Jekyll::Hooks.register :site, :post_render do |site, payload|
     exit 1
   end
 
-  posts_list = site.posts.docs.map { |post| "- [#{post.data['title']}](#{site.config['url']}#{post.url}) \n" }
+  posts_list = site.posts.docs.map { |post| "- [#{post.data['title']}](https://judes.me#{post.url}) \n" }
 
   posts_list = posts_list.reverse.join('')
 

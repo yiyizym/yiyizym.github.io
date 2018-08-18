@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [React Native 踩坑记](https://judes.me/tech/2018/08/18/cautions-about-react-native.html) 
 - [vue 源码阅读一点经验](https://judes.me/tech/2018/07/20/vue-source-code-reading.html) 
 - [被放大的字体](https://judes.me/frontend/2018/06/17/font-boosting.html) 
 - [一次页面启动优化实践](https://judes.me/frontend/2018/06/09/start_up_optimazation.html) 

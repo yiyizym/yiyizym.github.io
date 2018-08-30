@@ -74,6 +74,10 @@ RN 需要调用 `AppRegistry.registerComponent` 注册作为应用根组件的 `
 
 RN 官方不支持 svg ，而第三方对 svg 的支持又很有限。暂时能找到比较好的实现在[这里](https://www.jianshu.com/p/7db2bc62c5ed)。原理大致上是通过 react-native-svg-uri 组件的 svgXmlData 属性加载以 xml 形式保存下来的 svg 文件。
 
+- 抓包调试
+
+要抓包调试，得先设置代理。如果使用官方的模拟器，可以点击工具条上最边缘的那个按钮(more)，打开 extended controls，然后依次点击： Settings -> Proxy -> Manual proxy configuration ，填入代理地址，最后点击 Apply 。
+
 **一些坑**
 
 - 修改后的代码不生效
@@ -86,7 +90,7 @@ RN 官方不支持 svg ，而第三方对 svg 的支持又很有限。暂时能�
 
 - Modal
 
-Modal 是官方弹窗组件。在使用模拟器开发时要注意，不要在 Modal 弹出时按两下 `r` 刷新应用，一定要先关闭 Modal 再刷新应用，否则 Modal 刷新后也不会消失。
+Modal 是官方弹窗组件。在使用模拟器开发时要注意，不要在 Modal 弹出时按两下 `r` 刷新应用，一定要先关闭 Modal 再刷新应用，否则 Modal 刷新后也不会消失。如果你已经这么做了，一个解决办法是点击模拟器的“多任务按钮”，把应用杀掉再重启。
 
 - AsyncStorage.getItem
 
@@ -105,5 +109,11 @@ let info = AsyncStorage.getItem('key')
 // 别手欠删掉这行注释，否则后果自负！https://github.com/facebook/react-native/issues/18372
 console.log('info: ', info)
 ```
+
+- display: 'none' 与 position: 'absolute' 同时使用
+
+这样做会导致前者失效。目前（react-native@0.56）[这个问题](https://github.com/facebook/react-native/issues/18415)仍然存在，坊间的解决办法是拆分两个属性，前者应用在父元素上，后者用在子元素上。
+
+
 
 **TO Be Continued / つづく / 未完待续**

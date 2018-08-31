@@ -1,4 +1,4 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js');
+importScripts('/workbox-sw-3.4.1.js');
 
 // https://developers.google.com/web/tools/workbox/guides/common-recipes
 

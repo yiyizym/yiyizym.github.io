@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [一个在线 lrc 歌词生成/编辑器](https://judes.me/tech/2018/09/13/lrc-editor.html) 
 - [React Native 踩坑记](https://judes.me/tech/2018/08/18/cautions-about-react-native.html) 
 - [vue 源码阅读一点经验](https://judes.me/tech/2018/07/20/vue-source-code-reading.html) 
 - [被放大的字体](https://judes.me/frontend/2018/06/17/font-boosting.html) 

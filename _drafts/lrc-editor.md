@@ -18,10 +18,12 @@ categories: tech
 
 这个[歌词编辑器](https://judes.me/lrc_editor/)，在 UI 上借鉴了上面介绍到的那个，因为对配色没自信，所以更加简单。
 
-- 最初页面
-- 加载歌曲后页面
-- 加载歌词后页面
-- 播放时的页面
+下面是页面截图：
+
+- ![最初页面]({{ site.url }}/assets/lrc_editor_1.png)*最初页面*
+- ![加载歌曲后页面]({{ site.url }}/assets/lrc_editor_2.png)*加载歌曲后页面*
+- ![加载歌词后页面]({{ site.url }}/assets/lrc_editor_3.png)*加载歌词后页面*
+- ![播放时的页面]({{ site.url }}/assets/lrc_editor_4.png)*播放时的页面*
 
 支持以下功能：
 
@@ -39,9 +41,9 @@ categories: tech
 
 以下是技术相关的话题。
 
-难点不在 React 或者 mobx，而是在 babel 语法插件上：
+框架方面，难点不在 React 或者 mobx，而是在 babel 语法插件上。因为用上了 7.0 的版本 babel，很多插件改了名字，而且有些特性开关变成了默认关闭：
 
-- 用上了 babel@7.0 ，一堆插件改名了，插件配置也变了
+- 
 
 播放声音，加载文件
 
@@ -49,4 +51,4 @@ material-ui/便利性/className
 
 实时更新进度条/更新当前播放对应歌词 component life circle/requestAnimationFrame
 
-[github 地址](https://github.com/yiyizym/lrc_editor)
+这个小工具已经开源，github 地址[在这里](https://github.com/yiyizym/lrc_editor)

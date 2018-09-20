@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 自学一堂谈判课
 date: 2017-04-17 08:37:30
 description: 这次，我终于读完了《沃顿商学院 最受欢迎的谈判课》

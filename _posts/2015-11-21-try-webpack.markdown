@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: webpack 踩坑记
 description: 因为奇葩的需求，踩了 webpack 里面的一些坑
 categories: frontend

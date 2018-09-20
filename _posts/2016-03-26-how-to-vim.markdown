@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: vim 使用指南
 description: vim 折腾之旅
 categories: tech

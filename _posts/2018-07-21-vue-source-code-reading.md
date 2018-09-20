@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: vue 源码阅读一点经验
 date: 2018-07-20 14:20:28
 excerpt: 一点前端源码阅读经验

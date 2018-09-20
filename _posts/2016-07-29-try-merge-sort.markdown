@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 写写归并排序
 date: 2016-07-29 07:38:54
 description: 为什么知道原理还是写不出正确的程序呢？(系列)

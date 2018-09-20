@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 大鱼
 description: "重看电影《大鱼》，严重剧透，请观影后阅读"
 date: 2014-07-18 16:47:38

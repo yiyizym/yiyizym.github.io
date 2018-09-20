@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: "每日阅读小摘"
 description: "2015-1"
 date: 2015-01-01 16:47:38

@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 读《请不要给我的孩子减负》有感
 date: 2018-03-31 00:29:04
 description: 我对减负的看法跟大众不一样

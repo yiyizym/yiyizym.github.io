@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: "林书豪：被忽视的屌丝、最耀眼的金子"
 description: "一个真实的奋斗在NBA的哈佛高才生的屌丝故事"
 date: 2013-11-17 16:47:38

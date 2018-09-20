@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: "年终总结"
 description: "用两个字总结这一年，失败；用四个字的话，我希望是：还没完败"
 date: 2013-12-14 16:47:38

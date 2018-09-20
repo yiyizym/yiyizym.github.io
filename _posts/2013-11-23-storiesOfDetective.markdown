@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: "多彩的侦探故事"
 description: "最近因为看了不少侦探故事引发的感想"
 date: 2013-11-23 16:47:38

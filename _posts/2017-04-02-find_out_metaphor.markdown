@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 找出《围城》的比喻句
 date: 2017-04-02 07:01:23
 description: 最近读了本书，做了件无聊事。

@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 有限的笑话
 date: 2016-05-08 20:27:06
 categories: joke

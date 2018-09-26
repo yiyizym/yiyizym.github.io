@@ -102,7 +102,7 @@ error: resource android:style/TextAppearance.Material.Widget.Button.Borderless.C
 - 修改 `node_modules/组件名/android/build.gradle`。（十分直接暴力，不推荐）
 - 修改项目的 `build.gradle`。
 
-后者往 `build.gradle` 中加入如下代码：
+后者往 `build.gradle` 中加入如下代码，[出处](https://github.com/joeferraro/react-native-cookies/issues/100#issuecomment-415262846)：
 
 ```
 subprojects {

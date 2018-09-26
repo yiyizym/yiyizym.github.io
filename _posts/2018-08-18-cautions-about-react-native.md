@@ -78,6 +78,47 @@ RN 官方不支持 svg ，而第三方对 svg 的支持又很有限。暂时能�
 
 要抓包调试，得先设置代理。如果使用官方的模拟器，可以点击工具条上最边缘的那个按钮(more)，打开 extended controls，然后依次点击： Settings -> Proxy -> Manual proxy configuration ，填入代理地址，最后点击 Apply 。
 
+- 编译 APK 报错
+
+使用命令 `cd android && ./gradlew assembleRelease` 编译 apk 时，会遇到多种报错的情况，这些错都有相应的打印信息。
+
+其中一种错误是，执行某个第三方组件的编译任务时，报 `Failed to execute aapt` 错，具体一点是找不到某个资源，比如
+
+```
+error: resource android:style/TextAppearance.Material.Widget.Button.Borderless.Colored not found
+```
+
+原因是 RN 本身升级比较频繁，它设置的 `compileSdkVersion` 版本升级也比较频繁，在引入第三方组件，而且这个组件需要更改 gradle 配置来实现编译原生代码时，组件所设置的 `compileSdkVersion` 往往比 RN 项目里的早，这样可能导致项目用到一些组件中没有的 API 。
+
+上面的例子中， `android:style/TextAppearance.Material.Widget.Button.Borderless.Colored` 是 API 24 才添加的（意味着项目设置的 `compileSdkVersion` 大于等于 24），只要组件的 `compileSdkVersion` 比 24 小就有可能出现问题。
+
+解决的办法有两个：
+
+- 降低项目的 `compileSdkVersion` 。通常我们不想降低项目的 `compileSdkVersion` ，因为这样就用不到最新的 API 了。
+- 升级组件的 `compileSdkVersion/buildToolsVersion/supportLibVersion`。
+
+实现后者也有两种办法：
+
+- 修改 `node_modules/组件名/android/build.gradle`。（十分直接暴力，不推荐）
+- 修改项目的 `build.gradle`。
+
+后者往 `build.gradle` 中加入如下代码：
+
+```
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 26 // 与 buildscript 中的保持一致
+                buildToolsVersion '26.0.3' // 与 buildscript 中的保持一致
+            }
+        }
+    }
+}
+```
+
+上面代码做的事情：在解释完所有的 `build.grandle` 之后，执行 task 之前，修改所有带有 `android` 属性的子 `project` ，设置它们的 `android` 属性中的 `compileSdkVersion/buildToolsVersion` 为指定值。（第三方组件如果需要在 `npm install` 后，运行 `react-native link xxx`，link 做的事情就是修改 `settings.gradle/build.gradle` 文件，把自己当成子 `project` 引入、编译）
+
 **一些坑**
 
 - 修改后的代码不生效

@@ -94,12 +94,12 @@ error: resource android:style/TextAppearance.Material.Widget.Button.Borderless.C
 
 解决的办法有两个：
 
-- 降低项目的 `compileSdkVersion` 。通常我们不想降低项目的 `compileSdkVersion` ，因为这样就用不到最新的 API 了。
+- 降低项目的 `compileSdkVersion` 。但这样就用不到最新的 API 了。
 - 升级组件的 `compileSdkVersion/buildToolsVersion/supportLibVersion`。
 
 实现后者也有两种办法：
 
-- 修改 `node_modules/组件名/android/build.gradle`。（十分直接暴力，不推荐）
+- 修改 `node_modules/组件名/android/build.gradle`。（直接暴力，但不推荐）
 - 修改项目的 `build.gradle`。
 
 后者往 `build.gradle` 中加入如下代码，[出处](https://github.com/joeferraro/react-native-cookies/issues/100#issuecomment-415262846)：
@@ -109,8 +109,8 @@ subprojects {
     afterEvaluate {project ->
         if (project.hasProperty("android")) {
             android {
-                compileSdkVersion 26 // 与 buildscript 中的保持一致
-                buildToolsVersion '26.0.3' // 与 buildscript 中的保持一致
+                compileSdkVersion 27 // 与 buildscript 中的保持一致
+                buildToolsVersion '27.0.3' // 与 buildscript 中的保持一致
             }
         }
     }
@@ -143,7 +143,7 @@ console.log('info: ', info) // 这行代码不会执行
 console.log('funny!') // 而这行代码会执行
 ```
 
-这个[问题](https://github.com/facebook/react-native/issues/18372)目前无解。或许可以这样做：
+0.57 已解决这个[问题](https://github.com/facebook/react-native/issues/18372)。如果不能升级，或许可以这样做：
 
 ```javascript
 let info = AsyncStorage.getItem('key')
@@ -153,8 +153,19 @@ console.log('info: ', info)
 
 - display: 'none' 与 position: 'absolute' 同时使用
 
-这样做会导致前者失效。目前（react-native@0.56）[这个问题](https://github.com/facebook/react-native/issues/18415)仍然存在，坊间的解决办法是拆分两个属性，前者应用在父元素上，后者用在子元素上。
+这样做会导致前者失效。[这个问题](https://github.com/facebook/react-native/issues/18415)在 0.57 上仍然存在，坊间的解决办法是拆分两个属性，前者应用在父元素上，后者用在子元素上。
 
+- 运行打包出来的 app-release.apk 闪退
+
+这个问题出现在 0.56 和 0.57 两个版本上。
+
+闪退通常是因为抛出来的异常没有被捕获，异常的来源又分为 javascript 和 原生系统 。为了让 app 表现得友好一点，可以安装一个异常捕获的组件，如 [react-native-exception-handler](https://github.com/master-atul/react-native-exception-handler)。
+
+有时候异常捕获组件不一定起作用，比如这个闪退问题。这时需要调试、看日志：找一根 usb 连接设备，在项目根目录运行 `react-native log-android` (如果是 iOS，则运行 `react-native log-android`)，然后运行 apk 。详细文档[在此](https://facebook.github.io/react-native/docs/debugging#accessing-console-logs)。
+
+闪退的原因是这两个版本的 RN 打包出来的 apk 不包含 `@babel/proposal-decorators` 需要用到的两个方法： `initializerDefineProperty` 和 `applyDecoratedDescriptor`。解决思路是手动注入这两个方法。
+
+具体办法见[这里](https://github.com/facebook/react-native/issues/20150)提到的 `Workaround 2` 。
 
 
 **TO Be Continued / つづく / 未完待续**

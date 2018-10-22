@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 说好一起变圆，你怎么就瘦了？
 date: 2018-01-07 02:47:23
 description: 浏览器画圆圈问题

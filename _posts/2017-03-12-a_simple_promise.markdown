@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 一个简单的 Promise 实现
 date: 2017-03-12 02:50:26
 description: 这篇文章只是抄人家的原创，原本没必要写的，只是自己花了一天才看懂人家那篇文章，我觉得拿来“改善”一下形式

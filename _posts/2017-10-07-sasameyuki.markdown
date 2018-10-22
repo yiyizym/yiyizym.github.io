@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 读《细雪》
 date: 2017-10-07 01:04:04
 description: 就像日本的《红楼梦》？

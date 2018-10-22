@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: I've made it
 description: "借助 jekyll 终于折腾出第一篇文章了。"
 date: 2013-11-10 16:47:38

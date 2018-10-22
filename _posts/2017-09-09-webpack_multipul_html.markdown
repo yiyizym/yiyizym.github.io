@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 用 webpack 打包多个 html 
 date: 2017-09-09 03:20:09
 description: 一个简单的使用样例

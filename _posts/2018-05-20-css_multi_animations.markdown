@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: CSS animation 多动画
 date: 2018-05-20 04:36:27
 description: 这是篇水文

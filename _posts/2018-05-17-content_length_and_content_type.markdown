@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 一个由 Content-Length 与 Content-Type 引发的问题
 date: 2018-05-17 01:14:37
 description: 很早之前我就发觉在用 fiddler 伪造请求时，不好好设置 Content-Length 是不行的。但当响应 body 里面有中文时，这就成了一道考察细心的小学数学题。

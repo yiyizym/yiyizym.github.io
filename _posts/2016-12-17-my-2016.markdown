@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 逝去的 2016
 date: 2016-12-17 21:12:06
 description: 回望今年，不是总结

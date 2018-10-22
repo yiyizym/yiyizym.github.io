@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 《人类简史》感想
 date: 2017-02-25 02:23:56
 description: 虚构故事，一股越来越强大的力量

@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post_with_octocat
 title: 阅读小摘 201801
 date: 2018-01-20 03:18:31
 description: DailyReadingRecord

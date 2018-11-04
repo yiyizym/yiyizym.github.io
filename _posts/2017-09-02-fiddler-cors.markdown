@@ -51,7 +51,14 @@ if(m_ForceCORS &&
 )
 {                                
     if(!oSession.oResponse.headers.Exists("Access-Control-Allow-Origin"))
-        oSession.oResponse.headers.Add("Access-Control-Allow-Origin", "*");
+    {
+      var requestOrigin: String = "*";
+      if(oSession.oRequest.headers['Origin'] != "")
+      {
+        requestOrigin = oSession.oRequest.headers['Origin'];
+      }
+      oSession.oResponse.headers.Add("Access-Control-Allow-Origin", requestOrigin);
+    }
     
     if(!oSession.oResponse.headers.Exists("Access-Control-Allow-Methods"))
         oSession.oResponse.headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");

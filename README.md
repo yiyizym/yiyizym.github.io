@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [从“贷款创造存款”说开](https://judes.me/life/reading/2018/11/11/loan_create_deposit.html) 
 - [读《群居的艺术》](https://judes.me/reading/2018/09/16/%E8%AF%BB%E7%BE%A4%E5%B1%85%E7%9A%84%E8%89%BA%E6%9C%AF.html) 
 - [一个在线 lrc 歌词生成/编辑器](https://judes.me/tech/2018/09/13/lrc-editor.html) 
 - [React Native 踩坑记](https://judes.me/tech/2018/08/18/cautions-about-react-native.html) 

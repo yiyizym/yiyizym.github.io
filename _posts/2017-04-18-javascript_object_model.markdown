@@ -5,6 +5,14 @@ date: 2017-04-18 01:18:27
 description: 看过不少 javascript 对象、继承、原型链等知识点，但一直没能把点连成线，今天就来好好总结下。
 categories: frontend
 ---
+
+**更新 2018-12-22**
+
+下文提及的 [`__proto__`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/proto) 原是厂家的自定义属性，后来被大多数厂家支持。但已被标记为 Deprecated ，不再推荐使用。
+
+如果需要获取对象的原型，可使用 `Object.getPrototypeOf(obj)` 代替 `obj.__proto__` 。
+
+
 **本文假设读者已对 javascript 继承和原型链有所了解，如果没有，可以先到[这里](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)补补课**
 
 最近在整理 javascript 知识点时，逐渐发觉 javascript 所有的对象都在一套基于原型链体系之中，这套体系描述了对象实例与类、子类与父类的关系。
@@ -117,6 +125,9 @@ var o = new Object();
 
 // 2. 让空白对象的原型指向 Animal.prototype
 o.__proto__ = Animal.prototype
+
+// 以上两步可以使用 Object.create 方法代替，也推荐这样做：
+// var o = Objext.create(Animal.prototype)
 
 // 3. 设置空白对象的 `constructor` 属性
 o.constructor = Cat

@@ -104,15 +104,22 @@ printProtoOf(a)
 
 **更好的继承**
 
-借助这些细节可以实现更好的继承，比如：
+借助这些细节可以实现更好的继承：
 
 ```
+// 假设父类是 Animal，要让子类 Cat 继承 Animal
+
+// 先思考继承目标，有两个：属性、方法。前者要复用父类的构造方法，后者要修改子类的原型链。
+
+// 首先复用父类的构造方法，在 Cat 构造函数中调用 Animal 构造函数
+
 function Animal(){}
 
-function Cat(){}
+function Cat(){
+  Animal.call(this)
+}
 
-// 目标是让 Cat 继承 Animal ，思路是修改原型链
-
+// 接下来修改原型链
 // 假设 oneCat 是 Cat 的实例对象
 // 那么 oneCat 的原型链应该是这样的：
 // oneCat.__proto__ === Cat.prototype

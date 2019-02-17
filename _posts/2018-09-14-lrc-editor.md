@@ -22,10 +22,10 @@ categories: tech
 
 页面截图如下：
 
-![最初页面]({{ site.url }}/assets/lrc_editor_1.png)*最初页面*
-![加载歌曲后页面]({{ site.url }}/assets/lrc_editor_2.png)*加载歌曲后页面*
-![加载歌词后页面]({{ site.url }}/assets/lrc_editor_3.png)*加载歌词后页面*
-![播放时的页面]({{ site.url }}/assets/lrc_editor_4.png)*播放时的页面*
+![最初页面]({{ site.url }}/assets/lrc_editor_1.jpg)*最初页面*
+![加载歌曲后页面]({{ site.url }}/assets/lrc_editor_2.jpg)*加载歌曲后页面*
+![加载歌词后页面]({{ site.url }}/assets/lrc_editor_3.jpg)*加载歌词后页面*
+![播放时的页面]({{ site.url }}/assets/lrc_editor_4.jpg)*播放时的页面*
 
 它支持以下功能：
 
@@ -36,6 +36,7 @@ categories: tech
 - 导出以歌曲名为文件名的 lrc 文件
 - 打时间标签
 - 出错回退（回退歌曲时间，同时撤销在这段时间内所打的标签）
+- 在歌词面板直接编辑歌词
 - 高亮当前歌词
 - 点击歌词定位歌曲时间
 
@@ -90,5 +91,8 @@ UI 用的是 [material-ui](https://material-ui.com/)，除了官网要梯子访�
 
 随着歌曲播放，页面要实时更新进度条，以及高亮当前正在播放的歌词。以进度条更新为例，目前的实现方式是把进度条封装成一个 react 组件。在组件的生命周期钩子函数内用 `requestAnimationFrame` 不断更新自身的状态，在此之前，判断歌曲是否在播放状态减少更新操作。
 
+**react hooks**
+
+在简单的组件里面，使用了 react hooks 。
 
 这个小工具已经开源，github 地址[在这里](https://github.com/yiyizym/lrc_editor)。

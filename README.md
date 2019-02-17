@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [到日本，顺便看一场棒球赛吧](https://judes.me/life/2019/02/17/buy_fukuoka_hawks_tickets.html) 
 - [九州之旅](https://judes.me/life/2019/01/07/kyuushuu-no-tabi.html) 
 - [javascript 内存泄漏与 Chrome dev tools](https://judes.me/frontend/2018/11/18/memory_leaks_dev_tools.html) 
 - [从“贷款创造存款”说开](https://judes.me/life/reading/2018/11/11/loan_create_deposit.html) 

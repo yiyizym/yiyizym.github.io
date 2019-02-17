@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [小程序：上行坂日语](https://judes.me/tech/2019/02/17/noborizaka-nihongo.html) 
 - [到日本，顺便看一场棒球赛吧](https://judes.me/life/2019/02/17/buy_fukuoka_hawks_tickets.html) 
 - [九州之旅](https://judes.me/life/2019/01/07/kyuushuu-no-tabi.html) 
 - [javascript 内存泄漏与 Chrome dev tools](https://judes.me/frontend/2018/11/18/memory_leaks_dev_tools.html) 

@@ -4,6 +4,8 @@
 
 **文章列表**
 
+- [从头搭建一个使用 react+redux+react-router 实现简单功能的页面有多难](https://judes.me/tech/frontend/2019/03/02/react-from-scratch.html) 
+- [读「邓小平时代」](https://judes.me/reading/2019/02/24/deng-xiao-ping-shi-dai.html) 
 - [小程序：上行坂日语](https://judes.me/tech/2019/02/17/noborizaka-nihongo.html) 
 - [到日本，顺便看一场棒球赛吧](https://judes.me/life/2019/02/17/buy_fukuoka_hawks_tickets.html) 
 - [九州之旅](https://judes.me/life/2019/01/07/kyuushuu-no-tabi.html) 

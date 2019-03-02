@@ -1,4 +1,4 @@
-source "https://gems.ruby-china.org"
+source "https://gems.ruby-china.com"
 ruby RUBY_VERSION
 
 # Hello! This is where you manage which Jekyll version is used to run.
@@ -9,7 +9,7 @@ ruby RUBY_VERSION
 #
 # This will help ensure the proper Jekyll version is running.
 # Happy Jekylling!
-gem "jekyll", "3.7.3"
+gem "jekyll", "3.7.4"
 
 # This is the default theme for new Jekyll sites. You may change this to anything you like.
 # gem 'minima', :git => 'git@github.com:yiyizym/custom_minima.git', :branch => 'master'

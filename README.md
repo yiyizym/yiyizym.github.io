@@ -4,11 +4,13 @@
 
 **文章列表**
 
+- [权限组件的 React 实现](https://judes.me/tech/frontend/2019/04/14/authorize-with-promise.html) 
 - [四月物语](https://judes.me/life/2019/04/09/april-story.html) 
 - [从头搭建一个使用 react+redux+react-router 实现简单功能的页面有多难](https://judes.me/tech/frontend/2019/03/02/react-from-scratch.html) 
 - [读「邓小平时代」](https://judes.me/reading/2019/02/24/deng-xiao-ping-shi-dai.html) 
 - [小程序：上行坂日语](https://judes.me/tech/2019/02/17/noborizaka-nihongo.html) 
 - [到日本，顺便看一场棒球赛吧](https://judes.me/life/2019/02/17/buy_fukuoka_hawks_tickets.html) 
+- [anu 源码阅读 01](https://judes.me/tech/2019/01/09/anu-sources-reading-1.html) 
 - [九州之旅](https://judes.me/life/2019/01/07/kyuushuu-no-tabi.html) 
 - [javascript 内存泄漏与 Chrome dev tools](https://judes.me/frontend/2018/11/18/memory_leaks_dev_tools.html) 
 - [从“贷款创造存款”说开](https://judes.me/life/reading/2018/11/11/loan_create_deposit.html) 

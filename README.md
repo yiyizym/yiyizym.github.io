@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [一个关于 Git branch 的分享](https://judes.me/tech/2019/05/02/about-git-branch.html) 
 - [权限组件的 React 实现](https://judes.me/tech/frontend/2019/04/14/authorize-with-promise.html) 
 - [四月物语](https://judes.me/life/2019/04/09/april-story.html) 
 - [从头搭建一个使用 react+redux+react-router 实现简单功能的页面有多难](https://judes.me/tech/frontend/2019/03/02/react-from-scratch.html) 

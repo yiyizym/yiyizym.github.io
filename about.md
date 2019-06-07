@@ -12,6 +12,6 @@ permalink: /about/
 
 ### 作者
 
-- [个人简历](https://judes.me/resume/)
+- 一只写代码的猫
 
 - 欢迎关注我的 Twitter ：[yiyizym](https://twitter.com/yiyizym)

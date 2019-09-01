@@ -12,6 +12,6 @@ permalink: /about/
 
 ### 作者
 
-- 一只写代码的猫
+- 一个普通的宅
 
-- 欢迎关注我的 Twitter ：[yiyizym](https://twitter.com/yiyizym)
+- 欢迎关注我的 Twitter ：[chong__yun](https://twitter.com/chong__yun)

@@ -4,7 +4,7 @@ title: 怎样抑制在父组件调用子组件方法的冲动？
 date: 2019-06-02 10:20:28
 excerpt: 或许你在用 React 时也会遇到同样的问题
 categories: 
-- fronted
+- frontend
 ---
 
 最近都在写 React ，官网有很多应对各种情境的最佳实践指引。

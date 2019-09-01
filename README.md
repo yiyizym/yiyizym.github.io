@@ -4,10 +4,10 @@
 
 **文章列表**
 
-- [一个定制 vue 输入框组件的思路](https://judes.me/fronted/2019/08/31/vue-custom-input.html) 
+- [一个定制 vue 输入框组件的思路](https://judes.me/frontend/2019/08/31/vue-custom-input.html) 
 - [台北见闻](https://judes.me/life/2019/08/10/taiwan-trip.html) 
 - [读「政治分肥」](https://judes.me/reading/2019/06/15/pork-barrel.html) 
-- [怎样抑制在父组件调用子组件方法的冲动？](https://judes.me/fronted/2019/06/02/call-child-method.html) 
+- [怎样抑制在父组件调用子组件方法的冲动？](https://judes.me/frontend/2019/06/02/call-child-method.html) 
 - [推荐「雪球速读法」](https://judes.me/reading/2019/05/12/snow-ball-reading.html) 
 - [一个关于 Git branch 的分享](https://judes.me/tech/2019/05/02/about-git-branch.html) 
 - [权限组件的 React 实现](https://judes.me/tech/frontend/2019/04/14/authorize-with-promise.html) 

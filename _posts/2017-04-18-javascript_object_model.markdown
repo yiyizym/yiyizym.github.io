@@ -134,7 +134,7 @@ var o = new Object();
 o.__proto__ = Animal.prototype
 
 // 以上两步可以使用 Object.create 方法代替，也推荐这样做：
-// var o = Objext.create(Animal.prototype)
+// var o = Object.create(Animal.prototype)
 
 // 3. 设置空白对象的 `constructor` 属性
 o.constructor = Cat

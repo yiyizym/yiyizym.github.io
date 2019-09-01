@@ -64,7 +64,7 @@ template 的内容：
 <input v-model="data" />
 ```
 
-这种写法与下面的写法是造价的：
+这种写法与下面的写法是等价的：
 
 ```html
 <input v-bind:value="data" v-on:input="data = $event.target.value" />

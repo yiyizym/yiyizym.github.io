@@ -9,7 +9,7 @@ categories:
 
 不少用过 ant design table 的朋友，可能都会遇到过当一页加载的数量超过 150 条时，table 组件渲染慢且后续操作（如点击勾选框）反应慢的情况。
 
-ant design table 组件功能强大，可定制的地方也多，通常这意义着它复杂度高，而性能往往跟功能此消彼长。
+ant design table 组件功能强大，而性能往往跟功能此消彼长；功能强大通常意义着复杂度高，相当难以改动。
 
 社区早就有人提出优先长列表渲染性能的 [issue](https://github.com/ant-design/ant-design/issues/3789) ，针对 table 的性能优化，官方也计划于今年第四季度推出的 ant design 4.0 版本支持 [虚拟滚动](https://github.com/ant-design/ant-design/issues/16911)。但是我有点担心进度能不能赶上，毕竟还有两个星期就到第四季度了，实现虚拟滚动的 table 预览版都还没有出来。
 

@@ -40,7 +40,7 @@ Table 组件功能强大，而性能往往跟功能此消彼长，功能强大�
 
 我希望能一次性加载所有数据，然后用虚拟滚动显示数据。找了好久，没有找到现成的轮子，工作所迫，得亲自动手造。下面是我的一些思路和实践。
 
-首先我希望能尽量依靠现有的接口实现虚拟滚动。因为我已经应用上不少它的功能，已经找不到别的能实现相同功能的组件。最好能在 Table 的外面做一层封装，把虚拟滚动相关的代码都写在外面，让 Table 不知道自己处在虚拟滚动的现实里，但从其他轮子已有的问题看出，天下间没这么便宜的事。依靠现有接口一定程度的侵入内部实现是必要的。
+首先我希望能尽量依靠现有的接口实现虚拟滚动。因为我已经应用上不少它的功能，找不到别的能实现相同功能的组件。最好能在 Table 的外面做一层封装，把虚拟滚动相关的代码都写在外面，让 Table 不知道自己处在虚拟滚动的现实里，但从其他轮子已有的问题看出，天下间没这么便宜的事。依靠现有接口一定程度的侵入内部实现是必要的。
 
 Table 接受一个属性 components ，它允许我们传入自定义的 table / tr / td 。在一番尝试之后，发现可以使用自定义 table 来实现上面提到的第二种虚拟滚动。
 
@@ -60,7 +60,7 @@ Table 接受一个属性 components ，它允许我们传入自定义的 table /
 - 对 Table 里出现的组件，尽量改用 React.memo 或者 React.PureComponent 减少不必要的 render ；
 - 用 debounce 和 requestAnimationFrame 以及记录上次计算结果等等方法，减少滚动监听事件回调的执行次数
 
-第二个方向的优化，因为 Table 有好几处内部代码会触发 reflow (具体见源码注释)，所以优化到最后会发现自己无能为力。
+第二个方向的优化，因为 Table 有好几处内部代码会触发 reflow (具体见[源码](https://github.com/yiyizym/infinite_table)注释)，所以优化到最后会发现自己无能为力。
 
 值得一提的是，如果你在 Table 内部使用了 ant design 的 Button 组件，你会发现这个 Button 组件（可能）会触发 reflow 。它内部使用了一个 `fixTwoCNChar` 方法（往两个汉字中间加一个空格），这个方法内部有这样一行代码：
 
@@ -73,6 +73,8 @@ var buttonText = this.buttonNode.textContent || this.buttonNode.innerText;
 `||` 是短路操作符，如果从 `textContent` 取到 truthy 的值，不会再去取 `innerText`。
 
 问题是，如果连 `textContent` 都取不到内容， `innerText` 就更不会有内容了，我猜这样写的原因是解决兼容性问题，缺点是当 `textContent` 取到 falsy 的值，就会触发 reflow 。
+
+官网有[文档](https://ant.design/components/button-cn/#如何移除两个汉字之间的空格？)说明如何去掉 `fixTwoCNChar` ，你也可以用一个空函数直接 override Button 组件的这个方法。
 
 怪异的问题也解决了一些，比如有 fixed 列时，列/行错位；滚动监听事件的回调绑定了两次等等。这些问题都要深入 Table 的内部实现才能知道原因，解决办法也很取巧以及不可靠，就不多说了。对实现感兴趣的推荐先看[这里](https://juejin.im/post/5d593f1ef265da03ae7873b5)，再看源码。
 

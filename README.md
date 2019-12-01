@@ -4,6 +4,9 @@
 
 **文章列表**
 
+- [实现内凹圆角+阴影效果](https://judes.me/frontend/2019/12/01/concave-fillet-with-shadow.html) 
+- [译文：react fiber 如何以及为什么使用链表遍历组件](https://judes.me/tech/2019/11/13/react-fiber-internal-1-reconciler.html) 
+- [读「经济学的思维方式」](https://judes.me/reading/2019/11/02/basic-economics.html) 
 - [读「走出帝制」](https://judes.me/reading/2019/10/03/zou-chu-di-zhi.html) 
 - [基于 ant design table 实现的虚拟滚动列表](https://judes.me/frontend/2019/09/17/infinite-table.html) 
 - [一个定制 vue 输入框组件的思路](https://judes.me/frontend/2019/08/31/vue-custom-input.html) 
@@ -18,6 +21,7 @@
 - [读「邓小平时代」](https://judes.me/reading/2019/02/24/deng-xiao-ping-shi-dai.html) 
 - [小程序：上行坂日语](https://judes.me/tech/2019/02/17/noborizaka-nihongo.html) 
 - [到日本，顺便看一场棒球赛吧](https://judes.me/life/2019/02/17/buy_fukuoka_hawks_tickets.html) 
+- [anu 源码阅读 01](https://judes.me/tech/2019/01/09/anu-sources-reading-1.html) 
 - [九州之旅](https://judes.me/life/2019/01/07/kyuushuu-no-tabi.html) 
 - [javascript 内存泄漏与 Chrome dev tools](https://judes.me/frontend/2018/11/18/memory_leaks_dev_tools.html) 
 - [从“贷款创造存款”说开](https://judes.me/life/reading/2018/11/11/loan_create_deposit.html) 

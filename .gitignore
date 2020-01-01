@@ -3,3 +3,4 @@ new_post.rb
 _site/
 .sass-cache/
 .vscode/
+.jekyll-cache/

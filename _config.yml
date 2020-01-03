@@ -13,11 +13,11 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: 生活/读书/编程
-author: jude zhu
+title: jude's life
+author: chong yun
 email: 
 description: > # this means to ignore newlines until "baseurl:"
-  一个人安静地活着，挺好
+  生活，读书，编程
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://judes.me" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: chong__yun
@@ -26,17 +26,11 @@ github_username:  yiyizym
 # google_analytics
 google_analytics: UA-88024669-1
 
-# enable service_worker
-service_worker: true
-
-# enable twitter_card
-twitter_card: true
-
 # Build settings
 markdown: kramdown
 theme: minima
-plugins: []
-  # - jekyll-feed
+plugins:
+  - jekyll-feed
 exclude:
   - Gemfile
   - Gemfile.lock

@@ -3,7 +3,7 @@
 --- 
 @import "minima";
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", STXihei, "华文细黑", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   line-height: 1.625;
   font-size: 1.125rem;
 }
@@ -78,7 +78,7 @@ img+em {
 
 a {
   color: #111;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 a:hover {

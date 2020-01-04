@@ -127,10 +127,9 @@ a.post-link:hover {
     transition: border-color 75ms ease,box-shadow 150ms ease,transform .2s ease,background-color 125ms ease,-webkit-transform .2s ease;
 
     &:hover {
-      border-color: $light-purple;
-      background-color: $light-purple;
+      background-color: $light-pink;
       background-image: none;
-      box-shadow: 0 0 9px 0 $light-purple, 5px 5px 11px 0 $light-purple;
+      box-shadow: 0 0 9px 0 $light-pink, 5px 5px 11px 0 $light-pink;
       // color: #1e4d79;
       color: $deep-blue;
       text-transform: none;
@@ -145,7 +144,7 @@ a.post-link:hover {
       margin-left: 5vw;
       margin-right: 5vw;
     }
-}
+  }
 
   .post-list .post-title {
     font-size: $base-font-size * 2;
@@ -159,6 +158,36 @@ a.post-link:hover {
     @include line-clamp(2, 1.5);
   }
 }
+
+/* override */
+blockquote {
+  color: $deep-blue;
+  border-left: 1px solid $secondary-color;
+  padding: $base-font-size;
+  background-color: $light-pink;
+}
+
+
+ul, ol {
+  margin-top: 22px;
+  margin-bottom: 27px;
+  padding: $base-font-size $base-font-size 0 $base-font-size * 2;
+  border-style: solid;
+  border-width: 1px;
+  border-color: $light-purple;
+  border-radius: 2px;
+  box-shadow: 0 5px 15px -10px $set-light-blue;
+  background-color: $light-pink;
+  color: $deep-blue;
+}
+
+li {
+  margin-top: 2px;
+  margin-bottom: $base-font-size;
+  padding-left: 3px;
+}
+/* override */
+
 
 /* for categories */
 

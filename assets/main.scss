@@ -86,6 +86,7 @@ a:hover {
   text-decoration: none;
 }
 
+
 a.post-link {
   color: #4e93ee;
   text-decoration: none;
@@ -110,10 +111,10 @@ a.post-link:hover {
     flex-direction: column;
     justify-content: center;
     box-sizing: border-box;
-    width: 400px;
+    width: 375px;
     height: 200px;
     flex-shrink: 0;
-    padding: 2px 24px 22px;
+    padding: 2px $base-font-size $base-font-size;
     margin-bottom: $base-font-size;
     border: 1px solid $light-purple;
     background-color: $set-light-blue;
@@ -136,6 +137,15 @@ a.post-link:hover {
       transform: translate(0,-3px);
     }
   }
+
+
+  @include media-query($on-iphone6) {
+    .post-list > a {
+      width: 90vw;
+      margin-left: 5vw;
+      margin-right: 5vw;
+    }
+}
 
   .post-list .post-title {
     font-size: $base-font-size * 2;

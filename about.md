@@ -13,5 +13,3 @@ permalink: /about/
 ### 作者
 
 - 一个普通的宅
-
-- 欢迎关注我的 Twitter ：[chong__yun](https://twitter.com/chong__yun)

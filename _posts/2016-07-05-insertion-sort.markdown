@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 写写插入排序
 date: 2016-07-05 08:06:17
 excerpt: 为什么知道原理还是写不出正确的程序呢？(系列)

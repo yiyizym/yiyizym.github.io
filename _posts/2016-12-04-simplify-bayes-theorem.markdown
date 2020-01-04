@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 模糊的正确
 date: 2016-12-04 21:30:28
 excerpt: 如果没有贝叶斯定理，怎样得到大致正确的答案呢？

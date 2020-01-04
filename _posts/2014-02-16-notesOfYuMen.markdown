@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: "《生活在哪个朝代最郁闷》摘抄"
 excerpt: "抄几段杨念群写的《生活在哪个朝代最郁闷》。我想，学历史的人生活在现世都有种与常人不一样的郁闷吧"
 date: 2014-02-16 16:47:38

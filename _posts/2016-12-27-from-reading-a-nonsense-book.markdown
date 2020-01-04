@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 从读一本废话连篇的书说起
 date: 2016-12-27 21:53:20
 excerpt: 这是一篇意识流的，扯到哪算哪的文章

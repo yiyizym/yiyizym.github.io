@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: from nodejs request to promise
 date: 2016-04-16 19:50:24
 excerpt: 把 nodejs 中的 request 模块 转换为 es2015 的 Promise

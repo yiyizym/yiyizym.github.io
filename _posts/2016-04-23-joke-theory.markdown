@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 最高的笑话
 date: 2016-04-23 11:37:55
 excerpt: 最高的笑话，拥有意料之外但又在情理之中的结局

@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: web 版微信通讯录
 date: 2016-11-26 17:54:03
 excerpt: 无聊做了个 web 版的功能跟微信里面那个差不多的通讯录

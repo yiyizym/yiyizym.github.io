@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: width属性取100%时与inherit的区别
 excerpt: "width属性取100%时与inherit的区别"
 date: 2014-03-31 16:47:38

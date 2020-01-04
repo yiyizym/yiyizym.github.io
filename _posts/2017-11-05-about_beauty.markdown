@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 读《谈美》
 date: 2017-11-05 02:07:10
 excerpt: 美是无所为而为，读这本书也是如此

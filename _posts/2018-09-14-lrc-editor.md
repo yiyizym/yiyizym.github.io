@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 一个在线 lrc 歌词生成/编辑器
 date: 2018-09-13 07:20:28
 excerpt: 最近有空，用 React 做了这个简单的小东西

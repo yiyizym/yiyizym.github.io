@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 每日阅读小摘
 date: 2015-11-23 12:07:28
 excerpt: 换个文件继续

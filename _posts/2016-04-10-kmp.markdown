@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 算法第四版 kmp 算法
 date: 2016-04-10 17:35:28
 excerpt: 理解算法第四版中 KMP 算法的关键点

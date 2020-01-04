@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 阅读小摘 201712
 date: 2017-12-04 01:05:30
 excerpt: DailyReadingRecord

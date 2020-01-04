@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 浅谈CSS2.1可视化格式模型
 excerpt: "对CSS2.1可视化格式模型的一些总结"
 date: 2014-03-27 16:47:38

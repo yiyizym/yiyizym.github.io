@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: "导出网易博客"
 excerpt: "折腾了一下，把之前在网易的博客文章导出成md格式"
 date: 2014-03-22 16:47:38

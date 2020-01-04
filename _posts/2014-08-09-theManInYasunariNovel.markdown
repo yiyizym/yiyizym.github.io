@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 川端康成三部名作中的男主人
 excerpt: "川端康成擅长描写女性，他书中出现的男性则往往是为了展现女性美。"
 date: 2014-08-09 16:47:38

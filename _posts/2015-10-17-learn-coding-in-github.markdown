@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: github 学习指南
 excerpt: 同性交友网站的正确打开方式：“偷窥”别人的代码
 categories: tech

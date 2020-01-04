@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: "科学说需求 读书笔记"
 excerpt: "本文是《科学说需求》卷一的读书笔记，以章节为索引整理重点和感悟"
 date: 2015-04-18 16:47:38

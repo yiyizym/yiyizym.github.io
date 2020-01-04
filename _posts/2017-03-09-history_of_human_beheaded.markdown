@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 人类砍头的花边历史
 date: 2017-03-09 23:48:07
 excerpt: 把陌生人当人而不是物品，可能是近 100 年才出现的观念

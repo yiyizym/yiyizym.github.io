@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: sinatra 0.3.0 源码学习
 date: 2016-09-06 21:11:15
 excerpt: 通过 sinatra 学习 ruby 编程技巧（系列）

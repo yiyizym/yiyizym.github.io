@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: iOS浏览器内核导致 fixed 定位元素可能错位问题
 date: 2016-10-11 21:32:43
 excerpt: 又是一个在开发微信企业号时遇到的问题，这次锅不在腾讯

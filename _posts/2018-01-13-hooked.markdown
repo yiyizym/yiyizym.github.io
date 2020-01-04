@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 读《上瘾》
 date: 2018-01-13 01:52:50
 excerpt: 结合实例分享一下这本书

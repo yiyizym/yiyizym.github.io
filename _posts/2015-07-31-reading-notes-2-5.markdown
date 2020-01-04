@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 阅读小摘
 excerpt: "201502-05"
 keywords: 阅读

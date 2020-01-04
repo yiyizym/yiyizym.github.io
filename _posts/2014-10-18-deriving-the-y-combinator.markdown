@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 推导 Y 组合子
 excerpt: "看不懂 the little schemer 第九章？请看这里"
 date: 2014-10-18 16:47:38

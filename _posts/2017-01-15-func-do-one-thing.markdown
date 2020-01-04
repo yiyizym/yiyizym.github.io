@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 方法只做一件事
 date: 2017-01-15 10:31:26
 excerpt: clean code 给我的启发

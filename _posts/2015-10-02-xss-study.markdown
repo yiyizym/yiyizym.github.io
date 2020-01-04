@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: xss 一点总结
 excerpt: 整理了一下学习 xss 的头绪，只涉及 javascript/html/url ，没研究 flash
 categories: frontend

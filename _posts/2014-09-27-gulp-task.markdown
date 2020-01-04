@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: gulp task
 excerpt: "gulp task 笔记"
 date: 2014-09-27 16:47:38

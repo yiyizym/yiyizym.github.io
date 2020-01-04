@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 一个应用JSONP的例子
 excerpt: "ADS上一个JSONP的例子，服务器得知请求端函数名的具体实现"
 date: 2014-05-26 16:47:38

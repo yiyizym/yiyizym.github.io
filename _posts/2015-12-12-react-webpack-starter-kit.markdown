@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: react_webpack_starter_kit
 excerpt: 这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~
 categories: frontend

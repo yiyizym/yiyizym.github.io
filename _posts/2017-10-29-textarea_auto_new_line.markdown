@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 输入框高度自适应及其它细节实现
 date: 2017-10-29 03:07:38
 excerpt: 工作原因，稍微实现了一下

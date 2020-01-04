@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 小心使用 git rebase
 excerpt: 令人糊涂的 git rebase
 categories: tech

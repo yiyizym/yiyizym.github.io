@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 香港两日游
 date: 2016-10-04 17:22:52
 excerpt: 在去日本的前两日，被亲戚抓去香港客串导游了

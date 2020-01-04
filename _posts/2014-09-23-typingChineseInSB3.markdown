@@ -1,5 +1,5 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 在 manjaro sublime text 3 中輸入中文
 excerpt: "sublime text 很好用，但不能輸入中文就很蛋疼了。水文一篇"
 date: 2014-09-23 16:47:38

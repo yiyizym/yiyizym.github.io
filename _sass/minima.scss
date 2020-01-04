@@ -22,10 +22,22 @@ $spacing-unit: 30px !default;
 $text-color: #111 !default;
 $background-color: #fdfdfd !default;
 $brand-color: #2a7ae2 !default;
-
 $grey-color: #828282 !default;
 $grey-color-light: lighten($grey-color, 40%) !default;
 $grey-color-dark: darken($grey-color, 25%) !default;
+
+$primary-color: #9055A2;
+$secondary-color: rgba(247, 182, 217, 0.8);
+$light-purple: rgba(201, 182, 247, 0.13);
+$dark-purple: rgb(99, 64, 144);
+$deep-blue: #011638;
+$primary-blue: #4F86C6;
+$set-light-blue: rgba(214, 236, 250, 0.09);
+
+
+$set-purple: #A593E0;
+$set-grey: #E0E3DA;
+$set-light-dark: #566270;
 
 $table-text-align: left !default;
 

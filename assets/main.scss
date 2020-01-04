@@ -4,13 +4,13 @@
 @import "minima";
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.625;
-  font-size: 1.125rem;
+  line-height: 1.375;
+  font-size: 1.0625rem;
 }
 
 @media (min-width: 760px) {
   body {
-    font-size: 1.375rem;
+    font-size: 1.125rem;
   }
 }
 
@@ -115,7 +115,26 @@ a.post-link:hover {
     flex-shrink: 0;
     padding: 2px 24px 22px;
     margin-bottom: $base-font-size;
-    border: 1px solid rgba(229,242,255,.77);
+    border: 1px solid $light-purple;
+    background-color: $set-light-blue;
+    color: $dark-purple;
+    transition-property: border-color, box-shadow, transform, background-color, -webkit-transform;
+    transition-duration: 75ms, 150ms, 0.2s, 125ms, 0.2s;
+    transition-timing-function: ease, ease, ease, ease, ease;
+    transition-delay: 0s, 0s, 0s, 0s, 0s;
+
+    transition: border-color 75ms ease,box-shadow 150ms ease,transform .2s ease,background-color 125ms ease,-webkit-transform .2s ease;
+
+    &:hover {
+      border-color: $light-purple;
+      background-color: $light-purple;
+      background-image: none;
+      box-shadow: 0 0 9px 0 $light-purple, 5px 5px 11px 0 $light-purple;
+      // color: #1e4d79;
+      color: $deep-blue;
+      text-transform: none;
+      transform: translate(0,-3px);
+    }
   }
 
   .post-list .post-title {

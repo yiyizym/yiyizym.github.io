@@ -27,7 +27,11 @@
 
   &,
   &:visited {
-    color: $grey-color-dark;
+    color: $primary-color;
+  }
+
+  &:hover {
+    color: $primary-blue;
   }
 }
 
@@ -72,7 +76,7 @@
 
 .site-header .divider,
 .site-footer .divider {
-  border-top: 1px solid $text-color;
+  border-top: 1px solid $primary-color;
   transform: rotate(-1deg);
 }
 

@@ -96,6 +96,41 @@ a.post-link:hover {
   text-decoration: none;
 }
 
+/* for home page */
+
+.home {
+  .post-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .post-list > a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 400px;
+    height: 200px;
+    flex-shrink: 0;
+    padding: 2px 24px 22px;
+    margin-bottom: $base-font-size;
+    border: 1px solid rgba(229,242,255,.77);
+  }
+
+  .post-list .post-title {
+    font-size: $base-font-size * 2;
+    line-height: 1.5;
+    @include line-clamp(2, 1.5);
+  }
+
+  .post-list .post-meta {
+    display: block;
+    margin-top: $base-font-size;
+    @include line-clamp(2, 1.5);
+  }
+}
+
 /* for categories */
 
 .categories {

@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 几篇好文章帮你理解 Git 工作原理
 date: 2017-12-16 06:50:10
-description: 最近对 Git 又有了更深入的了解，本想用自己的语言解释 Git 原理，但见珠玉在前，没自信做得更好，索性罗列自己看过的好文章
+excerpt: 最近对 Git 又有了更深入的了解，本想用自己的语言解释 Git 原理，但见珠玉在前，没自信做得更好，索性罗列自己看过的好文章
 categories: tech
 ---
 

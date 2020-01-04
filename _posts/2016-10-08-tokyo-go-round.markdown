@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: Tokyo go round
 date: 2016-10-08 23:00:54
-description: 东京见闻&感想。6天的东京之旅，注定是走马观花，借用 merry-go-round ，给这游记取名为 Tokyo-go-round 多图！慎点！
+excerpt: 东京见闻&感想。6天的东京之旅，注定是走马观花，借用 merry-go-round ，给这游记取名为 Tokyo-go-round 多图！慎点！
 categories: life
 tags:
 - 东京

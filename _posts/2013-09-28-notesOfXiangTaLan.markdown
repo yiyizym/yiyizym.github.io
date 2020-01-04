@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: "《项塔兰》书摘"
-description: "项塔兰在印度某种语言里指的是：和平之人。"
+excerpt: "项塔兰在印度某种语言里指的是：和平之人。"
 date: 2013-09-28 16:47:38
 keywords: 项塔兰, 真理, 不幸，虚伪, 谦恭有礼
 categories: reading

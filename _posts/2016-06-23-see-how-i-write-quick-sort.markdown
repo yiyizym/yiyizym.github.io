@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 我尝试去写快排，结果。。。
 date: 2016-06-23 20:56:50
-description: 为什么知道原理还是写不出正确的程序呢？
+excerpt: 为什么知道原理还是写不出正确的程序呢？
 categories: tech
 tags:
 - algorithm

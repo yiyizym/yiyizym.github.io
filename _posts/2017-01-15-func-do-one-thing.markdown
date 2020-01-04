@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 方法只做一件事
 date: 2017-01-15 10:31:26
-description: clean code 给我的启发
+excerpt: clean code 给我的启发
 categories: tech
 tags:
 - clean code

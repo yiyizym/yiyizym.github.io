@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: "多彩的侦探故事"
-description: "最近因为看了不少侦探故事引发的感想"
+excerpt: "最近因为看了不少侦探故事引发的感想"
 date: 2013-11-23 16:47:38
 keywords: 冰菒, 大侦探波罗, 一朵桔梗花, 古烟任三郎, 金田一
 categories: life

@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: 推导 Y 组合子
-description: "看不懂 the little schemer 第九章？请看这里"
+excerpt: "看不懂 the little schemer 第九章？请看这里"
 date: 2014-10-18 16:47:38
 keywords: scheme, Y-combinator, the little schemer
 categories: tech

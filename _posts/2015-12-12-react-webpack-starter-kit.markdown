@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: react_webpack_starter_kit
-description: 这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~
+excerpt: 这是一个纯前端 react webpack 启动项目，以此为基础可以快速入坑~
 categories: frontend
 tags: 
 - react

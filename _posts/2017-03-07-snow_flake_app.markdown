@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 雪花分形，一次从前到后的尝试
 date: 2017-03-07 00:06:50
-description: 写写我在做雪花分形应用时遇到了什么事
+excerpt: 写写我在做雪花分形应用时遇到了什么事
 categories: tech
 ---
 

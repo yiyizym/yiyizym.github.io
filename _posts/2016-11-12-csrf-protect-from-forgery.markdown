@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: Rails 的 CSRF 对策
 date: 2016-11-12 22:33:28
-description: protect_from_forgery 方法
+excerpt: protect_from_forgery 方法
 categories: tech
 tags:
 - rails

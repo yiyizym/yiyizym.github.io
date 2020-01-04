@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: 为什么eval里面要加圆括号？
-description: "关于eval、分组操作符、语句及表达式"
+excerpt: "关于eval、分组操作符、语句及表达式"
 date: 2014-05-18 16:47:38
 keywords: eval, 表达式, 语句、分组操作符
 categories: frontend

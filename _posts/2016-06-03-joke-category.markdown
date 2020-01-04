@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 笑话分类
 date: 2016-06-03 08:06:33
-description: 给笑话分个类
+excerpt: 给笑话分个类
 categories: joke
 tags: 
 - 笑话理论

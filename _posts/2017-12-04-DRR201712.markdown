@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 阅读小摘 201712
 date: 2017-12-04 01:05:30
-description: DailyReadingRecord
+excerpt: DailyReadingRecord
 categories: reading
 ---
 

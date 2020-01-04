@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 微信小程序组件开发示例
 date: 2017-02-11 03:09:57
-description: 最近开始折腾小程序了
+excerpt: 最近开始折腾小程序了
 categories: tech
 tags:
 - 微信小程序

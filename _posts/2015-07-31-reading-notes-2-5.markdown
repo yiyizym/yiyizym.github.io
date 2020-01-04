@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: 阅读小摘
-description: "201502-05"
+excerpt: "201502-05"
 keywords: 阅读
 categories: DailyReadingRecord
 tags: reading

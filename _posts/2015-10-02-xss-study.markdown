@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: xss 一点总结
-description: 整理了一下学习 xss 的头绪，只涉及 javascript/html/url ，没研究 flash
+excerpt: 整理了一下学习 xss 的头绪，只涉及 javascript/html/url ，没研究 flash
 categories: frontend
 tags: xss
 date: 2015-10-02 14:45:41

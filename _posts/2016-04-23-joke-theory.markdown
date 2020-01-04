@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 最高的笑话
 date: 2016-04-23 11:37:55
-description: 最高的笑话，拥有意料之外但又在情理之中的结局
+excerpt: 最高的笑话，拥有意料之外但又在情理之中的结局
 categories: joke
 tags: 
 - 笑话理论

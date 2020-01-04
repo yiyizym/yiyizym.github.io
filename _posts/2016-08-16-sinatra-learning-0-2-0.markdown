@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: sinatra 0.2.0 源码学习
 date: 2016-08-16 21:21:48
-description: 通过 sinatra 学习 ruby 编程技巧（系列）
+excerpt: 通过 sinatra 学习 ruby 编程技巧（系列）
 categories: ruby
 tags: 
 - sinatra

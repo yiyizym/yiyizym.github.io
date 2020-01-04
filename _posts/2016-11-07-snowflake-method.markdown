@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 雪花分形
 date: 2016-11-07 22:04:44
-description: 一种被实证可行的小说创作方法
+excerpt: 一种被实证可行的小说创作方法
 categories: life
 tags:
 - 写作

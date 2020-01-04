@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: 小心使用 git rebase
-description: 令人糊涂的 git rebase
+excerpt: 令人糊涂的 git rebase
 categories: tech
 tags:
 - git

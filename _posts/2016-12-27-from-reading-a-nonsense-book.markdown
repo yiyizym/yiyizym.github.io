@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 从读一本废话连篇的书说起
 date: 2016-12-27 21:53:20
-description: 这是一篇意识流的，扯到哪算哪的文章
+excerpt: 这是一篇意识流的，扯到哪算哪的文章
 categories: reading
 tags:
 - 刻意练习

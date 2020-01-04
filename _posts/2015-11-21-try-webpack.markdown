@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: webpack 踩坑记
-description: 因为奇葩的需求，踩了 webpack 里面的一些坑
+excerpt: 因为奇葩的需求，踩了 webpack 里面的一些坑
 categories: frontend
 tags: webpack
 date: 2015-11-21 11:00:58

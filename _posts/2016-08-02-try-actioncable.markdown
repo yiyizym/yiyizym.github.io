@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 试用 Action Cable
 date: 2016-08-02 20:54:33
-description: Rails 5 出来很久了，学习一下 Action Cable
+excerpt: Rails 5 出来很久了，学习一下 Action Cable
 categories: ruby
 tags:
 - ruby

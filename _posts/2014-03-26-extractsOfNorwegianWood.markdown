@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: 《挪威的森林》摘抄
-description: "绿子和彻的一段对白。爱是宽容、宠爱与感恩。"
+excerpt: "绿子和彻的一段对白。爱是宽容、宠爱与感恩。"
 date: 2014-03-26 16:47:38
 keywords: 挪威的森林, 爱, 任性, 珍贵, 报答
 categories: reading

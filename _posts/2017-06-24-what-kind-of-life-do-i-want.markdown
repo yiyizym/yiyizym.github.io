@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 我想要怎样的生活？
 date: 2017-06-24 07:54:21
-description: 先定个模糊的目标，再朝它迈出一小步
+excerpt: 先定个模糊的目标，再朝它迈出一小步
 categories: life
 ---
 

@@ -1,8 +1,8 @@
 ---
-layout: post_with_octocat
+layout: post
 title: 读《中国国家治理的制度逻辑》
 date: 2018-04-15 07:46:43
-description: 这是本了解中国国家治理的好书
+excerpt: 这是本了解中国国家治理的好书
 categories: reading
 ---
 

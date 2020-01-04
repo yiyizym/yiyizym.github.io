@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 模糊的正确
 date: 2016-12-04 21:30:28
-description: 如果没有贝叶斯定理，怎样得到大致正确的答案呢？
+excerpt: 如果没有贝叶斯定理，怎样得到大致正确的答案呢？
 categories: life
 tags: 
 - 条件概率

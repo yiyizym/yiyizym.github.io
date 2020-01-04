@@ -2,7 +2,7 @@
 layout: post_with_octocat
 title: 简单总结 javascript 对象模型
 date: 2017-04-18 01:18:27
-description: 看过不少 javascript 对象、继承、原型链等知识点，但一直没能把点连成线，今天就来好好总结下。
+excerpt: 看过不少 javascript 对象、继承、原型链等知识点，但一直没能把点连成线，今天就来好好总结下。
 categories: frontend
 ---
 

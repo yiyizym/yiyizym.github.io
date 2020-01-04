@@ -1,7 +1,7 @@
 ---
 layout: post_with_octocat
 title: "每日阅读小摘"
-description: "2014-11"
+excerpt: "2014-11"
 date: 2014-11-22 16:47:38
 keywords: 阅读
 categories: DailyReadingRecord

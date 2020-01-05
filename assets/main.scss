@@ -186,6 +186,23 @@ li {
   margin-bottom: $base-font-size;
   padding-left: 3px;
 }
+
+code.highlighter-rouge {
+  background-color: transparent;
+}
+
+.page-content .wrapper a {
+  background-color: $light-pink;
+  color: $primary-color;
+
+  &:hover {
+    background-color: $set-light-blue;
+    color: $primary-blue;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: $light-purple;
+  }
+}
 /* override */
 
 

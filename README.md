@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [读《Effective TypeScript》](https://judes.me/frontend/2020/02/09/effective-typescript.html) 
 - [学车记](https://judes.me/life/2020/01/17/learn-to-drive.html) 
 - [读“为什么是英国——有限政府的起源”](https://judes.me/reading/2019/12/20/why-england.html) 
 - [实现内凹圆角+阴影效果](https://judes.me/frontend/2019/12/01/concave-fillet-with-shadow.html) 

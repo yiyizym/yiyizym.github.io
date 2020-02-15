@@ -35,7 +35,7 @@ TypeScript 中与全集对应的是类型是 unknown ，如果你对某个类型
 
 举个例子，我们知道了类型 T1 有一个属性 name ，（通过继承）在 T1 的基础上，我们知道 T2 还有一个属性 age 。从集合的角度讲，T1 包含了 T2 ，因为如果某个变量属于 T2 的话，它一定也属于 T1 ，反过来就不是这样。
 
-```
+```typescript
 interface T1 {
   name: string;
 }
@@ -55,7 +55,7 @@ TypeScript 是一种 "duck typing" 的语言，它并不通过声明时指定的
 
 举个例子，以下的写法在 "duck typing" 的语言是合法的：
 
-```
+```typescript
 type A = {
     title: string;
 }
@@ -73,7 +73,7 @@ let b: B = a
 
 我曾经遇到过一个问题，就与这个 "duck typing" 的设计相关。借用书中的例子说明。
 
-```
+```typescript
 interface Options {
   title: string;
   darkMode?: boolean;
@@ -105,7 +105,7 @@ createWindow(intermediate) // 不会报错，传进去的参数实际是一模�
 
 至于为什么不对中间变量也采取相同的处理，是因为这样做的开销会比你想像中的大。因为 "duck typing" 的缘故，被视为与上述类型 `Options` 是同一种类型的其他类型有很多，这些类型的实例都可以当作 `createWindow` 的参数：
 
-```
+```typescript
 const o1: Options = document;  // OK
 const o2: Options = new HTMLAnchorElement;  // OK
 ```
@@ -123,7 +123,7 @@ const o2: Options = new HTMLAnchorElement;  // OK
 
 很容易就会定义以下数据类型：
 
-```
+```typescript
 type ResponseType {
   code: number;
   errorMsg: string;
@@ -139,7 +139,7 @@ type ResponseType {
 
 应该分开写两种情况的返回类型：
 
-```
+```typescript
 interface SuccessResponseType {
   code: number; // 如果指定了 0 为成功时的值，可以直接写成 code: 0
   data: {[key as string]: any}
@@ -161,7 +161,7 @@ type ResponseType = SuccessResponseType | FailResponseType
 
 举个例子，我们要定义一种类型来描述一个动物园里的动物（假设动物园里只有两种动物：海豚和鸵鸟），可能会这样写：
 
-```
+```typescript
 type ZooAnimals {
   placeToLive: 'land'|'sea'
   skill: 'run'|'swim'
@@ -172,7 +172,7 @@ type ZooAnimals {
 
 这种情况，与其将属性值定义为联合类型，不如将类本身定义为联合类型：
 
-```
+```typescript
 interface Dolphin {
   placeToLive: 'sea'
   skill: 'swim'

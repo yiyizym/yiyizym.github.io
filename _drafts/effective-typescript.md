@@ -49,8 +49,6 @@ interface T2 extends T1 {
 
 TypeScript 中与空集对应的是类型是 never ，属于这个类型的变量从代码逻辑上永远都不能被访问。
 
-
-
 **Excess Property Checking**
 
 TypeScript 是一种 "duck typing" 的语言，它并不通过声明时指定的类型名称，而是通过值包含的属性以及方法来检查一个值的类型。
@@ -117,8 +115,76 @@ const o2: Options = new HTMLAnchorElement;  // OK
 在兼故性能和体验后， TypeScript 采用折衷的做法：只对字面量做严格的类型检查。
 
 
+**类型设计**
 
-Types that represent both valid and invalid state are likely to lead to confusing and error-prone code.
+在定义类型时，很容易会将两种（或以上）不能同时存在的属性放进同一个类型里面。比如后台返回的数据结构。
 
-Interfaces with multiple properties that are union types are often a mistake because they obscure the relationships between these properties.
+假设对任一个请求，后台有可能返回成功，或者失败。成功的时候回附带相应的数据，失败的时候会附带详细的错误信息。
 
+很容易就会定义以下数据类型：
+
+```
+type ResponseType {
+  code: number;
+  errorMsg: string;
+  data: {[key as string]: any}
+}
+```
+
+用不同的 `code` 区分成功和失败。如果成功的返回不带 `errorMsg` ，失败的返回不带 `data` ，那么上面的类型定义就做得不好，用书中的话来说，就是：
+
+> Types that represent both valid and invalid state are likely to lead to confusing and error-prone code.
+
+因为 `errorMsg` 跟 `data` 不可能同时存在于某个返回里，这种类型定义就有可能让程序员写出“当返回的是失败情况时，读取 data ”这种毫无意义的代码。
+
+应该分开写两种情况的返回类型：
+
+```
+interface SuccessResponseType {
+  code: number; // 如果指定了 0 为成功时的值，可以直接写成 code: 0
+  data: {[key as string]: any}
+}
+
+interface FailResponseType {
+  code: number;
+  errorMsg: string;
+}
+
+type ResponseType = SuccessResponseType | FailResponseType
+```
+
+这样当你判断某个返回为失败，再去读取 `data` 属性时， TypeScript 就会提示你 `FailResponseType` 并没有 `data` 这个属性。
+
+另外一种容易出错的做法就是，定义多个值为联合类型、且这些值之间有对应关系的属性。用书中的话来说：
+
+> Interfaces with multiple properties that are union types are often a mistake because they obscure the relationships between these properties.
+
+举个例子，我们要定义一种类型来描述一个动物园里的动物（假设动物园里只有两种动物：海豚和鸵鸟），可能会这样写：
+
+```
+type ZooAnimals {
+  placeToLive: 'land'|'sea'
+  skill: 'run'|'swim'
+}
+```
+
+动物园的动物，活在陆地上的并不会游泳；而活在水里的并不会跑。以上定义忽略了不同属性的联合类型之间一一对应的关系。
+
+这种情况，与其将属性值定义为联合类型，不如将类本身定义为联合类型：
+
+```
+interface Dolphin {
+  placeToLive: 'sea'
+  skill: 'swim'
+}
+
+interface Ostrich {
+  placeToLive: 'land'
+  skill: 'run'
+}
+
+type ZooAnimals = Dolphin | Ostrich
+
+```
+
+以上。书中还有很多有用的经验总结，建议亲自看看。

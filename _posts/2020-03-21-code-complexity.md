@@ -24,7 +24,7 @@ categories:
 
 用 `code complexity javascript` 之类的关键词搜了下，发现 eslint 早就可以配置 [complexity](eslint-complexity) 规则。
 
-作为一个坚持己见的人，接受不了它早就被广泛接受的事实，我点开 eslint complexity 页面中每一条参考链接，最终看到这篇对循环复杂度提出异议的[文章](complexity-for-javascript)。
+作为一个坚持己见的人，接受不了这个——它早就流行开去的——事实，我点开 eslint complexity 页面中每一条参考链接，最终看到这篇对循环复杂度提出异议的[文章](complexity-for-javascript)。
 
 作者从多个角度评价这套理论：
 

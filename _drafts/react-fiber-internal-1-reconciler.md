@@ -7,7 +7,7 @@ categories:
 - tech
 ---
 
-**这是一篇译文，原文[链接](https://medium.com/react-in-depth/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-67f1014d0eb7)**
+**这是一篇译文，原文[链接](https://indepth.dev/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-to-walk-the-components-tree/)**
 
 **准备背景知识**
 

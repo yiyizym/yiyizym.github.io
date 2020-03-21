@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 读《Effective TypeScript》
+title: 读「Effective TypeScript」
 date: 2020-02-09 10:20:28
 excerpt: 书上有你在各个技术网站都难看到的内容
 categories: 

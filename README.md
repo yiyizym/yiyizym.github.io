@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [读「Bayesian Statistics the Fun Way」](https://judes.me/reading/2020/04/18/bayesian-statistics-the-fun-way.html) 
 - [代码复杂度分析](https://judes.me/tech/frontend/2020/03/21/code-complexity.html) 
 - [读「Effective TypeScript」](https://judes.me/frontend/2020/02/09/effective-typescript.html) 
 - [学车记](https://judes.me/life/2020/01/17/learn-to-drive.html) 

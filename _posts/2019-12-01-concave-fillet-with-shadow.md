@@ -39,8 +39,8 @@ categories:
       </clipPath>
     </defs>
   </svg>
-  <span class="shap-wrap">
-    <span class="shap"></span>
+  <span class="shape-wrap">
+    <span class="shape"></span>
   </span>
 ```
 
@@ -67,10 +67,10 @@ body {
   place-items: center;
   margin: 0;
 }
-.shap-wrap {
+.shape-wrap {
   filter: drop-shadow(0px 0px 10px rgba(50, 50, 0, 0.5));
 }
-.shap {
+.shape {
   display: block;
   background: #FB8C00;
   width: 200px;

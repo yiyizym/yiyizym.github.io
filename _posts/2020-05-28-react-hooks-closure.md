@@ -58,8 +58,6 @@ function Example() {
 
 每次渲染，函数组件内部的 `useEffects` 会从上到下执行一遍，只是作为它的第一个参数的 `side effect` 会不会在渲染结束后执行就得看情况。但是只要这些 `side effect` 执行，它们就是以闭包的姿态执行。这意味着 `side effect` 内部引用到的 `state` 跟 `props` 都会是函数组件最近一次渲染时的值。
 
-这个表现其实跟异步执行没什么关系。
-
 ```javascript
 function Counter() {
   const [count, setCount] = useState(0);
@@ -83,7 +81,43 @@ function Counter() {
 
 上面的代码，无论你点 `Click me` 有多快， `console.log` 都会将 `count` 从 0 开始逐个打印出来。
 
-上述两个例子作为铺垫，比较容易看出问题。来看看下面这个：
+这个表现跟异步执行没什么关系，看看下面这个没有 `setTimeout` 的[例子][2]：
+
+```javascript
+export default function App() {
+  const [count, setCount] = useState(0);
+  const [list, setList] = useState([]);
+
+  const increaseCount = () => {
+    const newCount = count;
+    console.log(newCount);
+    setCount(newCount + 1);
+  };
+
+  useEffect(() => {
+    const list = new Array(5).fill().map((_, index) => {
+      return (
+        <div key={index} onClick={increaseCount}>
+          try click me
+        </div>
+      );
+    });
+    setList(list);
+  }, []);
+
+  return (
+    <div className="App">
+      <div className="list">{list}</div>
+      <h2>{count}</h2>
+    </div>
+  );
+}
+```
+
+所有的 `onClick` 事件都只在 `componentDidMount` 时注册，之后不再更新，并且都指向那时的 `increaseCount` 。因此无论你点了多少遍 `try clike me` ，`count` 都是 1 ，而控制台永远打印 0 。
+
+
+上述几个例子作为铺垫，比较容易看出问题。来看看下面这个：
 
 ```javascript
 export default function App() {
@@ -120,7 +154,7 @@ export default function App() {
 
 上面代码值得注意的地方在于 `runner` 方法内部：会将自身传进 `bar` ，在其内作为回调被执行。
 
-在[这里][2]运行一下，你会发现控制台不断打印 `loading` 的值，但这个值永远都是 `false` ，这与页面上显示的不一致。
+在[这里][3]运行一下，你会发现控制台不断打印 `loading` 的值，但这个值永远都是 `false` ，这与页面上显示的不一致。
 
 
 明明是因为 `setLoading(true)` 才触发重新渲染，为什么控制台的 `loading` 却一直是 `false` 呢？
@@ -140,5 +174,6 @@ export default function App() {
 - [A Complete Guide to useEffect](https://overreacted.io/a-complete-guide-to-useeffect/)
 
 
-[1]: https://reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function
-[2]:https://codesandbox.io/s/gifted-matsumoto-56jxw?file=/src/App.js:485-578
+[1]:https://reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function
+[2]:https://codesandbox.io/s/affectionate-mountain-uh4k6?file=/src/App.js:76-656
+[3]:https://codesandbox.io/s/gifted-matsumoto-56jxw?file=/src/App.js:485-578

@@ -334,5 +334,5 @@ function workLoop(isYieldy) {
 [12]:https://github.com/facebook/react/issues/7942
 [13]:https://stackblitz.com/edit/js-tle1wr
 [14]:https://github.com/facebook/react/blob/95a313ec0b957f71798a69d8e83408f40e76765b/packages/react-reconciler/src/ReactFiberScheduler.js
-[15]:https://indepth.dev/the-how-and-why-on-React-usage-of-linked-list-in-fiber-to-walk-the-components-tree/
+[15]:https://indepth.dev/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-to-walk-the-components-tree/
 [16]:https://indepth.dev/inside-fiber-in-depth-overview-of-the-new-reconciliation-algorithm-in-react/

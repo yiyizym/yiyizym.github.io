@@ -27,45 +27,27 @@ categories:
 
 **背景知识**
 
-Fiber’s architecture has two major phases: reconciliation/render and commit. In the source code the reconciliation phase is mostly referred to as the “render phase”. This is the phase when React walks the tree of components and:
+Fiber 的架构有两个主要阶段：协调/渲染和提交。在源码中，协调阶段大多被称为"渲染阶段"。在这个阶段 React 会遍历组件树以及：
 
-updates state and props,
-calls lifecycle hooks,
-retrieves the children from the component,
-compares them to the previous children,
-and figures out the DOM updates that need to be performed.
+- 更新状态和属性
+- 调用生命周期钩子函数
+- 获取组件的子组件
+- 将它们与之前的比较
+- 并计算出需要执行的 DOM 更新
 
-Fiber 的架构有两个主要阶段：协调/渲染和提交。在源码中，协调阶段大多被称为"渲染阶段"。在这个阶段，React 遍历组件树和。
+所有这些操作在 Fiber 内部被称为 work 。work 类型取决于 React Element 的类型。例如，对于一个类组件， React 需要实例化一个类，而对于一个函数组件，它不需要这样做。如果感兴趣，[这里][5]可以看到 Fiber 中所有与 work 对应的类型。这些操作正是 Andrew 所讲到的：
 
-更新状态和道具。
-调用生命周期钩子。
-从组件中检索子代。
-将他们与之前的孩子进行比较。
-并计算出需要执行的DOM更新。
+> 在处理用户界面时会碰到的一个问题是：如果一次性执行太多操作，可能会导致动画掉帧……
 
-All these activities are referred to as work inside Fiber. The type of work that needs to be done depends on the type of the React Element. For example, for a Class Component React needs to instantiate a class, while it doesn't do it for a Functional Component. If interested, here you can see all types of work targets in Fiber. These activities are exactly what Andrew talks about here:
+"一次性执行"，为什么会出问题呢？
 
-所有这些活动都被称为Fiber内部的工作。需要做的工作类型取决于React元素的类型。例如，对于一个类组件，React需要实例化一个类，而对于一个功能组件，它不需要这样做。如果有兴趣，这里可以看到Fiber中所有类型的工作目标。这些活动正是Andrew在这里讲到的。
+好吧，总的来说，如果 React 要同步遍历整个组件树，并在每个组件上执行相关操作，它的代码逻辑可能会运行超过 16 毫秒，而这将会导致掉帧造成停滞的视觉效果。
 
-When dealing with UIs, the problem is that if too much work is executed all at once, it can cause animations to drop frames…
+以下方法就可以解决问题吗？
 
-在处理用户界面时，问题是如果一次性执行太多工作，可能会导致动画掉帧...。
+> 新近版本的浏览器（还有 React Native）实现了有助于解决这个问题的 API ……
 
-Now what about that ‘all at once’ part? Well, basically, if React is going to walk the entire tree of components synchronously and perform work for each component, it may run over 16 ms available for an application code to execute its logic. And this will cause frames to drop causing stuttering visual effects.
-
-现在，那个 "一次全部 "的部分呢？好吧，基本上，如果React要同步遍历整个组件树，并为每个组件执行工作，它可能会运行超过16毫秒的应用程序代码执行其逻辑。而这将会导致掉帧造成停滞的视觉效果。
-
-So this can be helped?
-
-所以，这可以帮助？
-
-Newer browsers (and React Native) implement APIs that help address this exact problem…
-
-较新的浏览器（和React Native）实现了有助于解决这个确切问题的API...
-
-The new API he talks about is the requestIdleCallback global function that can be used to queue a function to be called during a browser’s idle periods. Here’s how you would use it by itself:
-
-他谈到的新API是requestIdleCallback全局函数，可以用来排队在浏览器空闲期调用一个函数。下面是你自己如何使用它。
+他所说的新 API 是名为 [requestIdleCallback][6] 的全局函数，它通过队列让浏览器在空闲期调用函数。下面是它的调用方式：
 
 ```javascript
 requestIdleCallback((deadline)=>{
@@ -73,17 +55,11 @@ requestIdleCallback((deadline)=>{
 });
 ```
 
-If I now open the console and execute the code above, Chrome logs 49.9 false. It basically tells me that I have 49.9 ms to do whatever work I need to do and I haven’t yet used up all allotted time, otherwise the deadline.didTimeout would be true. Keep in mind that timeRemaining can change as soon as a browser gets some work to do, so it should be constantly checked.
+如果我现在打开浏览器控制台并执行上面的代码，Chrome 会打印出 `49.9 false` 。这个信息大体上告诉我，我有 49.9 毫秒的时间来做任何我需要做的工作，我还没有用完所有分配的时间，否则 deadline.didTimeout 就会是 true 。请记住，一旦浏览器要执行某些操作，timeRemaining 就会改变，所以应该经常检查这个值。
 
-如果我现在打开控制台并执行上面的代码，Chrome会记录49.9 false。它基本上告诉我，我有49.9毫秒的时间来做任何我需要做的工作，我还没有用完所有分配的时间，否则deadline.didTimeout就会是true。请记住，一旦浏览器有工作要做，timeRemaining就会改变，所以应该经常检查它。
+> 因为 requestIdleCallback 受限制太多，[执行频率不够高][7]，无法实现流畅的 UI 渲染，React 团队不得不[另行实现][8]。
 
-requestIdleCallback is actually a bit too restrictive and is not executed often enough to implement smooth UI rendering, so React team had to implement their own version.
-
-requestIdleCallback其实限制性太强，执行频率不够高，无法实现流畅的UI渲染，所以React团队不得不实现自己的版本。
-
-Now if we put all the activities Reacts performs on a component into the function performWork, and use requestIdleCallback to schedule the work, our code could look like this:
-
-现在，如果我们把Reacts在组件上执行的所有活动都放到函数 performWork中，并使用 requestIdleCallback来安排工作，我们的代码就会像这样。
+如果我们把 Reacts 在组件上执行的所有操作都放到函数 performWork 中，并使用 requestIdleCallback 来调度这些 work ，我们的代码就会像这样：
 
 ```javascript
 requestIdleCallback((deadline) => {
@@ -94,13 +70,9 @@ requestIdleCallback((deadline) => {
 });
 ```
 
-We perform the work on one component and then return the reference to the next component to process. This would work, if not for one thing. You can’t process the entire tree of components synchronously, as in the previous implementation of the reconciliation algorithm. And that’s the problem Andrew talks about here:
+我们在一个组件上执行 work ，然后返回下一个执行 work 的组件引用。这样做是可行的，但是你不能像之前实现的协调算法那样，同步处理整个组件树。这就是 Andrew 所提到的问题：
 
-我们在一个组件上执行工作，然后将引用返回给下一个组件进行处理。如果不是因为一件事，这样做是可行的。你不能像之前实现的协调算法那样，同步处理整个组件树。而这就是Andrew在这里谈到的问题。
-
-in order to use those APIs, you need a way to break rendering work into incremental units
-
-为了使用这些API，你需要一种将渲染工作分解成增量单位的方法。
+> 为了使用这些 API ，你需要一种方法将渲染工作分解成增量单元。
 
 So to solve this problem, React had to re-implement the algorithm for walking the tree from the synchronous recursive model that relied on the built-in stack to an asynchronous model with linked list and pointers. And that’s what Andrew writes about here:
 

@@ -1,13 +1,13 @@
 ---
 layout: post
-title: 译文：react fiber 如何以及为什么使用链表遍历组件
-date: 2019-11-13 10:20:28
+title: 译文：React 在 Fiber 中使用链表来遍历组件树的原因和方式
+date: 2020-07-03 10:20:28
 excerpt: 深入 react fiber 系列之一
 categories: 
 - tech
 ---
 
-**这是一篇译文，原文[链接](https://indepth.dev/the-how-and-why-on-React-usage-of-linked-list-in-fiber-to-walk-the-components-tree/)**
+**这是一篇译文，原文[链接][15]**
 
 本文探讨了 React 新的名为 Fiber 的协调器实现中的主要工作循环(work loop)。 它比较并解释了浏览器的调用栈和 React 的 Fiber 架构中的栈的实现之间的差异。
 
@@ -314,14 +314,25 @@ function workLoop(isYieldy) {
 }
 ```
 
-As you can see, it maps nicely to the algorithm I presented above. It keeps the reference to the current fiber node in the nextUnitOfWork variable that acts as a top frame.
+正如你所看到的，它能很好地映射到我上面介绍的算法。它将当前 fiber 节点的引用保存在作为顶层栈帧的 `nextUnitOfWork` 变量中。
 
-正如你所看到的，它很好地映射到我上面介绍的算法。它将当前光纤节点的引用保留在作为顶格的nextUnitOfWork变量中。
+该算法可以同步遍历组件树，并为树上的每个 fiber 节点执行 work（nextUnitOfWork）。这通常是 UI 事件（点击、输入等等）引起的交互更新的情况（译者注：需要立即响应）。它也可以异步遍历动组件树，在为一个 fiber 节点执行 work 后检查是否还有剩余时间。函数 `shouldYield` 的返回结果取决于 `deadlineDidExpire` 和 `deadline` 变量，这些变量在 React 为 fiber 节点执行 work 时不断被更新。
 
-The algorithm can walk the components tree synchronously and perform the work for each fiber node in the tree (nextUnitOfWork). This is usually the case for so-called interactive updates caused by UI events (click, input etc). Or it can walk the components tree asynchronously checking if there’s time left after performing work for a Fiber node. The function shouldYield returns the result based on deadlineDidExpire and deadline variables that are constantly updated as React performs work for a fiber node.
+`peformUnitOfWork` 函数在这里有深入的介绍。
 
-该算法可以同步遍历组件树，并为树上的每个纤维节点执行工作（nextUnitOfWork）。这通常是UI事件（点击、输入等）引起的所谓交互式更新的情况。或者它也可以异步遍历动组件树，检查在为一个fiber节点执行工作后是否还有时间。函数shouldYield根据deadlineDidExpire和deadline变量返回结果，这些变量在React为光纤节点执行工作时不断更新。
+[1]:https://twitter.com/acdlite/status/1056612147432574976
+[2]:https://github.com/acdlite/react-fiber-architecture
+[3]:https://www.youtube.com/watch?v=ZCuYPiUIONs
+[4]:https://indepth.dev/iside-fiber-in-depth-overview-of-the-new-reconciliation-algorithm-in-react/
+[5]:https://github.com/facebook/react/blob/340bfd9393e8173adca5380e6587e1ea1a23cefa/packages/shared/ReactWorkTags.js
+[6]:https://developers.google.com/web/updates/2015/08/using-requestidlecallback
+[7]:https://github.com/facebook/react/issues/13206
+[8]:https://github.com/facebook/react/blob/eeb817785c771362416fd87ea7d2a1a32dde9842/packages/scheduler/src/Scheduler.js
+[9]:https://reactjs.org/docs/codebase-overview.html
+[10]:https://reactjs.org/docs/reconciliation.html
+[11]:https://medium.com/angular-in-depth/learn-recursion-in-10-minutes-e3262ac08a1
+[12]:https://github.com/facebook/react/issues/7942
+[13]:https://stackblitz.com/edit/js-tle1wr
+[14]:https://github.com/facebook/react/blob/95a313ec0b957f71798a69d8e83408f40e76765b/packages/react-reconciler/src/ReactFiberScheduler.js
+[15]:https://indepth.dev/the-how-and-why-on-React-usage-of-linked-list-in-fiber-to-walk-the-components-tree/
 
-The peformUnitOfWork function is described in depth here.
-
-peformUnitOfWork函数在这里有深入的介绍。

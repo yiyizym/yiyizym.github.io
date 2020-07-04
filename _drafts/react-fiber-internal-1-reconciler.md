@@ -148,36 +148,23 @@ function doWork(o) {
 
 递归的方法很直观，很适合遍历树。但我们发现，它有局限性。最大的限制是，我们不能将工作分解成增量单元。我们不能在某个组件处暂停工作，稍后再继续。使用这种方法，React 只是不断地迭代，直到处理完所有组件，堆栈为空。
 
-So how does React implement the algorithm to walk the tree without recursion? It uses a singly linked list tree traversal algorithm. It makes it possible to pause the traversal and stop the stack from growing.
+那么 React 是如何实现无递归遍历树的算法呢？它使用的是单链表树遍历算法。它可以暂停遍历，停止堆栈的增长。
 
-那么 React 是如何实现无递归遍历树的算法呢？它使用的是单链路列表树遍历算法。它可以暂停遍历，停止堆栈的增长。
+## 链表遍历
 
-Linked list traversal
-链接列表遍历
+我很幸运地在[这里][12]找到了 Sebastian Markbåge 概述的算法要点。为了实现这个算法，我们需要一个包含 3 个字段的数据结构:
 
-I was lucky to find the gist of the algorithm outlined by Sebastian Markbåge here. To implement the algorithm, we need to have a data structure with 3 fields:
+- child - 第一个子节点的引用
+- sibling - 第一个兄弟节点的引用
+- return - 指向父节点的引用
 
-child — reference to the first child
-sibling — reference to the first sibling
-return — reference to the parent
+在 React 新的协调算法中，带有这些字段的数据结构叫做 Fiber 。本质上说，它就是一个 React Element。React Element 保存了一个 work 队列。关于这一点，我在接下来的文章中会有更多的介绍。
 
-我很幸运地在这里找到了Sebastian Markbåge概述的算法要点。为了实现这个算法，我们需要一个包含3个字段的数据结构。
+下图展示了通过链表联接的对象的层次结构以及它们之间的连接类型：
 
-子女 - 第一个子女的引用
-兄弟姐妹--指第一个兄弟姐妹
-return--指向母体的引用
+![linked_component_tree]({{ site.url }}/assets/linked_component_tree.png)*linked component tree*
 
-In the context of the new reconciliation algorithm in React, the data structure with these fields is called Fiber. Under the hood it’s the representation of a React Element that keeps a queue of work to do. More on that in my next articles.
-
-在React新的协调算法中，带有这些字段的数据结构叫做Fiber。在外壳下，它是一个React Element的表示，它保留了一个工作队列。关于这一点，我在接下来的文章中会有更多的介绍。
-
-The following diagram demonstrates the hierarchy of objects linked through the linked list and the types of connections between them:
-
-下图展示了通过链接列表链接的对象的层次结构以及它们之间的连接类型。
-
-So let’s first define our custom node constructor:
-
-所以我们先定义一下我们的自定义节点构造函数。
+让我们先定义一下节点构造函数：
 
 ```javascript
 class Node {
@@ -190,9 +177,7 @@ class Node {
 }
 ```
 
-And the function that takes an array of nodes and links them together. We’re going to use it to link children returned by the render method:
-
-以及接受一个节点数组并将它们链接在一起的函数。我们要用它来链接渲染方法返回的子节点。
+还有接受一个节点数组作为参数并将它们联接在一起的函数。我们要用它来联接 `render` 方法返回的子节点:
 
 ```javascript
 function link(parent, elements) {
@@ -209,9 +194,7 @@ function link(parent, elements) {
 }
 ```
 
-The function iterates over the array of nodes starting from the last one and links them together in a singly linked list. It returns the reference to the first sibling in the list. Here is a simple demo of how it works:
-
-该函数从最后一个节点开始遍历节点数组，并将它们链接到一个单独的链接列表中。它返回对列表中第一个兄弟姐妹的引用。下面是一个简单的工作演示。
+该函数从最后一个节点开始遍历节点数组，并将它们链接到一个单链表中。它返回对列表中第一个兄弟节点的引用。下面是这个函数使用方式的简单演示:
 
 ```javascript
 const children = [{name: 'b1'}, {name: 'b2'}];

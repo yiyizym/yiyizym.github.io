@@ -264,7 +264,7 @@ function walk(o) {
 
 正如你所看到的，当我们向下访问树节点的时候，堆栈并没有增长。但如果现在把调试器放到 doWork 函数里，并记录节点名称，就会看到以下内容：
 
-![logs_of_walk]({{ site.url }}/assets/logs_of_walk.gif)*logs of walk*
+![logs_of_doWork]({{ site.url }}/assets/logs_of_doWork.gif)*logs of doWork*
 
 它看起来就像浏览器中的调用栈。通过这种算法，我们有效地用自己的实现取代了浏览器对调用栈的实现。这就是 Andrew 所描述的：
 

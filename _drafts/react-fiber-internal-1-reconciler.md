@@ -7,7 +7,7 @@ categories:
 - tech
 ---
 
-**这是一篇译文，原文[链接](https://indepth.dev/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-to-walk-the-components-tree/)**
+**这是一篇译文，原文[链接](https://indepth.dev/the-how-and-why-on-React-usage-of-linked-list-in-fiber-to-walk-the-components-tree/)**
 
 本文探讨了 React 新的名为 Fiber 的协调器实现中的主要工作循环(work loop)。 它比较并解释了浏览器的调用栈和 React 的 Fiber 架构中的栈的实现之间的差异。
 
@@ -25,7 +25,7 @@ categories:
 
 让我们开始吧!
 
-**背景知识**
+## 背景知识
 
 Fiber 的架构有两个主要阶段：协调/渲染和提交。在源码中，协调阶段大多被称为"渲染阶段"。在这个阶段 React 会遍历组件树以及：
 
@@ -59,7 +59,7 @@ requestIdleCallback((deadline)=>{
 
 > 因为 requestIdleCallback 受限制太多，[执行频率不够高][7]，无法实现流畅的 UI 渲染，React 团队不得不[另行实现][8]。
 
-如果我们把 Reacts 在组件上执行的所有操作都放到函数 performWork 中，并使用 requestIdleCallback 来调度这些 work ，我们的代码就会像这样：
+如果我们把 React 在组件上执行的所有操作都放到函数 performWork 中，并使用 requestIdleCallback 来调度这些 work ，我们的代码就会像这样：
 
 ```javascript
 requestIdleCallback((deadline) => {
@@ -70,53 +70,35 @@ requestIdleCallback((deadline) => {
 });
 ```
 
-我们在一个组件上执行 work ，然后返回下一个执行 work 的组件引用。这样做是可行的，但是你不能像之前实现的协调算法那样，同步处理整个组件树。这就是 Andrew 所提到的问题：
+我们在一个组件上执行 work ，然后返回下一个执行 work 的组件引用。这样做是可行的，但是你不能像[之前实现的协调算法][9]那样，同步处理整个组件树。这就是 Andrew 所提到的问题：
 
 > 为了使用这些 API ，你需要一种方法将渲染工作分解成增量单元。
 
-So to solve this problem, React had to re-implement the algorithm for walking the tree from the synchronous recursive model that relied on the built-in stack to an asynchronous model with linked list and pointers. And that’s what Andrew writes about here:
+为了解决这个问题，React 不得不重新实现了遍历树的算法，从依赖内置栈的同步递归模型变成了链接列表和指针的异步模型。而这就是 Andrew 所写的：
 
-所以为了解决这个问题，React不得不重新实现了遍历树的算法，从依赖内置栈的同步递归模型变成了链接列表和指针的异步模型。而这就是Andrew在这里写的内容。
+> 如果只依靠(内置)调用栈，它会一直执行 work ，直到栈空为止……如果我们可以随意中断调用栈，手动操作栈帧，那不是很好吗？这就是 React Fiber 的目标，Fiber 是专门针对 React 组件的栈的重新实现。你可以把单个 fiber 看作是一个虚拟的栈帧。
 
-If you rely only on the [built-in] call stack, it will keep doing work until the stack is empty…Wouldn’t it be great if we could interrupt the call stack at will and manipulate stack frames manually? That’s the purpose of React Fiber.Fiber is re-implementation of the stack, specialized for React components. You can think of a single fiber as a virtual stack frame.
+这就是我接下要解释的内容。
 
-如果只依靠[内置的]调用栈，它会一直做工作，直到栈空为止......如果我们可以随意中断调用栈，手动操作栈帧，那不是很好吗？这就是React Fiber.Fiber的目的，Fiber是栈的再实现，专门针对React组件。你可以把一根光纤看作是一个虚拟的栈帧。
+## 关于堆栈
 
-And that’s what I’m going to explain now.
+我想大家应该都很熟悉调用栈的概念。如果程序在断点处暂停运行，在浏览器的调试工具中你能看到直到断点处的调用栈。下面是维基百科上的一些相关引文和图表。
 
-这就是我现在要解释的。
+> 在计算机科学中，调用栈是一个堆栈数据结构，它存储了计算机程序的活动子程序的信息……调用栈主要是为了跟踪每个活动子程序在执行完毕后应该返回控制权到何处……调用栈是由堆栈帧组成的……每个堆栈帧对应于对一个尚未结束（以 return 的形式）的子程序的调用。例如，如果一个名为 DrawLine 的子程序目前正在运行，而它被DrawSquare 的子程序调用，那么调用堆栈的顶部可能会像下图那样排列。
 
-A word about the stack
+![call stack]({{ site.url }}/assets/call_stack.png)*call stack*
 
-关于堆栈
+为什么堆栈与 React 有关？
 
-I assume you’re all familiar with the notion of a call stack. This is what you see in your browser’s debugging tools if you pause code at a breakpoint. Here are a few relevant quotes and diagrams from Wikipedia:
+正如我们在文章第一部分所定义的那样，React 在协调/渲染阶段行遍历组件树，并为组件执行一些 work 。协调器之前的实现使用的是同步递归模型，依靠内置的栈来遍历树。[官方文档][10]]描述了这个过程，并谈了很多关于递归的内容。
 
-我想大家应该都很熟悉调用栈的概念。如果你在断点处暂停代码，你在浏览器的调试工具中看到的就是这个概念。下面是维基百科上的一些相关引文和图表。
+> 默认情况下，当递归一个 DOM 节点的子节点时，React 只是在同一时间遍历新旧两个子节点列表，只要有差异就会记录一处变动。
 
-In computer science, a call stack is a stack data structure that stores information about the active subroutines of a computer program… the main reason for having call stack is to keep track of the point to which each active subroutine should return control when it finishes executing… A call stack is composed of stack frames… Each stack frame corresponds to a call to a subroutine which has not yet terminated with a return. For example, if a subroutine named DrawLine is currently running, having been called by a subroutine DrawSquare, the top part of the call stack might be laid out like in the adjacent picture.
+如果你仔细想想，每次递归调用都会给堆栈增加一帧。而且它以同步执行。假设我们有以下的组件树：
 
-在计算机科学中，调用栈是一个堆栈数据结构，它存储了计算机程序的活动子程序的信息......拥有调用栈的主要原因是为了跟踪每个活动子程序在执行完毕后应该返回控制权的点......调用栈是由堆栈帧组成的......每个堆栈帧对应于对一个尚未以返回结束的子程序的调用。例如，如果一个名为DrawLine的子程序目前正在运行，已经被DrawSquare的子程序调用，那么调用堆栈的顶部可能会像下图那样排列。
+![component_tree]({{ site.url }}/assets/component_tree.png)*component tree*
 
-Why is the stack relevant to React?
-
-为什么堆栈与React有关？
-
-As we defined in the first part of the article, Reacts walks the components tree during the reconciliation/render phase and performs some work for components. The previous implementation of the reconciler used the synchronous recursive model that relied on the built-in stack to walk the tree. The official doc on reconciliation describe this process and talk a lot about recursion:
-
-正如我们在文章第一部分所定义的那样，Reacts在协调/重构阶段行遍历组件树，并为组件执行一些工作。协调器之前的实现使用的是同步递归模型，依靠内置的栈来遍历树。协调的官方文档描述了这个过程，并谈了很多关于递归的内容。
-
-By default, when recursing on the children of a DOM node, React just iterates over both lists of children at the same time and generates a mutation whenever there’s a difference.
-
-默认情况下，当递归一个DOM节点的子节点时，React只是在同一时间对两个子节点列表进行迭代，只要有差异就会产生突变。
-
-If you think about it, each recursive call adds a frame to the stack. And it does so synchronously. Suppose we have the following tree of components:
-
-如果你仔细想想，每次递归调用都会给堆栈增加一帧。而且它是同步进行的。假设我们有以下的组件树。
-
-Represented as objects with the render function. You can think of them as instances of components:
-
-用渲染函数表示为对象。你可以把它们看作是组件的实例。
+将节点表示为带有 `render` 函数的对象，你可以把它们看作是组件的实例：
 
 ```javascript
 const a1 = {name: 'a1'};
@@ -138,17 +120,11 @@ d1.render = () => [];
 d2.render = () => [];
 ```
 
-React needs to iterate the tree and perform work for each component. To simplify, the work to do is to log the name of the current component and retrieve its children. Here’s how we do it with recursion.
+React 需要遍历树，并为每个组件执行 work 。简单来说，work 要做的就是记录当前组件的名称，并收集其子代。接下来我们用递归的方式做这些事情。
 
-React需要迭代树，并为每个组件执行工作。简单来说，要做的工作就是记录当前组件的名称，并检索其子代。下面是我们如何用递归的方式来完成。
+## 递归遍历
 
-Recursive traversal
-
-递归遍历
-
-The main function that iterates over the tree is called walk in the implementation below:
-
-在下面的实现中，在树上迭代的主要函数叫做walk。
+在下面的实现中，遍历树的主要函数叫做 `walk`:
 
 ```javascript
 walk(a1);
@@ -164,23 +140,17 @@ function doWork(o) {
 }
 ```
 
-Here’s the output we’re getting:
+以下是我们得到的输出：
 
-这是我们得到的输出。
+> a1, b1, b2, c1, d1, d2, b3, c2
 
-a1, b1, b2, c1, d1, d2, b3, c2
+如果你对递归不怎么熟悉，可以看看我关于递归的[深度文章][11]。
 
-If you don’t feel confident with recursions, check out my in-depth article on recursion.
-
-如果你对递归没有信心，可以看看我关于递归的深度文章。
-
-A recursive approach is intuitive and well-suited for walking the trees. But as we discovered, it has limitations. The biggest one is that we can’t break the work into incremental units. We can’t pause the work at a particular component and resume it later. With this approach React just keeps iterating until it processed all components and the stack is empty.
-
-递归的方法很直观，很适合遍历树。但我们发现，它有局限性。最大的限制是，我们不能将工作分解成增量单位。我们不能在某个组件处暂停工作，稍后再继续。使用这种方法，React只是不断地迭代，直到处理完所有组件，堆栈为空。
+递归的方法很直观，很适合遍历树。但我们发现，它有局限性。最大的限制是，我们不能将工作分解成增量单元。我们不能在某个组件处暂停工作，稍后再继续。使用这种方法，React 只是不断地迭代，直到处理完所有组件，堆栈为空。
 
 So how does React implement the algorithm to walk the tree without recursion? It uses a singly linked list tree traversal algorithm. It makes it possible to pause the traversal and stop the stack from growing.
 
-那么React是如何实现无递归遍历树的算法呢？它使用的是单链路列表树遍历算法。它可以暂停遍历，停止堆栈的增长。
+那么 React 是如何实现无递归遍历树的算法呢？它使用的是单链路列表树遍历算法。它可以暂停遍历，停止堆栈的增长。
 
 Linked list traversal
 链接列表遍历

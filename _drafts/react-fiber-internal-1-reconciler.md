@@ -206,9 +206,7 @@ console.log(child.instance.name === 'b1');
 console.log(child.sibling.instance === children[1]);
 ```
 
-We’ll also implement a helper function that performs some work for a node. In our case, it’s going to log the name of a component. But besides that it also retrieves the children of a component and links them together:
-
-我们还将实现一个帮助函数，为节点执行一些工作。在我们的例子中，它将记录一个组件的名称。但除此之外，它还会检索一个组件的子节点，并将它们链接在一起。
+我们还将实现一个为节点执行一些 work 的 helper 函数。在我们的例子中，它将记录下组件的名称。但除此之外，它还会获取组件的子节点，并将组件和它的子节点链接在一起。
 
 ```javascript
 function doWork(node) {
@@ -218,10 +216,7 @@ function doWork(node) {
 }
 ```
 
-Okay, now we’re ready to implement the main traversal algorithm. It’s a parent first, depth-first implementation. Here is the code with useful comments:
-
-好了，现在我们准备好实现主要的遍历算法了。这是一个父先，深度优先的实现。下面是带有有用注释的代码。
-
+好了，现在我们准备好实现主要的遍历算法了。这是一个先从父节点开始、深度优先的实现。下面是带上注释的代码：
 
 ```javascript
 function walk(o) {
@@ -261,29 +256,21 @@ function walk(o) {
 }
 ```
 
-Although the implementation is not particularly difficult to understand, you may need to play with it a little to grok it. Do it here. The idea is that we keep the reference to the current node and re-assign it while descending the tree until we hit the end of the branch. Then we use the return pointer to return to the common parent.
+虽然这个实现并不是特别难理解，但你可能需要[玩一玩][13]才能摸清它。思路是，我们保留对当前节点的引用，并在访问树的下层节点的过程中对它重新赋值，直到我们到达树的分支的末端，然后我们使用 `return` 指针返回到公共父节点。
 
-虽然这个实现并不是特别难理解，但你可能需要玩一玩才能摸清它。在这里做。这个想法是，我们保留对当前节点的引用，并在树的下降过程中重新分配它，直到我们到达分支的末端。然后我们使用返回指针返回到公共父节点。
+如果我们现在查看这个实现的调用栈，我们会看到以下内容：
 
-If we now check the call stack with this implementation, here’s what we’re going to see:
+![walk_call_stack]({{ site.url }}/assets/walk_call_stack.gif)*walk call stack*
 
-如果我们现在用这个实现来检查调用栈，我们会看到以下内容。
+正如你所看到的，当我们向下访问树节点的时候，堆栈并没有增长。但如果现在把调试器放到 doWork 函数里，并记录节点名称，我们就会看到以下内容：
 
-As you can see, the stack doesn’t grow as we walk down the tree. But if now put the debugger into the doWork function and log node names, we’re going to see the following:
+![logs_of_walk]({{ site.url }}/assets/logs_of_walk.gif)*logs of walk*
 
-正如你所看到的，当我们向下走的时候，堆栈并没有增长。但如果现在把调试器放到doWork函数中，并记录节点名称，我们就会看到以下内容。
+它看起来就像浏览器中的调用栈。通过这种算法，我们有效地用自己的实现取代了浏览器对调用栈的实现。这就是 Andrew 所描述的：
 
-It looks like a callstack in a browser. So with this algorithm, we’re effectively replacing the browser’s implementation of the call stack with our own implementation. That’s what Andrew describes here:
+> Fiber 是专门针对 React 组件的栈的再实现。你可以把单个 fiber 看作是一个虚拟的栈帧。
 
-它看起来就像浏览器中的调用栈。所以，通过这种算法，我们有效地用自己的实现取代了浏览器对调用栈的实现。这就是Andrew在这里所描述的。
-
-Fiber is re-implementation of the stack, specialized for React components. You can think of a single fiber as a virtual stack frame.
-
-光纤是栈的再实现，专门针对React组件。你可以把单个光纤看作是一个虚拟的栈框架。
-
-Since we’re now controlling the stack by keeping the reference to the node that acts as a top frame:
-
-由于我们现在通过保持对作为顶层框架的节点的引用来控制栈。
+由于我们现在通过保存作为顶层栈帧的节点的引用来控制栈：
 
 ```javascript
 function walk(o) {
@@ -304,16 +291,12 @@ function walk(o) {
 }
 ```
 
-we can stop the traversal at any time and resume to it later. That’s exactly the condition we wanted to achieve to be able to use the new requestIdleCallback API.
+我们可以在任何时候停止遍历，并在稍后恢复到它。这正是我们想要达到的状态，这样我们就能够使用新的 `requestIdleCallback` API 。
 
-我们可以在任何时候停止遍历，并在稍后恢复到它。这正是我们想要达到的条件，以便能够使用新的 requestIdleCallback API。
 
-Work loop in React
-React中的工作循环
+## React 的工作循环
 
-Here’s the code that implements work loop in React:
-这是React中实现工作循环的代码。
-
+这是 React 中实现工作循环的[代码][14]：
 
 ```javascript
 function workLoop(isYieldy) {

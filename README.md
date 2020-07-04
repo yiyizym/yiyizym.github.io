@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [React 在 Fiber 中使用链表来遍历组件树的原因和方式](https://judes.me/tech/2020/07/03/react-fiber-internal-1-reconciler.html) 
 - [react hooks 与闭包](https://judes.me/frontend/2020/05/26/react-hooks-closure.html) 
 - [读「Bayesian Statistics the Fun Way」](https://judes.me/reading/2020/04/18/bayesian-statistics-the-fun-way.html) 
 - [代码复杂度分析](https://judes.me/tech/frontend/2020/03/21/code-complexity.html) 
@@ -11,7 +12,6 @@
 - [学车记](https://judes.me/life/2020/01/17/learn-to-drive.html) 
 - [读「为什么是英国——有限政府的起源」](https://judes.me/reading/2019/12/20/why-england.html) 
 - [实现内凹圆角+阴影效果](https://judes.me/frontend/2019/12/01/concave-fillet-with-shadow.html) 
-- [译文：react fiber 如何以及为什么使用链表遍历组件](https://judes.me/tech/2019/11/13/react-fiber-internal-1-reconciler.html) 
 - [读「经济学的思维方式」](https://judes.me/reading/2019/11/02/basic-economics.html) 
 - [读「走出帝制」](https://judes.me/reading/2019/10/03/zou-chu-di-zhi.html) 
 - [基于 ant design table 实现的虚拟滚动列表](https://judes.me/frontend/2019/09/17/infinite-table.html) 

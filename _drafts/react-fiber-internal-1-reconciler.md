@@ -9,40 +9,23 @@ categories:
 
 **这是一篇译文，原文[链接](https://indepth.dev/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-to-walk-the-components-tree/)**
 
+本文探讨了 React 新的名为 Fiber 的协调器实现中的主要工作循环(work loop)。 它比较并解释了浏览器的调用栈和 React 的 Fiber 架构中的栈的实现之间的差异。
 
-This article explores the main the work loop in React’s new reconciler implementation called Fiber. It compares and explains the differences between browser's call stack and the implementation of the stack in React's Fiber architecture.
+为了教育自己和社区，我在网络技术的逆向工程上面花了很多时间，并写下我的收获。在过去的一年里，我主要专注于 Angular ，我发布了网络上最大的 Angular 出版物--Angular-In-Depth。现在是时候深入研究 React 了。变化检测已经成为我在 Angular 中的主要专业领域，只要有一定的耐心和大量的调试，我希望很快就能在 React 中达到与之相当的水平。
 
-本文探讨了React新的名为Fiber的调和器实现中的主要*工作循环*。 它比较并解释了浏览器的调用栈和React的Fiber架构中的栈的实现之间的差异。
+在 React 中，变化检测的机制通常被称为协调或渲染，Fiber 是其最新的实现。由于底层架构的原因，它得以实现许多有趣的功能，如执行非阻塞渲染、根据优先级实施更新和在后台预渲染内容。这些功能在[Concurrent React 理念][1]中被称为时间分割。
 
-To educate myself and the community, I spend a lot of time reverse-engineering web technologies and writing about my findings. In the last year, I’ve focused mostly on Angular sources which resulted in the biggest Angular publication on the web — Angular-In-Depth. Now the time has come to dive deep into React. Change detection has become the main area of my expertise in Angular, and with some patience and a lot of debugging, I hope to soon achieve that level in React.
+除了解决开发者的实际问题外，从工程的角度来看，这些机制的内部实现具有广泛的吸引力。源码中如此丰富的知识，能帮助我们开发者成长。
 
-为了教育自己和社区，我花了很多时间对网络技术进行逆向工程，并写下我的发现。在过去的一年里，我主要专注于*Angular源*，这*导致了*网络上最大的Angular出版物--Angular-In-Depth。现在是时候深入研究React了。变更检测已经成为我在Angular中的主要专业领域，只要有一定的耐心和大量的调试，我希望很快就能在React中达到这个水平。
+如果你今天在 Google 上搜索 "React Fiber"，你会在搜索结果中看到不少文章。不过除了 Andrew Clark 的[文章][2]之外，其他的都是很顶层的解释。在本文中，我将参考这篇文章，详细地解释 Fiber 中一些特别重要的概念。看完后你就会有足够的知识来理解这场 Lin Clark 在 ReactConf 2017 上的一个非常好的关于工作循环的[演讲][3]。
 
-In React, the mechanism of change detection is often referred to as reconciliation or rendering, and Fiber is its newest implementation. Due to the underlying architecture, it provides capabilities to implement many interesting features like performing non-blocking rendering, applying updates based on the priority and pre-rendering content in the background. These features are referred to as time-slicing in the Concurrent React philosophy.
+建议你去看这场演讲。在此之前要是你花一点时间在源码上，你会对演讲有更深入的理解。
 
-在React中，变化检测的机制通常被称为*调和*或渲染，Fiber是其最新的实现。由于底层架构的原因，它提供了实现许多有趣功能的能力，如执行非阻塞渲染、根据优先级应用更新和在后台预渲染内容。这些功能在Concurrent React理念中被称为时间分割。
-
-Besides solving real problems of application developers, the internal implementation of these mechanisms has a wide appeal from the engineering perspective. There’s such a wealth of knowledge in the sources that will help us grow as developers.
-
-除了解决应用开发者的实际问题外，从工程的角度来看，这些机制的内部实现具有广泛的吸引力。在源头上有如此丰富的知识，将有助于我们开发者的成长。
-
-If you Google “React Fiber” today you’re going to see quite a lot articles in the search results. All of them, though, except for the notes by Andrew Clark are pretty high-level explanations. In this article, I’ll refer to this resource and provide an elaborate explanation for some particularly important concepts in Fiber. Once we’ve finished, you’ll have enough knowledge to understand the work loop representation from a very good talk by Lin Clark at ReactConf 2017. That’s the one talk you need to see. But it’ll make a lot more sense to you after you’ve spent a little time in the sources.
-
-如果你今天在Google上搜索 "React Fiber"，你会在搜索结果中看到不少文章。不过除了Andrew Clark的笔记之外，其他的都是很高级别的解释。在本文中，我将参考这个资源，对Fiber中一些特别重要的概念进行详细的解释。一旦我们完成了，你就会有足够的知识来理解工作循环的表示，来自Lin Clark在ReactConf 2017上的一个非常好的演讲。这是你需要看的一个演讲。但在你花了一点时间在源头上之后，你会觉得更有意义。
-
-This post opens a series on React’s Fiber internals. I’m about 70% through understanding the internal details of the implementation and have three more articles on reconciliation and rendering mechanism in the works.
-
-
-这篇文章开启了关于React的Fiber内部的系列文章。我对内部实现细节的理解已经完成了70%左右，还有三篇关于调和和渲染机制的文章正在编写中。
-
-Let’s get started!
+这篇文章是关于 React 的 Fiber 内部实现的[系列文章][4]的开篇。我对 Fiber 内部实现细节的理解大约在 70% 左右，还有三篇关于协调和渲染机制的文章正在书写当中。
 
 让我们开始吧!
 
-
-Setting the background
-
-**准备背景知识**
+**背景知识**
 
 Fiber’s architecture has two major phases: reconciliation/render and commit. In the source code the reconciliation phase is mostly referred to as the “render phase”. This is the phase when React walks the tree of components and:
 
@@ -52,7 +35,7 @@ retrieves the children from the component,
 compares them to the previous children,
 and figures out the DOM updates that need to be performed.
 
-Fiber的架构有两个主要阶段：调和/渲染和提交。在源代码中，调和阶段大多被称为 "渲染阶段"。这个阶段是React走组件树和。
+Fiber 的架构有两个主要阶段：协调/渲染和提交。在源码中，协调阶段大多被称为"渲染阶段"。在这个阶段，React 遍历组件树和。
 
 更新状态和道具。
 调用生命周期钩子。
@@ -70,7 +53,7 @@ When dealing with UIs, the problem is that if too much work is executed all at o
 
 Now what about that ‘all at once’ part? Well, basically, if React is going to walk the entire tree of components synchronously and perform work for each component, it may run over 16 ms available for an application code to execute its logic. And this will cause frames to drop causing stuttering visual effects.
 
-现在，那个 "一次全部 "的部分呢？好吧，基本上，如果React要同步走过整个组件树，并为每个组件执行工作，它可能会运行超过16毫秒的应用程序代码执行其逻辑。而这将会导致掉帧造成停滞的视觉效果。
+现在，那个 "一次全部 "的部分呢？好吧，基本上，如果React要同步遍历整个组件树，并为每个组件执行工作，它可能会运行超过16毫秒的应用程序代码执行其逻辑。而这将会导致掉帧造成停滞的视觉效果。
 
 So this can be helped?
 
@@ -113,7 +96,7 @@ requestIdleCallback((deadline) => {
 
 We perform the work on one component and then return the reference to the next component to process. This would work, if not for one thing. You can’t process the entire tree of components synchronously, as in the previous implementation of the reconciliation algorithm. And that’s the problem Andrew talks about here:
 
-我们在一个组件上执行工作，然后将引用返回给下一个组件进行处理。如果不是因为一件事，这样做是可行的。你不能像之前实现的调和算法那样，同步处理整个组件树。而这就是Andrew在这里谈到的问题。
+我们在一个组件上执行工作，然后将引用返回给下一个组件进行处理。如果不是因为一件事，这样做是可行的。你不能像之前实现的协调算法那样，同步处理整个组件树。而这就是Andrew在这里谈到的问题。
 
 in order to use those APIs, you need a way to break rendering work into incremental units
 
@@ -121,7 +104,7 @@ in order to use those APIs, you need a way to break rendering work into incremen
 
 So to solve this problem, React had to re-implement the algorithm for walking the tree from the synchronous recursive model that relied on the built-in stack to an asynchronous model with linked list and pointers. And that’s what Andrew writes about here:
 
-所以为了解决这个问题，React不得不重新实现了走树的算法，从依赖内置栈的同步递归模型变成了链接列表和指针的异步模型。而这就是Andrew在这里写的内容。
+所以为了解决这个问题，React不得不重新实现了遍历树的算法，从依赖内置栈的同步递归模型变成了链接列表和指针的异步模型。而这就是Andrew在这里写的内容。
 
 If you rely only on the [built-in] call stack, it will keep doing work until the stack is empty…Wouldn’t it be great if we could interrupt the call stack at will and manipulate stack frames manually? That’s the purpose of React Fiber.Fiber is re-implementation of the stack, specialized for React components. You can think of a single fiber as a virtual stack frame.
 
@@ -149,7 +132,7 @@ Why is the stack relevant to React?
 
 As we defined in the first part of the article, Reacts walks the components tree during the reconciliation/render phase and performs some work for components. The previous implementation of the reconciler used the synchronous recursive model that relied on the built-in stack to walk the tree. The official doc on reconciliation describe this process and talk a lot about recursion:
 
-正如我们在文章第一部分所定义的那样，Reacts在调和/重构阶段行走组件树，并为组件执行一些工作。调和器之前的实现使用的是同步递归模型，依靠内置的栈来走树。调和的官方文档描述了这个过程，并谈了很多关于递归的内容。
+正如我们在文章第一部分所定义的那样，Reacts在协调/重构阶段行遍历组件树，并为组件执行一些工作。协调器之前的实现使用的是同步递归模型，依靠内置的栈来遍历树。协调的官方文档描述了这个过程，并谈了很多关于递归的内容。
 
 By default, when recursing on the children of a DOM node, React just iterates over both lists of children at the same time and generates a mutation whenever there’s a difference.
 
@@ -221,11 +204,11 @@ If you don’t feel confident with recursions, check out my in-depth article on 
 
 A recursive approach is intuitive and well-suited for walking the trees. But as we discovered, it has limitations. The biggest one is that we can’t break the work into incremental units. We can’t pause the work at a particular component and resume it later. With this approach React just keeps iterating until it processed all components and the stack is empty.
 
-递归的方法很直观，很适合走树。但我们发现，它有局限性。最大的限制是，我们不能将工作分解成增量单位。我们不能在某个组件处暂停工作，稍后再继续。使用这种方法，React只是不断地迭代，直到处理完所有组件，堆栈为空。
+递归的方法很直观，很适合遍历树。但我们发现，它有局限性。最大的限制是，我们不能将工作分解成增量单位。我们不能在某个组件处暂停工作，稍后再继续。使用这种方法，React只是不断地迭代，直到处理完所有组件，堆栈为空。
 
 So how does React implement the algorithm to walk the tree without recursion? It uses a singly linked list tree traversal algorithm. It makes it possible to pause the traversal and stop the stack from growing.
 
-那么React是如何实现无递归走树的算法呢？它使用的是单链路列表树遍历算法。它可以暂停遍历，停止堆栈的增长。
+那么React是如何实现无递归遍历树的算法呢？它使用的是单链路列表树遍历算法。它可以暂停遍历，停止堆栈的增长。
 
 Linked list traversal
 链接列表遍历
@@ -244,7 +227,7 @@ return--指向母体的引用
 
 In the context of the new reconciliation algorithm in React, the data structure with these fields is called Fiber. Under the hood it’s the representation of a React Element that keeps a queue of work to do. More on that in my next articles.
 
-在React新的调和算法中，带有这些字段的数据结构叫做Fiber。在外壳下，它是一个React Element的表示，它保留了一个工作队列。关于这一点，我在接下来的文章中会有更多的介绍。
+在React新的协调算法中，带有这些字段的数据结构叫做Fiber。在外壳下，它是一个React Element的表示，它保留了一个工作队列。关于这一点，我在接下来的文章中会有更多的介绍。
 
 The following diagram demonstrates the hierarchy of objects linked through the linked list and the types of connections between them:
 
@@ -429,7 +412,7 @@ As you can see, it maps nicely to the algorithm I presented above. It keeps the 
 
 The algorithm can walk the components tree synchronously and perform the work for each fiber node in the tree (nextUnitOfWork). This is usually the case for so-called interactive updates caused by UI events (click, input etc). Or it can walk the components tree asynchronously checking if there’s time left after performing work for a Fiber node. The function shouldYield returns the result based on deadlineDidExpire and deadline variables that are constantly updated as React performs work for a fiber node.
 
-该算法可以同步行走组件树，并为树上的每个纤维节点执行工作（nextUnitOfWork）。这通常是UI事件（点击、输入等）引起的所谓交互式更新的情况。或者它也可以异步走动组件树，检查在为一个fiber节点执行工作后是否还有时间。函数shouldYield根据deadlineDidExpire和deadline变量返回结果，这些变量在React为光纤节点执行工作时不断更新。
+该算法可以同步遍历组件树，并为树上的每个纤维节点执行工作（nextUnitOfWork）。这通常是UI事件（点击、输入等）引起的所谓交互式更新的情况。或者它也可以异步遍历动组件树，检查在为一个fiber节点执行工作后是否还有时间。函数shouldYield根据deadlineDidExpire和deadline变量返回结果，这些变量在React为光纤节点执行工作时不断更新。
 
 The peformUnitOfWork function is described in depth here.
 

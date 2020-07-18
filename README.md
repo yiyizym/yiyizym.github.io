@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [英语口语的意群(thought groups)](https://judes.me/life/2020/07/18/about-thought-groups.html) 
 - [React 在 Fiber 中使用链表来遍历组件树的原因和方式](https://judes.me/tech/2020/07/03/react-fiber-internal-1-reconciler.html) 
 - [react hooks 与闭包](https://judes.me/frontend/2020/05/26/react-hooks-closure.html) 
 - [读「Bayesian Statistics the Fun Way」](https://judes.me/reading/2020/04/18/bayesian-statistics-the-fun-way.html) 
@@ -27,7 +28,6 @@
 - [读「邓小平时代」](https://judes.me/reading/2019/02/24/deng-xiao-ping-shi-dai.html) 
 - [小程序：上行坂日语](https://judes.me/tech/2019/02/17/noborizaka-nihongo.html) 
 - [到日本，顺便看一场棒球赛吧](https://judes.me/life/2019/02/17/buy_fukuoka_hawks_tickets.html) 
-- [anu 源码阅读 01](https://judes.me/tech/2019/01/09/anu-sources-reading-1.html) 
 - [九州之旅](https://judes.me/life/2019/01/07/kyuushuu-no-tabi.html) 
 - [javascript 内存泄漏与 Chrome dev tools](https://judes.me/frontend/2018/11/18/memory_leaks_dev_tools.html) 
 - [从“贷款创造存款”说开](https://judes.me/life/reading/2018/11/11/loan_create_deposit.html) 

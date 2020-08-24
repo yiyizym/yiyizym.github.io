@@ -31,6 +31,18 @@ markdown: kramdown
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-multiple-languages-plugin
 exclude:
   - Gemfile
   - Gemfile.lock
+
+# multipul languages
+languages: ["cn","en"]
+exclude_from_localizations: [
+  "assets",
+  "CNAME",
+  "sw.js",
+  "workbox-sw-3.4.1.js",
+  "offline.html",
+  "README.md"
+]

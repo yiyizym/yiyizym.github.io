@@ -1,8 +1,17 @@
 <header class="site-header" role="banner">
     <nav class="site-nav">
-      <a class="page-link" href="/about/">关于</a>
+      {% if site.lang == "en" %}
+        {% capture site_link %}/{% endcapture %}
+        {% capture about_link %}/en/about/{% endcapture %}
+      {% elsif site.lang == "cn" %}
+        {% capture site_link %}/en/{% endcapture %}
+        {% capture about_link %}/about/{% endcapture %}
+      {% endif %}
+      <a class="page-link" href="{{ site_link }}">{% t global.language %}</a>
       <i class="page-link-divider"></i>
-      <a class="page-link" target="_blank"href="https://twitter.com/{{ site.twitter_username }}">推特</a>
+      <a class="page-link" href="{{ about_link }}">{% t global.about %}</a>
+      <i class="page-link-divider"></i>
+      <a class="page-link" target="_blank"href="https://twitter.com/{{ site.twitter_username }}">{% t global.twitter %}</a>
     </nav>
     <a class="site-title" rel="author" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
     <div class="divider"></div>

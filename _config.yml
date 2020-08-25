@@ -43,6 +43,5 @@ exclude_from_localizations: [
   "CNAME",
   "sw.js",
   "workbox-sw-3.4.1.js",
-  "offline.html",
   "README.md"
 ]

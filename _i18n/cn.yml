@@ -1,4 +1,7 @@
 global:
   about: 关于
   twitter: 推特
-  language: English 
+  language: English
+  change_language_link: /en/
+  site_link: /
+  about_link: /about/

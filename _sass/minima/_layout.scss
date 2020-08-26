@@ -52,6 +52,10 @@
   .page-link {
     color: $text-color;
     line-height: $base-line-height;
+
+    &.language.active_lang {
+      color: $primary-color;
+    }
   }
 
   .page-link-divider {

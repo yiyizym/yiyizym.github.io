@@ -1,3 +1,10 @@
+---
+layout: about
+title: About
+permalink: /about/
+lang: en
+---
+
 ### Blog Content
 - Programming (front-end)
 - Reading

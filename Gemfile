@@ -24,7 +24,7 @@ gem "minima"
 group :jekyll_plugins do
    gem "jekyll-feed"
    gem 'jekyll-compose'
-   gem 'jekyll-multiple-languages-plugin'
+   gem 'jekyll-polyglot'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

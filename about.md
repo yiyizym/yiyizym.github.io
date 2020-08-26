@@ -4,4 +4,4 @@ title: About
 permalink: /about/
 ---
 
-{% tf about/about.md %}
+{% translate_file about/about.md %}

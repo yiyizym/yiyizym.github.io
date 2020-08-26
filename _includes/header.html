@@ -1,35 +1,34 @@
-{% assign lang = site.active_lang %}
 <header class="site-header" role="banner">
-    <nav class="site-nav">
-      {% for tongue in site.languages %}
-        {% capture page_link %}
-          {% if tongue == site.default_lang %}
-            {{site.baseurl}}{{page.url}} 
-          {% else %}
-            {{site.baseurl}}/{{ tongue }}{{page.url}}
-          {% endif %}
-        {% endcapture %}
-        <a class="page-link language {% if tongue == lang %} active_lang {% endif %}" href="{{page_link}}">{{ site.languageDescription[tongue] }}</a>
-        <i class="page-link-divider"></i>
-      {% endfor %}
-      {% capture about_link %}
-        {% if lang == site.default_lang %}
-          {{site.baseurl}}/about
+  <nav class="site-nav">
+    {% for tongue in site.languages %}
+      {% capture page_link %}
+        {% if tongue == site.default_lang %}
+          {{site.baseurl}}{{page.url}} 
         {% else %}
-          {{site.baseurl}}/{{ lang }}/about
+          {{site.baseurl}}/{{ tongue }}{{page.url}}
         {% endif %}
       {% endcapture %}
-      <a class="page-link" href="{{about_link}}">{{ lang }}</a>
+      <a class="page-link language {% if tongue == site.active_lang %} active_lang {% endif %}" href="{{page_link}}">{{ site.languageDescription[tongue] }}</a>
       <i class="page-link-divider"></i>
-      <a class="page-link" target="_blank"href="https://twitter.com/{{ site.twitter_username }}">{{ site.twitterDescription[lang] }}</a>
-    </nav>
-    {% capture site_link %}
-      {% if lang == site.default_lang %}
-        {{site.url}}
+    {% endfor %}
+    {% capture about_link %}
+      {% if site.active_lang == site.default_lang %}
+        {{site.baseurl}}/about
       {% else %}
-        {{site.url}}/{{ lang }}
+        {{site.baseurl}}/{{ site.active_lang }}/about
       {% endif %}
     {% endcapture %}
-    <a class="site-title" rel="author" href="{{site_link}}">{{ site.title | escape }}</a>
-    <div class="divider"></div>
+    <a class="page-link" href="{{about_link}}">{{ site.aboutDescription[site.active_lang] }}</a>
+    <i class="page-link-divider"></i>
+    <a class="page-link" target="_blank"href="https://twitter.com/{{ site.twitter_username }}">{{ site.twitterDescription[site.active_lang] }}</a>
+  </nav>
+  {% capture site_link %}
+    {% if site.active_lang == site.default_lang %}
+      {{site.url}}
+    {% else %}
+      {{site.url}}/{{ site.active_lang }}
+    {% endif %}
+  {% endcapture %}
+  <a class="site-title" rel="author" href="{{site_link}}">{{ site.title | escape }}</a>
+  <div class="divider"></div>
 </header>

@@ -31,17 +31,31 @@ markdown: kramdown
 theme: minima
 plugins:
   - jekyll-feed
-  - jekyll-multiple-languages-plugin
 exclude:
   - Gemfile
   - Gemfile.lock
 
 # multipul languages
-languages: ["cn","en"]
-exclude_from_localizations: [
+languages: ["zh_CN","en"]
+default_lang: "zh_CN"
+exclude_from_localization: [
   "assets",
   "CNAME",
   "sw.js",
   "workbox-sw-3.4.1.js",
   "README.md"
 ]
+parallel_localization: true
+
+sass:
+  sourcemap: never
+
+languageDescription:
+  en: English
+  zh_CN: 中文
+aboutDescription:
+  en: about
+  zh_CN: 关于
+twitterDescription:
+  en: twitter
+  zh_CN: 推特

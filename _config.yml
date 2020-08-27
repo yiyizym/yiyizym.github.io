@@ -35,24 +35,9 @@ exclude:
   - Gemfile
   - Gemfile.lock
 
-# multipul languages
-languages: ["zh_CN","en"]
-default_lang: "zh_CN"
-exclude_from_localization: [
-  "assets",
-  "CNAME",
-  "sw.js",
-  "workbox-sw-3.4.1.js",
-  "README.md"
-]
-parallel_localization: true
-
-sass:
-  sourcemap: never
-
-languageDescription:
-  en: English
-  zh_CN: 中文
+counterPartTranslation:
+  en: 中文
+  zh_CN: English
 aboutDescription:
   en: about
   zh_CN: 关于

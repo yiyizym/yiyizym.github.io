@@ -1,33 +1,33 @@
-{% assign lang = site.active_lang %}
 <header class="site-header" role="banner">
     <nav class="site-nav">
-      {% for tongue in site.languages %}
-        {% capture page_link %}
-          {% if tongue == site.default_lang %}
-            {{site.baseurl}}{{page.url}} 
-          {% else %}
-            {{site.baseurl}}/{{ tongue }}{{page.url}}
-          {% endif %}
-        {% endcapture %}
-        <a class="page-link language {% if tongue == lang %} active_lang {% endif %}" href="{{page_link}}">{{ site.languageDescription[tongue] }}</a>
-        <i class="page-link-divider"></i>
-      {% endfor %}
-      {% capture about_link %}
-        {% if lang == site.default_lang %}
-          {{site.baseurl}}/about
+      {% capture page_link %}
+        {% if 'zh_CN' == page.lang %}
+          {{site.url}}/en{{page.url}}
+        {% elsif 'en' == page.lang %}
+          {{site.url | remove_first: '/en'}}
         {% else %}
-          {{site.baseurl}}/{{ lang }}/about
         {% endif %}
       {% endcapture %}
-      <a class="page-link" href="{{about_link}}">{{ site.aboutDescription[lang] }}</a>
+      {% if page_link %}
+        <a class="page-link" href="{{page_link}}">{{ site.counterPartTranslation[page.lang]}}</a>
+        <i class="page-link-divider"></i>
+      {% endif %}
+      {% capture about_link %}
+        {% if 'zh_CN' == page.lang %}
+          {{site.url}}/about
+        {% else %}
+          {{site.url}}/en/about
+        {% endif %}
+      {% endcapture %}
+      <a class="page-link" href="{{about_link}}">{{ site.aboutDescription[page.lang] | site.aboutDescription['zh_CN'] }}</a>
       <i class="page-link-divider"></i>
-      <a class="page-link" target="_blank"href="https://twitter.com/{{ site.twitter_username }}">{{ site.twitterDescription[lang] }}</a>
+      <a class="page-link" target="_blank"href="https://twitter.com/{{ site.twitter_username }}">{{ site.twitterDescription[page.lang] | site.aboutDescription['zh_CN'] }}</a>
     </nav>
     {% capture site_link %}
-      {% if lang == site.default_lang %}
+      {% if 'zh_CN' == page.lang %}
         {{site.url}}
       {% else %}
-        {{site.url}}/{{ lang }}
+        {{site.url}}/en
       {% endif %}
     {% endcapture %}
     <a class="site-title" rel="author" href="{{site_link}}">{{ site.title | escape }}</a>

@@ -3,6 +3,7 @@ layout: post
 title: 雪花分形
 date: 2016-11-07 22:04:44
 excerpt: 一种被实证可行的小说创作方法
+lang: zh_CN
 categories: life
 tags:
 - 写作

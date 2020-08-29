@@ -4,7 +4,8 @@ layout: default
 
 <div class="home">
   <div class="post-list">
-    {% for post in site.posts %}
+    {% assign posts = site.posts | where:"lang", page.lang %}
+    {% for post in posts %}
         <a class="post-link" target="_blank" href="{{ post.url | relative_url }}">
           <span class="post-title">{{ post.title | escape }}</span>
           {%- assign post_meta = post.excerpt | default: '' -%}

@@ -3,6 +3,7 @@ layout: post
 title: 从“贷款创造存款”说开
 date: 2018-11-11 07:30:57
 excerpt: 一直都听说“存款创造贷款”，事实又是怎样呢？
+lang: zh_CN
 categories: 
 - life
 - reading

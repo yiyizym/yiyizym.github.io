@@ -3,6 +3,7 @@ layout: post
 title: 读「Bayesian Statistics the Fun Way」
 date: 2020-04-18 08:20:28
 excerpt: 高中生都能读懂的贝叶斯统计学
+lang: zh_CN
 categories: 
 - reading
 ---

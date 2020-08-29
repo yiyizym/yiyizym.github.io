@@ -3,6 +3,7 @@ layout: post
 title: 台北见闻
 date: 2019-08-10 10:20:28
 excerpt: 在台北搬砖之余，所见所闻
+lang: zh_CN
 categories: 
 - life
 ---

@@ -3,6 +3,7 @@ layout: post
 title: 读《细雪》
 date: 2017-10-07 01:04:04
 excerpt: 就像日本的《红楼梦》？
+lang: zh_CN
 categories: reading
 ---
 

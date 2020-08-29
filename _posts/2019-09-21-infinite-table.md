@@ -3,6 +3,7 @@ layout: post
 title: 基于 ant design table 实现的虚拟滚动列表
 date: 2019-09-17 10:20:28
 excerpt: 只是一种思路，不支持无限滚动且有很多未知 bug
+lang: zh_CN
 categories: 
 - frontend
 ---

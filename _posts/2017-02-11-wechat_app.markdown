@@ -3,6 +3,7 @@ layout: post
 title: 微信小程序组件开发示例
 date: 2017-02-11 03:09:57
 excerpt: 最近开始折腾小程序了
+lang: zh_CN
 categories: tech
 tags:
 - 微信小程序

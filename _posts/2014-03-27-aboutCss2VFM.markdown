@@ -4,6 +4,7 @@ title: 浅谈CSS2.1可视化格式模型
 excerpt: "对CSS2.1可视化格式模型的一些总结"
 date: 2014-03-27 16:47:38
 keywords: 可视化格式模型, 包含块, 盒子, 定位方案, 浮动, 常规流
+lang: zh_CN
 categories: frontend
 ---
 近日看了CSS2.1规范文档中对可视化格式模型（visual formatting model）的描述，弄懂了很多之前理解模糊的概念。顺手写写总结，理理思路，以便日后忘记了可以回头看看。

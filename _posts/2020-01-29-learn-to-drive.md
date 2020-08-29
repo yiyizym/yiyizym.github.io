@@ -3,6 +3,7 @@ layout: post
 title: 学车记
 date: 2020-01-17 10:20:28
 excerpt: 考驾照，一段还算有些意义的人生经历
+lang: zh_CN
 categories: 
 - life
 ---

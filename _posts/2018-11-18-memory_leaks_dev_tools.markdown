@@ -3,6 +3,7 @@ layout: post
 title: javascript 内存泄漏与 Chrome dev tools
 date: 2018-11-18 07:07:31
 excerpt: 个人认为 前端所谓的 内存泄漏 并不是真正的 内存泄漏
+lang: zh_CN
 categories: frontend
 ---
 

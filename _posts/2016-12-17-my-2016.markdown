@@ -3,6 +3,7 @@ layout: post
 title: 逝去的 2016
 date: 2016-12-17 21:12:06
 excerpt: 回望今年，不是总结
+lang: zh_CN
 categories: life
 tags:
 - 年终

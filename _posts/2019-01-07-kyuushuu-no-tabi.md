@@ -3,6 +3,7 @@ layout: post
 title: 九州之旅
 date: 2019-1-07 07:20:28
 excerpt: 去年 10 月初在日本九州周游了一圈，九天的记录
+lang: zh_CN
 categories: life
 ---
 

@@ -3,6 +3,7 @@ layout: post
 title: 方法只做一件事
 date: 2017-01-15 10:31:26
 excerpt: clean code 给我的启发
+lang: zh_CN
 categories: tech
 tags:
 - clean code

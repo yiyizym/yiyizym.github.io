@@ -3,6 +3,7 @@ layout: post
 title: 浏览器阻止弹窗
 date: 2016-04-24 11:04:50
 excerpt: 浏览器会阻止不是由用户直接触发的弹窗
+lang: zh_CN
 categories: frontend
 tags: 
 - 浏览器

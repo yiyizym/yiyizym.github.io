@@ -3,6 +3,7 @@ layout: post
 title: 读《请不要给我的孩子减负》有感
 date: 2018-03-31 00:29:04
 excerpt: 我对减负的看法跟大众不一样
+lang: zh_CN
 categories: 
 - life
 - reading

@@ -3,6 +3,7 @@ layout: post
 title: CSS 样式应用优先级
 date: 2015-09-13 10:51:45
 excerpt: 可以用来面试（别人），总结自一篇讲浏览器工作原理的文章。
+lang: zh_CN
 categories: frontend
 tags: CSS
 ---

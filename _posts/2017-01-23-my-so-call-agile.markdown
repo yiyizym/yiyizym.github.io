@@ -3,6 +3,7 @@ layout: post
 title: 我所经历的敏捷开发
 date: 2017-01-23 11:36:06
 excerpt: 从慢慢建立，到彻底崩坏
+lang: zh_CN
 categories: life
 ---
 

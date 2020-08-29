@@ -3,6 +3,7 @@ layout: post
 title: 微信浏览器 location reload 失效解决办法
 date: 2016-07-02 22:45:16
 excerpt: 微信自家浏览器总有莫名其妙的 bug
+lang: zh_CN
 categories: frontend
 tags: 
 - 微信

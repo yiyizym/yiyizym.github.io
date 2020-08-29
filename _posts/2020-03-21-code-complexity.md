@@ -3,6 +3,7 @@ layout: post
 title: 代码复杂度分析
 date: 2020-03-21 08:20:28
 excerpt: 一个杠精对两种理论的偏心比较
+lang: zh_CN
 categories: 
 - tech
 - frontend

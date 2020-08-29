@@ -3,6 +3,7 @@ layout: post
 title: react hooks 与闭包
 date: 2020-05-26 10:20:28
 excerpt: 所有烦恼的根源就在于你不知道为什么
+lang: zh_CN
 categories: 
 - frontend
 ---

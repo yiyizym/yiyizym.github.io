@@ -3,6 +3,7 @@ layout: post
 title: 一个因挪动 wechat_api 引发的问题，以及问题探究
 date: 2016-07-27 07:36:56
 excerpt: 本想着减少重复代码，把 wechat_api 从各个具体的 controller 挪动到 ApplicationController ，结果出错啦。为了找出原因，我又踏上了阅读源码的不归路。
+lang: zh_CN
 categories: ruby
 tags:
 - ruby

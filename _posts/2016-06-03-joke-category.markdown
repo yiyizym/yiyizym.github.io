@@ -3,6 +3,7 @@ layout: post
 title: 笑话分类
 date: 2016-06-03 08:06:33
 excerpt: 给笑话分个类
+lang: zh_CN
 categories: joke
 tags: 
 - 笑话理论

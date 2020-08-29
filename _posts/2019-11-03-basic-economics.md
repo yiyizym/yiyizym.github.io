@@ -3,6 +3,7 @@ layout: post
 title: 读「经济学的思维方式」
 date: 2019-11-02 10:20:28
 excerpt: 推荐给普通人，值得一读再读
+lang: zh_CN
 categories: 
 - reading
 ---

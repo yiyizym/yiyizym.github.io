@@ -4,6 +4,7 @@ title: 关于setTimeout二三事
 excerpt: "定时器与javascript引擎、浏览器及eval函数"
 date: 2014-07-03 16:47:38
 keywords: 定时器, javascript引擎, 线程、eval
+lang: zh_CN
 categories: frontend
 ---
 

@@ -3,6 +3,7 @@ layout: post
 title: 读「走出帝制」
 date: 2019-10-03 10:20:28
 excerpt: 从晚清到民国，从帝制到何处？
+lang: zh_CN
 categories: 
 - reading
 ---

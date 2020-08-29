@@ -3,6 +3,7 @@ layout: post
 title: 读「为什么是英国——有限政府的起源」
 date: 2019-12-20 10:20:28
 excerpt: 这是本有意思的小书
+lang: zh_CN
 categories: 
 - reading
 ---

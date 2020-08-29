@@ -3,6 +3,7 @@ layout: post
 title: 一个定制 vue 输入框组件的思路
 date: 2019-08-31 10:20:28
 excerpt: 基于现有控件基础上的再定制
+lang: zh_CN
 categories: 
 - frontend
 ---

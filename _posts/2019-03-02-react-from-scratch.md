@@ -3,6 +3,7 @@ layout: post
 title: 从头搭建一个使用 react+redux+react-router 实现简单功能的页面有多难
 date: 2019-03-01 17:20:28
 excerpt: 直到掉进坑里，我都以为不难。
+lang: zh_CN
 categories: 
 - tech
 - frontend

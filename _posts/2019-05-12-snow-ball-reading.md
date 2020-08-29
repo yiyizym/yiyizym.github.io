@@ -3,6 +3,7 @@ layout: post
 title: 推荐「雪球速读法」
 date: 2019-05-12 10:20:28
 excerpt: 一种快速读书的方法论
+lang: zh_CN
 categories: 
 - reading
 ---

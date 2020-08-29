@@ -3,6 +3,7 @@ layout: post
 title: React 在 Fiber 中使用链表来遍历组件树的原因和方式
 date: 2020-07-03 10:20:28
 excerpt: 深入 react fiber 系列之一
+lang: zh_CN
 categories: 
 - tech
 ---

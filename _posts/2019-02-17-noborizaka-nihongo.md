@@ -3,6 +3,7 @@ layout: post
 title: 小程序：上行坂日语
 date: 2019-02-17 07:20:28
 excerpt: 我做了一个学习日语的小程序
+lang: zh_CN
 categories: tech
 ---
 

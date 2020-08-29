@@ -3,6 +3,7 @@ layout: post
 title: sinatra 0.1.0 源码学习
 date: 2016-07-10 14:40:17
 excerpt: 通过 sinatra 学习 ruby 编程技巧（系列）
+lang: zh_CN
 categories: ruby
 tags: 
 - sinatra

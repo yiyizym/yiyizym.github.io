@@ -3,6 +3,7 @@ layout: post
 title: React Native 踩坑记
 date: 2018-08-18 07:20:28
 excerpt: 初次尝试 React Native 开发需要注意的几点
+lang: zh_CN
 categories: tech
 ---
 

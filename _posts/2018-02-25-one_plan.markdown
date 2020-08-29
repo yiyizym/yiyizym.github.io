@@ -3,6 +3,7 @@ layout: post
 title: 一个计划，一个尝试
 date: 2018-02-25 04:35:38
 excerpt: 关于笑话创作的一个想法和尝试
+lang: zh_CN
 categories: life
 ---
 

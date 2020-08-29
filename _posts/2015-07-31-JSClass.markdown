@@ -4,6 +4,7 @@ title: 两个小巧的javascript类工厂
 excerpt: "es6才原生支持 class ，来看看在此之前大神们怎样实现类工厂吧"
 keywords: "p.js , 原型链"
 date: 2015-07-31 23:02:51
+lang: zh_CN
 categories: frontend
 tags: 
 - javascript类

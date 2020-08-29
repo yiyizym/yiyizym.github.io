@@ -3,6 +3,7 @@ layout: post
 title: 到日本，顺便看一场棒球赛吧
 date: 2019-02-17 01:49:58
 excerpt: 如果想感受一下日本的文化和日常生活，去看一场当地的棒球赛吧
+lang: zh_CN
 categories: life
 ---
 

@@ -3,6 +3,7 @@ layout: post
 title: 英语口语中的意群(thought groups)
 date: 2020-07-18 10:20:28
 excerpt: 读英语长句时，该在哪里停顿换气呢？
+lang: zh_CN
 categories: 
 - life
 ---

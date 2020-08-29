@@ -3,6 +3,7 @@ layout: post
 title: 阅读小摘 201801
 date: 2018-01-20 03:18:31
 excerpt: DailyReadingRecord
+lang: zh_CN
 categories: reading
 ---
 

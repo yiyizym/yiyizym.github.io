@@ -3,6 +3,7 @@ layout: post
 title: background-color 和 background-image 的定位差异细节
 date: 2017-09-16 03:33:14
 excerpt: 这只是一篇读过 w3c 规范后，写就的文章
+lang: zh_CN
 categories: frontend
 ---
 

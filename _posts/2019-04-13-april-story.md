@@ -3,6 +3,7 @@ layout: post
 title: 四月物语
 date: 2019-04-09 07:20:28
 excerpt: 四月里的樱花,恋爱中的少女
+lang: zh_CN
 categories: life
 ---
 

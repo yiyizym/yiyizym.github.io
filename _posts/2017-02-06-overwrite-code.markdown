@@ -3,6 +3,7 @@ layout: post
 title: 提交历史神秘消失事件薄
 date: 2017-02-06 10:57:14
 excerpt: 文件提交历史消失了？是 git 的 bug 还是被强行 reset 了？
+lang: zh_CN
 categories: tech
 ---
 

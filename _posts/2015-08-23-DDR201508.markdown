@@ -3,6 +3,7 @@ layout: post
 title: 每日阅读小摘
 date: 2015-08-23 12:07:28
 excerpt: 中断N个月之后，又再继续
+lang: zh_CN
 categories: DailyReadingRecord
 tags: reading
 ---

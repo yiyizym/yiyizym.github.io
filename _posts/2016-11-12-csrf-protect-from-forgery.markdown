@@ -3,6 +3,7 @@ layout: post
 title: Rails 的 CSRF 对策
 date: 2016-11-12 22:33:28
 excerpt: protect_from_forgery 方法
+lang: zh_CN
 categories: tech
 tags:
 - rails

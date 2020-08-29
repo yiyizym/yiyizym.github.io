@@ -3,6 +3,7 @@ layout: post
 title: 试用 Action Cable
 date: 2016-08-02 20:54:33
 excerpt: Rails 5 出来很久了，学习一下 Action Cable
+lang: zh_CN
 categories: ruby
 tags:
 - ruby

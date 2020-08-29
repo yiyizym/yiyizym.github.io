@@ -4,6 +4,7 @@ title: gulp task
 excerpt: "gulp task 笔记"
 date: 2014-09-27 16:47:38
 keywords: gulp task, 异步, stream, callback, deferred
+lang: zh_CN
 categories: tech
 ---
 

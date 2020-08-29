@@ -4,6 +4,7 @@ title: I've made it
 excerpt: "借助 jekyll 终于折腾出第一篇文章了。"
 date: 2013-11-10 16:47:38
 keywords: Jekyll, 博客, Haroopad
+lang: zh_CN
 categories: life
 ---
 本人一直有写博客的习惯，最近在 阮一峰 的博客上看到这篇文章：

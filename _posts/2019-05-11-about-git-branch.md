@@ -3,6 +3,7 @@ layout: post
 title: 一个关于 Git branch 的分享
 date: 2019-05-02 10:20:28
 excerpt: 有了 A 分支，就不能有 A/B 分支?
+lang: zh_CN
 categories: 
 - tech
 ---

@@ -3,6 +3,7 @@ layout: post
 title: 读「政治分肥」
 date: 2019-06-15 10:20:28
 excerpt: 日本自民党政权长期存在的理由
+lang: zh_CN
 categories: 
 - reading
 ---

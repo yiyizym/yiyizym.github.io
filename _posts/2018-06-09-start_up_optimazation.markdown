@@ -3,6 +3,7 @@ layout: post
 title: 一次页面启动优化实践
 date: 2018-06-09 04:20:28
 excerpt: 纸上得来终觉浅，绝知此事要躬行
+lang: zh_CN
 categories: frontend
 ---
 

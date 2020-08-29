@@ -5,6 +5,7 @@ excerpt: "2014-12"
 date: 2014-12-01 16:47:38
 keywords: 阅读
 categories: DailyReadingRecord
+lang: zh_CN
 ---
 **2014-12-31**
 

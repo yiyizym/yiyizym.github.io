@@ -3,6 +3,7 @@ layout: post
 title: 读「邓小平时代」
 date: 2019-02-23 17:20:28
 excerpt: 邓小平与他身处的时代
+lang: zh_CN
 categories: reading
 ---
 

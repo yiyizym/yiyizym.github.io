@@ -4,6 +4,7 @@ title: 一个应用JSONP的例子
 excerpt: "ADS上一个JSONP的例子，服务器得知请求端函数名的具体实现"
 date: 2014-05-26 16:47:38
 keywords: ADS, JSONP, script标签、服务器
+lang: zh_CN
 categories: frontend
 ---
 javascript出于安全考虑，禁止跨域访问资源。跨域是指以下情况：各级域名、端口、协议有任何一处不相同。

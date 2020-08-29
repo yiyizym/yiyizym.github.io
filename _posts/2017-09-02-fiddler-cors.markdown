@@ -3,6 +3,7 @@ layout: post
 title:  fiddler 使用技巧及其他经验总结
 date: 2017-09-02 01:19:47
 excerpt: 最近一直在用 fiddler ，分享一下使用过程中踩过的坑和经验，不定期更新
+lang: zh_CN
 categories: frontend
 ---
 ## 序

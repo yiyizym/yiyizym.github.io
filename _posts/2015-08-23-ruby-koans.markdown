@@ -3,6 +3,7 @@ layout: post
 title: ruby_koans
 date: 2015-08-23 10:18:33
 excerpt: some notes about ruby when practicing with ruby koans
+lang: zh_CN
 categories: ruby
 tags: 
 - ruby

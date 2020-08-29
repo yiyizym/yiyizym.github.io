@@ -2,6 +2,7 @@
 layout: post
 title: 有限的笑话
 date: 2016-05-08 20:27:06
+lang: zh_CN
 categories: joke
 tags: 
 - 笑话理论

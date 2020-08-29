@@ -4,6 +4,7 @@ title: 奢餐，绝食，读《玻璃天》偶感
 excerpt: "夜读书，怎么就跟冰桶挑战扯上关系了呢？"
 date: 2014-08-24 16:47:38
 keywords: 菜肴,饥饿,冰桶挑战,浪费
+lang: zh_CN
 categories: reading
 ---
 

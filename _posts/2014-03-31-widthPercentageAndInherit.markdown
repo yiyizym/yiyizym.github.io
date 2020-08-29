@@ -4,6 +4,7 @@ title: width属性取100%时与inherit的区别
 excerpt: "width属性取100%时与inherit的区别"
 date: 2014-03-31 16:47:38
 keywords: width, CSS, inherit, specified value, 继承
+lang: zh_CN
 categories: frontend
 ---
 width属性不可继承，默认值是auto。

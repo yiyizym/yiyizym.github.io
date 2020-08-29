@@ -3,6 +3,7 @@ layout: post
 title: 权限组件的 React 实现
 date: 2019-04-13 17:20:28
 excerpt: 实现思路和框架
+lang: zh_CN
 categories: 
 - tech
 - frontend

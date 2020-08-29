@@ -4,6 +4,7 @@ title: 阅读小摘
 excerpt: "201502-05"
 keywords: 阅读
 categories: DailyReadingRecord
+lang: zh_CN
 tags: reading
 date: 2015-07-31 23:17:03
 ---

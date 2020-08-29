@@ -3,6 +3,7 @@ layout: post
 title: 怎样才能在富士山顶煮出理想的半熟鸡蛋
 date: 2017-11-23 12:45:04
 excerpt: 第一篇日语翻译作品，译着玩。
+lang: zh_CN
 categories: life
 ---
 

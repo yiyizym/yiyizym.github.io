@@ -3,7 +3,7 @@ layout: post
 title: React 在渲染列表时，列表元素的 Key 重复了会怎样？
 date: 2020-09-12 10:20:28
 excerpt: 除了 warning 还有别的意外惊喜！
-lang: zh-CN
+lang: zh_CN
 categories: 
 - frontend
 ---

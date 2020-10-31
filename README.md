@@ -4,9 +4,14 @@
 
 **文章列表**
 
+- [最近沉迷的事](https://judes.me/life/2020/10/31/subtitle-making.html) 
+- [React 在渲染列表时，列表元素的 Key 重复了会怎样？](https://judes.me/frontend/2020/09/12/react-list-repeated-key.html) 
+- [Excel can help you when reading the source code](https://judes.me/tech/2020/09/05/reading-source-code-with-excel-en.html) 
+- [阅读源码时 Excel 能帮你](https://judes.me/tech/2020/08/28/reading-source-code-with-excel.html) 
 - [英语口语中的意群(thought groups)](https://judes.me/life/2020/07/18/about-thought-groups.html) 
 - [React 在 Fiber 中使用链表来遍历组件树的原因和方式](https://judes.me/tech/2020/07/03/react-fiber-internal-1-reconciler.html) 
 - [react hooks 与闭包](https://judes.me/frontend/2020/05/26/react-hooks-closure.html) 
+- [react hooks and closure](https://judes.me/frontend/2020/05/26/react-hooks-closure-en.html) 
 - [读「Bayesian Statistics the Fun Way」](https://judes.me/reading/2020/04/18/bayesian-statistics-the-fun-way.html) 
 - [代码复杂度分析](https://judes.me/tech/frontend/2020/03/21/code-complexity.html) 
 - [读「Effective TypeScript」](https://judes.me/frontend/2020/02/09/effective-typescript.html) 

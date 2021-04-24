@@ -2,7 +2,7 @@
 layout: post
 title: React Native FlatList 性能优化实践
 date: 2021-01-27 10:20:28
-excerpt: 
+excerpt: 一些优化实践和建议
 lang: zh_CN
 categories: 
 - frontend

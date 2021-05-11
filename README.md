@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [React Native FlatList performance tuning](https://judes.me/frontend/2021/02/17/react-native-flatList-performance-tuning-en.html) 
 - [React Native FlatList 性能优化实践](https://judes.me/frontend/2021/01/27/react-native-flatList-performance-tuning.html) 
 - [最近沉迷的事](https://judes.me/life/2020/10/31/subtitle-making.html) 
 - [React 在渲染列表时，列表元素的 Key 重复了会怎样？](https://judes.me/frontend/2020/09/12/react-list-repeated-key.html) 

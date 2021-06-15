@@ -272,4 +272,4 @@ findLongestPalindrome('usacdcuseless')
 
 参考：
 
-- https://www.jianshu.com/p/116aa58b7d81
+- [Manacher算法的详细讲解](https://www.jianshu.com/p/116aa58b7d81)

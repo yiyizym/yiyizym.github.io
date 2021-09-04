@@ -4,6 +4,7 @@
 
 **文章列表**
 
+- [新旅程的第一步](https://judes.me/life/2021/08/19/remote-working-1.html) 
 - [马拉车](https://judes.me/tech/2021/06/11/manacher-algorithm.html) 
 - [React Native FlatList performance tuning](https://judes.me/frontend/2021/02/17/react-native-flatList-performance-tuning-en.html) 
 - [React Native FlatList 性能优化实践](https://judes.me/frontend/2021/01/27/react-native-flatList-performance-tuning.html) 

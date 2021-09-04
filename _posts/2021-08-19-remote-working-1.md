@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 新旅程的第二步
+title: 新旅程的第一步
 date: 2021-08-19 07:20:28
 excerpt: 想趁这个时间写写人生的新旅程
 lang: zh_CN

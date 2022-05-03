@@ -2,7 +2,7 @@
 layout: post
 title: 试着讲逻辑（一）
 date: 2022-05-02 07:20:28
-excerpt: 试着用逻辑对抗荒谬的世界（一）
+excerpt: 试着用逻辑对抗荒谬的世界
 lang: zh_CN
 categories: life
 ---
